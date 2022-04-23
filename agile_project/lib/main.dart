@@ -1,5 +1,6 @@
 import 'package:agile_project/scenes/HomeScene.dart';
 import 'package:agile_project/scenes/ProfileScene.dart';
+import 'package:agile_project/scenes/StockLevelScene.dart';
 import 'package:agile_project/scenes/WishlistScene.dart';
 import 'package:flutter/material.dart';
 
@@ -32,8 +33,10 @@ class AppBase extends StatefulWidget {
 }
 
 class _AppBaseState extends State<AppBase> {
-  int _selectedNavIndex = 1;
-  
+  //initial scene for bottom navigator
+  int _selectedNavIndex = 0;
+  bool isAdmin = false;
+
   void _onItemTapped(int index){
     setState(() => {
       _selectedNavIndex = index,
@@ -61,6 +64,16 @@ class _AppBaseState extends State<AppBase> {
         title: Text(widget.title),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.account_circle),
+            onPressed: ()=>{
+              isAdmin = !isAdmin,
+              //for refresh purpose
+              setState(() => {}),
+            },
+          )
+        ],
       ),
       body: SafeArea(
         child: _widgetOptions.elementAt(_selectedNavIndex)),
@@ -82,6 +95,20 @@ class _AppBaseState extends State<AppBase> {
           currentIndex: _selectedNavIndex,
           onTap: _onItemTapped,
         ),
+        floatingActionButton: isAdmin ? 
+          FloatingActionButton(
+            backgroundColor: Colors.black,
+            child: const Icon(Icons.settings, color: Colors.white,),
+            onPressed: _onFabTapped)
+          : null,
       );
+  }
+
+  //for passing function purpose
+  void pass(){}
+
+  void _onFabTapped(){
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const MyStockLevelScene(
+    )));
   }
 }

@@ -1,13 +1,13 @@
-import 'package:agile_project/components/_enumList.dart';
+import 'package:agile_project/models/enumList.dart';
+import 'package:agile_project/models/user.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MyProfileScene extends StatefulWidget{
   const MyProfileScene({
     Key? key, 
-    required this.currAccountType
     }) : super (key: key); 
 
-  final AccountType currAccountType;
   @override
   State<MyProfileScene> createState() => _MyProfileSceneState();
 }
@@ -21,12 +21,14 @@ class _MyProfileSceneState extends State<MyProfileScene>{
 
   @override
   Widget build(BuildContext context) {
+    //for identify login or not 
+    AccountType currAccountType = (Provider.of<AppUser?>(context) == null) ? AccountType.guest : AccountType.admin; 
     return Center(
-      child:  (widget.currAccountType == AccountType.guest) ? 
+      child:  (currAccountType == AccountType.guest) ? 
               const Text("Guest Profile View") : 
-              (widget.currAccountType == AccountType.user) ? 
+              (currAccountType == AccountType.user) ? 
               const Text("User Profile View") :
-              (widget.currAccountType == AccountType.admin) ?
+              (currAccountType == AccountType.admin) ?
               const Text("Admin Profile View") : const Text("ERROR: Account Type Out of Bonud"),
       );
   }

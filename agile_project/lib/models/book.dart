@@ -5,6 +5,7 @@ class Book{
   final String author;
   final String publishedDate;
   final String imageCoverURL;
+  final List<String> tags;
   final double tradePrice;
   final double retailPrice;
   final int quantity;
@@ -17,6 +18,7 @@ class Book{
       required this.author,
       required this.publishedDate,
       required this.imageCoverURL,
+      required this.tags,
       required this.tradePrice,
       required this.retailPrice,
       required this.quantity,

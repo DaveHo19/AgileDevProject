@@ -1,0 +1,163 @@
+import 'package:agile_project/models/user.dart';
+import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
+import 'package:agile_project/scenes/authentication/LoginScene.dart';
+import 'package:agile_project/scenes/authentication/RegisterScene.dart';
+import 'package:agile_project/scenes/home/HomeScene.dart';
+import 'package:agile_project/scenes/product/ManageProductScene.dart';
+import 'package:agile_project/scenes/product/ViewProductScene.dart';
+import 'package:agile_project/scenes/user/ProfileScene.dart';
+import 'package:agile_project/scenes/user/WishlistScene.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'models/enumList.dart';
+
+class Wrapper extends StatefulWidget {
+  const Wrapper({ Key? key }) : super(key: key);
+
+  @override
+  State<Wrapper> createState() => _WrapperState();
+}
+
+class _WrapperState extends State<Wrapper> {
+ //initial scene for bottom navigator
+  int _selectedNavIndex = 0;
+  AccountType accountType = AccountType.guest;
+
+  
+  void _onItemTapped(int index){
+    setState(() => {
+    _selectedNavIndex = index,
+    });
+  }
+
+  //for navigation scene 
+  static final List<Widget> _bottomNavigationScene = <Widget>[];
+  
+  @override
+  void initState() {
+    super.initState();
+    //for linking navigation scene
+    _initialBottomNavigationScene();
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    final user = Provider.of<AppUser?>(context);
+    accountType = (user == null) ? AccountType.guest : AccountType.admin;
+    return Scaffold(
+      //top bar
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            onPressed: pass,
+          ),
+          //debug purpose
+          IconButton(
+            icon: const Icon(Icons.account_circle),
+            onPressed: ()=>{
+              accountType = (accountType == AccountType.admin) ? AccountType.guest : AccountType.admin,
+              //for refresh purpose
+              setState(() => {
+                _initialBottomNavigationScene(),
+              }),
+            },
+          ),
+          //debug purpose
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              const PopupMenuItem<int>(
+                value: 0,
+                child: Text("Login"),
+              ),
+              const PopupMenuItem<int>(
+                value: 1,
+                child: Text("Register"),
+              ),
+              const PopupMenuItem<int>(
+                value: 2,
+                child: Text("StockLevel"),
+              ),              
+              const PopupMenuItem<int>(
+                value: 3,
+                child: Text("View"),
+              ),
+              const PopupMenuItem<int>(
+                value: 4,
+                child: Text("Manage"),
+              ),                 
+            ], 
+            onSelected: (int i) => {
+              debugHandler(context, i)
+            },),
+        ],
+      
+      ),
+      body: SafeArea(
+        child: _bottomNavigationScene.elementAt(_selectedNavIndex)),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: "Home",
+              ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite),
+              label: "Wishlist",
+              ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: "Profile",
+              ),
+          ],
+          currentIndex: _selectedNavIndex,
+          onTap: _onItemTapped,
+        ),
+        floatingActionButton: (accountType == AccountType.admin) ? 
+          FloatingActionButton(
+            backgroundColor: Colors.black,
+            child: const Icon(Icons.settings, color: Colors.white,),
+            onPressed: _onFabTapped)
+          : null,
+      );
+  }
+
+  //for passing function purpose
+  void pass(){}
+
+  void _initialBottomNavigationScene(){
+    _bottomNavigationScene.clear();
+    _bottomNavigationScene.add(const MyHomeScene());
+    _bottomNavigationScene.add(const MyWishlistScene());
+    _bottomNavigationScene.add(const MyProfileScene());
+  }
+
+  void _onFabTapped(){
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const MyStockLevelScene(
+    )));
+  }
+
+  void debugHandler(BuildContext context, int i){
+    switch (i){
+      case 0:
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyLoginScene()));
+        break;
+      case 1:
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyRegisterScene()));
+        break;
+      case 2:
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyStockLevelScene()));    
+        break;
+      case 3:
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyViewProductScene()));
+        break;
+      case 4:
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyManageProductScene()));    
+        break;     
+    }
+  }
+  
+}

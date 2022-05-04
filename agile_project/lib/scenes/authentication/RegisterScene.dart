@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class MyRegisterScene extends StatefulWidget{
@@ -24,7 +25,7 @@ class _MyRegisterSceneState extends State<MyRegisterScene>{
         ),
         body: const SafeArea(
           child: Center(
-            child: Text("Register Scene Here")
+            child: Text("register"),
           ),
         ),
     );

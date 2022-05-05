@@ -6,8 +6,6 @@ import 'package:agile_project/scenes/home/HomeScene.dart';
 import 'package:agile_project/scenes/user/ProfileScene.dart';
 import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
 import 'package:agile_project/scenes/user/WishlistScene.dart';
-import 'package:agile_project/scenes/product/ManageProductScene.dart';
-import 'package:agile_project/scenes/product/ViewProductScene.dart';
 import 'package:agile_project/services/firebase_auth.dart';
 import 'package:agile_project/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';

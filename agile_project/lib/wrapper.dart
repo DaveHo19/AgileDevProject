@@ -2,6 +2,8 @@ import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
 import 'package:agile_project/scenes/authentication/LoginScene.dart';
 import 'package:agile_project/scenes/authentication/RegisterScene.dart';
+import 'package:agile_project/scenes/debug/debug_auth.dart';
+import 'package:agile_project/scenes/debug/debug_image.dart';
 import 'package:agile_project/scenes/home/HomeScene.dart';
 import 'package:agile_project/scenes/product/ManageProductScene.dart';
 import 'package:agile_project/scenes/product/ViewProductScene.dart';
@@ -88,6 +90,14 @@ class _WrapperState extends State<Wrapper> {
               const PopupMenuItem<int>(
                 value: 4,
                 child: Text("Manage"),
+              ),    
+              const PopupMenuItem<int>(
+                value: 5,
+                child: Text("Debug-Auth"),
+              ),    
+              const PopupMenuItem<int>(
+                value: 6,
+                child: Text("Debug-Image"),
               ),                 
             ], 
             onSelected: (int i) => {
@@ -157,6 +167,12 @@ class _WrapperState extends State<Wrapper> {
       case 4:
         Navigator.push(context, MaterialPageRoute(builder: (context) => const MyManageProductScene()));    
         break;     
+      case 5: 
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugAuth()));    
+        break;
+      case 6:
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugImage()));    
+      break;
     }
   }
   

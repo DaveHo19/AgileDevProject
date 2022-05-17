@@ -1,11 +1,4 @@
-import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/models/user.dart';
-import 'package:agile_project/scenes/authentication/LoginScene.dart';
-import 'package:agile_project/scenes/authentication/RegisterScene.dart';
-import 'package:agile_project/scenes/home/HomeScene.dart';
-import 'package:agile_project/scenes/user/ProfileScene.dart';
-import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
-import 'package:agile_project/scenes/user/WishlistScene.dart';
 import 'package:agile_project/services/firebase_auth.dart';
 import 'package:agile_project/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';

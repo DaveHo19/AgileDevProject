@@ -3,7 +3,7 @@ class Book{
   final String title;
   final String? description;
   final String author;
-  final String publishedDate;
+  final DateTime publishedDate;
   final String imageCoverURL;
   final List<String> tags;
   final double tradePrice;
@@ -24,4 +24,8 @@ class Book{
       required this.quantity,
     }
   );
+
+  void toInfo(){
+    print("ISBN_13: $ISBN_13, Title: $title, Author: $author, P.Date: ${publishedDate.toString()}, imgCover: $imageCoverURL, tags: $tags, tPrice: $tradePrice, rPrice: $retailPrice, qty: $quantity");
+  }
 }

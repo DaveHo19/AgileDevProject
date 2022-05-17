@@ -165,7 +165,7 @@ class _WrapperState extends State<Wrapper> {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const MyViewProductScene()));
         break;
       case 4:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyManageProductScene()));    
+        Navigator.push(context, MaterialPageRoute(builder: (context) => MyManageProductScene(bookManagement: BookManagement.create,)));    
         break;     
       case 5: 
         Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugAuth()));    

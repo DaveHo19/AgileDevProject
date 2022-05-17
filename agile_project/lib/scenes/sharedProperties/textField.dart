@@ -27,3 +27,4 @@ InputDecoration dateInputDecoration(String title) => InputDecoration(
     floatingLabelBehavior: FloatingLabelBehavior.always,
     floatingLabelAlignment: FloatingLabelAlignment.start,
 );
+

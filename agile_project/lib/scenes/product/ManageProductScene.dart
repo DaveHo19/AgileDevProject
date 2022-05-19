@@ -323,18 +323,17 @@ class _MyManageProductSceneState extends State<MyManageProductScene>{
                           retailPrice: retailPrice, 
                           quantity: quantity);
                           var result = await dbService.createBook(newBook);
-                          print(result.toString());
                           if (result == null){
-                            setState(() {
-                              isProcess = false;
-                            });
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Result failed to update!")));
-                          } else {
                             setState(() {
                               isProcess = false;
                             });
                             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Book created successfully")));
                             Navigator.pop(context);
+                          } else {
+                            setState(() {
+                              isProcess = false;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Result failed to update!")));
                           }
                       } else {
                         setState(() {

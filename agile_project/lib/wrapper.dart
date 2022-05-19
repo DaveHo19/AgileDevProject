@@ -4,6 +4,7 @@ import 'package:agile_project/scenes/authentication/LoginScene.dart';
 import 'package:agile_project/scenes/authentication/RegisterScene.dart';
 import 'package:agile_project/scenes/debug/debug_auth.dart';
 import 'package:agile_project/scenes/debug/debug_image.dart';
+import 'package:agile_project/scenes/debug/debug_retrieve.dart';
 import 'package:agile_project/scenes/home/HomeScene.dart';
 import 'package:agile_project/scenes/product/ManageProductScene.dart';
 import 'package:agile_project/scenes/product/ViewProductScene.dart';
@@ -98,7 +99,11 @@ class _WrapperState extends State<Wrapper> {
               const PopupMenuItem<int>(
                 value: 6,
                 child: Text("Debug-Image"),
-              ),                 
+              ),    
+              const PopupMenuItem<int>(
+                value: 7,
+                child: Text("Debug-Retrieve"),
+              ),               
             ], 
             onSelected: (int i) => {
               debugHandler(context, i)
@@ -172,6 +177,9 @@ class _WrapperState extends State<Wrapper> {
         break;
       case 6:
         Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugImage()));    
+      break;
+      case 7:
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugRetrieve()));
       break;
     }
   }

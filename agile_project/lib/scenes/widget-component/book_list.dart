@@ -1,6 +1,8 @@
 import 'package:agile_project/models/book.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:agile_project/viewDetailScene.dart';
+import 'package:agile_project/models/enumList.dart';
 
 class BookList extends StatefulWidget {
   const BookList({Key? key}) : super(key: key);
@@ -42,6 +44,15 @@ class _BookListState extends State<BookList> {
       ),
       title: Text("Book Name: " + book.title),
       subtitle: Text("Quantity: " + book.quantity.toString()),
+      trailing: Icon(Icons.keyboard_arrow_right),
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => viewDetailScene(
+                    bookManagement: BookManagement.create, book: book)));
+      },
+      enabled: true,
     );
   }
 }

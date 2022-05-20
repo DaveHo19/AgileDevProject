@@ -2,10 +2,9 @@ import 'dart:html';
 
 import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/enumList.dart';
+import 'package:agile_project/scenes/widget-component/book_list.dart';
 import 'package:agile_project/services/databaseService.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:agile_project/services/databaseService.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:agile_project/scenes/product/ManageProductScene.dart';
 
@@ -17,9 +16,6 @@ class MyStockLevelScene extends StatefulWidget {
 }
 
 class _MyStockLevelSceneState extends State<MyStockLevelScene> {
-  List<Book> bookList = [];
-  final bookRef = FirebaseFirestore.instance;
-
   @override
   void initState() {
     super.initState();
@@ -27,41 +23,49 @@ class _MyStockLevelSceneState extends State<MyStockLevelScene> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Stock Level"),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        actions: const [
-          IconButton(
-            icon: Icon(Icons.search),
-            tooltip: "Search",
-            onPressed: null,
-          ),
-        ],
-      ),
-      body: Center(
-        child: const Text("On progress for retrieve data from firestore"),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => MyManageProductScene(
-                        bookManagement: BookManagement.create,
-                      )));
-        },
-        icon: const Icon(Icons.add),
-        label: const Text("Add Stock"),
+    return StreamProvider<List<Book>>.value(
+      value: DatabaseService().books,
+      initialData: const [],
+      catchError: (_, error) => errorMessage(context, error),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Stock Level"),
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
+          actions: const [
+            IconButton(
+              icon: Icon(Icons.search),
+              tooltip: "Search",
+              onPressed: null,
+            ),
+          ],
+        ),
+        body: const BookList(),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MyManageProductScene(
+                          bookManagement: BookManagement.create,
+                        )));
+          },
+          icon: const Icon(Icons.add),
+          label: const Text("Add Stock"),
+        ),
       ),
     );
   }
 
+  List<Book> errorMessage(BuildContext context, var data) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(data.toString())));
+
+    return <Book>[];
+  }
+
   // Widget _generateListView() {
-  //   DatabaseService databaseService = DatabaseService();
   //   return FutureBuilder(
-  //     future: databaseService.getBookList(),
   //     builder: (BuildContext context, AsyncSnapshot snapshot) {
   //       if (snapshot.connectionState == ConnectionState.done) {
   //         return _buildContent(snapshot);
@@ -72,27 +76,24 @@ class _MyStockLevelSceneState extends State<MyStockLevelScene> {
   //   );
   // }
 
-  // Widget _buildContent(snapshot) {
-  //   // List<Book> bookList = [];
-  //   bookList = snapshot.data;
-  //   // print(bookList.length);
-  //   return ListView.builder(
-  //       itemCount: bookList.length,
-  //       itemBuilder: (context, i) {
-  //         return _buildRowItem(bookList[i]);
-  //       });
-  // }
-
-  // Widget _buildRowItem(Book item) {
-  //   return ListTile(
-  //     leading: Container(
-  //       height: 200,
-  //       child: Image.network(item.imageCoverURL, fit: BoxFit.fill),
-  //       decoration: const BoxDecoration(color: Colors.black),
-  //     ),
-  //     title: Text(item.title),
-  //     subtitle: Text(item.description ?? ""),
-  //     isThreeLine: true,
-  //   );
+  // Future<QuerySnapshot> getBookList() async {
+  //   QuerySnapshot querySnapshot = await bookRef.collection('books').get();
+  //   final allBookRefData = querySnapshot.docs.map((doc) => doc.data()).toList();
+  //   final allBookData = querySnapshot.docs.map((doc) {
+  //     Book book = Book(
+  //       ISBN_13: doc.get("ISBN_13") ?? "",
+  //       title: doc.get("title") ?? "",
+  //       description: doc.get("desc") ?? "",
+  //       author: doc.get("author") ?? "",
+  //       publishedDate: doc.get("publishedDate") ?? DateTime.now(),
+  //       imageCoverURL: doc.get("imgCoverUrl") ?? "",
+  //       tags: doc.get("tags") ?? <String>[],
+  //       tradePrice: doc.get("tradePrice") ?? 0,
+  //       retailPrice: doc.get("retailPrice") ?? 0,
+  //       quantity: doc.get("quantity") ?? 0,
+  //     );
+  //   }).toList();
+  //   print(allBookRefData);
+  //   return querySnapshot;
   // }
 }

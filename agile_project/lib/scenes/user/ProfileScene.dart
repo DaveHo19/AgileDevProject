@@ -24,12 +24,7 @@ class _MyProfileSceneState extends State<MyProfileScene>{
     //for identify login or not 
     AccountType currAccountType = (Provider.of<AppUser?>(context) == null) ? AccountType.guest : AccountType.admin; 
     return Center(
-      child:  (currAccountType == AccountType.guest) ? 
-              const Text("Guest Profile View") : 
-              (currAccountType == AccountType.user) ? 
-              const Text("User Profile View") :
-              (currAccountType == AccountType.admin) ?
-              const Text("Admin Profile View") : const Text("ERROR: Account Type Out of Bonud"),
+      child: const Text("This scene will be implement in future!"),
       );
   }
 }

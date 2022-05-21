@@ -1,4 +1,5 @@
 import 'package:agile_project/models/book.dart';
+import 'package:agile_project/scenes/product/ViewProductScene.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:agile_project/viewDetailScene.dart';
@@ -44,13 +45,13 @@ class _BookListState extends State<BookList> {
       ),
       title: Text("Book Name: " + book.title),
       subtitle: Text("Quantity: " + book.quantity.toString()),
-      trailing: Icon(Icons.keyboard_arrow_right),
+      trailing: const Icon(Icons.keyboard_arrow_right),
       onTap: () {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => viewDetailScene(
-                    bookManagement: BookManagement.create, book: book)));
+                builder: (context) => MyViewProductScene(
+                    viewManagement: ViewManagement.private, book: book)));
       },
       enabled: true,
     );

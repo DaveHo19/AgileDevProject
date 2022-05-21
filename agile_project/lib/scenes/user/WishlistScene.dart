@@ -24,13 +24,9 @@ class _MyWishlistSceneState extends State<MyWishlistScene>{
     //for identify login or not 
     AccountType currAccountType = (Provider.of<AppUser?>(context) == null) ? AccountType.guest : AccountType.admin; 
 
-    return Center(
-      child:  (currAccountType == AccountType.guest) ? 
-              const Text("Guest Wishlist View") : 
-              (currAccountType == AccountType.user) ? 
-              const Text("User Wishlist View") :
-              (currAccountType == AccountType.admin) ?
-              const Text("Admin Wishlist View") : const Text("ERROR: Account Type Out of Bonud"),
+    return const Center(
+      child: Text("This scene will be implement in future!"),
+
       );
   }
 }

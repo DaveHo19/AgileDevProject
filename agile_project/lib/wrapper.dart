@@ -1,3 +1,6 @@
+import 'dart:js_util';
+
+import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
 import 'package:agile_project/scenes/authentication/LoginScene.dart';
@@ -167,7 +170,24 @@ class _WrapperState extends State<Wrapper> {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const MyStockLevelScene()));    
         break;
       case 3:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyViewProductScene()));
+        List<String> items = <String>[];
+        items.add("A");
+        items.add("B");
+        Book tempBook = Book(
+          ISBN_13: "Test", 
+          title: "Testing", 
+          author: "Mr. Test", 
+          publishedDate: DateTime.now(), 
+          imageCoverURL: "https://firebasestorage.googleapis.com/v0/b/agileproject-abd4b.appspot.com/o/bookCoverImage%2F0-7475-4215-9?alt=media&token=5e98a0d1-3b3d-4c4a-9abf-f62356c3c395", 
+          tags: items, 
+          tradePrice: 12.2324242, 
+          retailPrice: 15.51861218, 
+          quantity: 5);
+ Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MyViewProductScene(
+                    viewManagement: ViewManagement.public, book: tempBook)));
         break;
       case 4:
         Navigator.push(context, MaterialPageRoute(builder: (context) => MyManageProductScene(bookManagement: BookManagement.create,)));    

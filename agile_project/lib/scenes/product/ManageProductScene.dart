@@ -318,6 +318,7 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
                         ISBN_13: id,
                         title: name,
                         author: author,
+                        description: description,
                         publishedDate: publishedDate,
                         imageCoverURL: url,
                         tags: category,

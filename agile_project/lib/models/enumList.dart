@@ -10,3 +10,8 @@ enum AccountType{
   admin
 }
 
+enum ViewManagement{
+  public,
+  private,
+}
+

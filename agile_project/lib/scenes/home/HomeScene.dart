@@ -1,4 +1,7 @@
+import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/user.dart';
+import 'package:agile_project/scenes/home/HomeBookList.dart';
+import 'package:agile_project/services/databaseService.dart';
 import 'package:flutter/material.dart';
 import 'package:agile_project/models/enumList.dart';
 import 'package:provider/provider.dart';
@@ -23,29 +26,55 @@ class _MyHomeSceneState extends State<MyHomeScene>{
 
   @override
   Widget build(BuildContext context) {
-    //for identify login or not 
-    user = Provider.of<AppUser?>(context);
-    isAdmin();
-    return Center(
-      child:  (currAccountType == AccountType.guest) ? 
-              const Text("Guest Home View") : 
-              (currAccountType == AccountType.user) ? 
-              const Text("User Home View") :
-              (currAccountType == AccountType.admin) ?
-              const Text("Admin Home View") : const Text("ERROR: Account Type Out of Bonud"),
-      );
+    return StreamProvider<List<Book>>.value(
+          value: DatabaseService().books,
+          initialData: const [],
+          catchError: (_, error) => errorMessage(context, error),
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text("Stock Level"),
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
+              actions: const [
+                IconButton(
+                  icon: Icon(Icons.search),
+                  tooltip: "Search",
+                  onPressed: null,
+                ),
+              ],
+            ),
+            body: const HomeBookList(),)
+        );
+  }
+  List<Book> errorMessage(BuildContext context, var data) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(data.toString())));
+
+    return <Book>[];
   }
 
-    void isAdmin(){
-     
-     if (user != null){
-      if (user.uid == "AJDG4Ze3wpdav5bThoGHMfCekmI2"){
-        currAccountType = AccountType.admin;
-     } else {
-       currAccountType = AccountType.user;
-      } 
-     } else {
-       currAccountType = AccountType.guest;
-     }
+  Widget _buildList(){
+    return ListView.builder(
+        itemCount: 7,
+        itemBuilder: (_, i) {
+            return _horizontalListView();
+        },
+    );
   }
+
+Widget _horizontalListView() {
+    return SizedBox(
+      height: 120,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (_, __) => _buildBox(color: Colors.orange),
+      ),
+    );
+  }
+
+  Widget _buildBox({Color? color}) {
+    return Container(margin: EdgeInsets.all(12), height: 100, width: 200, color: color);
+  }
+
+   
 }

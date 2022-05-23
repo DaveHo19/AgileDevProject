@@ -1,11 +1,5 @@
-<<<<<<< Updated upstream
-=======
-import 'dart:html';
-
-import 'package:file_picker/file_picker.dart';
->>>>>>> Stashed changes
 import 'package:flutter/material.dart';
-import 'package:agile_project/scenes/authentication/components/RegisterBody.dart';
+import 'package:agile_project/scenes/authentication/register/RegisterBody.dart';
 
 class MyRegisterScene extends StatefulWidget{
   const MyRegisterScene({Key? key}) : super (key: key);
@@ -29,20 +23,7 @@ class _MyRegisterSceneState extends State<MyRegisterScene>{
           backgroundColor: Colors.black,
           foregroundColor: Colors.white,
         ),
-<<<<<<< Updated upstream
-        body: const SafeArea(
-          child: Center(
-            child: Text("Register Scene Here")
-          ),
-        ),
-=======
-        body: Body(),
-        // const SafeArea(
-        //   child: Center(
-        //     child: Text("register"),
-        //   ),
-        // ),
->>>>>>> Stashed changes
+        body: RegisterBody(),
     );
   }
 }

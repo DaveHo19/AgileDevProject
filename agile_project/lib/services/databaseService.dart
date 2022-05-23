@@ -1,15 +1,18 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:agile_project/models/user.dart';
+import 'package:agile_project/models/userInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_Storage.dart';
 import 'package:agile_project/models/book.dart';
 import 'package:flutter/material.dart';
 
 class DatabaseService {
   final FirebaseStorage fbStorage = FirebaseStorage.instance;
-  final CollectionReference bookCollectionRef =
-      FirebaseFirestore.instance.collection("books");
+  final CollectionReference bookCollectionRef = FirebaseFirestore.instance.collection("books");
+  final CollectionReference userCollectionRef = FirebaseFirestore.instance.collection("users");
 
   //constructor
   DatabaseService();
@@ -82,17 +85,30 @@ class DatabaseService {
     return result;
   }
 
-  // Future<String> getBookCoverUrl(String bookID) async {
-  //   String url = "";
+  Future createUserProfile(UserInfomation userInfo) async {
+    return await userCollectionRef.doc(userInfo.uid).set({
+      "uid": userInfo.uid,
+      "userName": userInfo.userName,
+      "emailAddress": userInfo.emailAddress,
+      "accountLevel": userInfo.accountLevel,
+      "wishList": userInfo.wishList,
+      "address": userInfo.addressMap,
+      "orderList": userInfo.orderList,
+    });
+  }
 
-  //   try {
-  //     final ref =
-  //         FirebaseStorage.instance.ref("bookCoverImage/$bookID").child(bookID);
-  //     url = await ref.getDownloadURL();
-  //   } catch (e) {
-  //     print("Error: ${e.toString()}");
-  //   }
-
-  //   return url;
-  // }
+  Future<UserInfomation> getUserInformation(String uid) async{
+    return await userCollectionRef.doc(uid).get().then((value) 
+    {
+      return UserInfomation(
+        uid: value["uid"],
+        userName: value["userName"],
+        emailAddress: value["emailAddress"],
+        accountLevel: value["accountLevel"],
+        wishList: value["wishList"],
+        addressMap: value["addressMap"],
+        orderList: value["orderList"],
+      );
+    });
+  } 
 }

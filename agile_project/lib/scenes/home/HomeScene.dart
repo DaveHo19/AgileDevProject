@@ -14,6 +14,8 @@ class MyHomeScene extends StatefulWidget{
 
 class _MyHomeSceneState extends State<MyHomeScene>{
 
+  var user;
+  AccountType currAccountType = AccountType.guest;
   @override
   void initState() {
     super.initState();
@@ -22,7 +24,8 @@ class _MyHomeSceneState extends State<MyHomeScene>{
   @override
   Widget build(BuildContext context) {
     //for identify login or not 
-    AccountType currAccountType = (Provider.of<AppUser?>(context) == null) ? AccountType.guest : AccountType.admin; 
+    user = Provider.of<AppUser?>(context);
+    isAdmin();
     return Center(
       child:  (currAccountType == AccountType.guest) ? 
               const Text("Guest Home View") : 
@@ -31,5 +34,18 @@ class _MyHomeSceneState extends State<MyHomeScene>{
               (currAccountType == AccountType.admin) ?
               const Text("Admin Home View") : const Text("ERROR: Account Type Out of Bonud"),
       );
+  }
+
+    void isAdmin(){
+     
+     if (user != null){
+      if (user.uid == "AJDG4Ze3wpdav5bThoGHMfCekmI2"){
+        currAccountType = AccountType.admin;
+     } else {
+       currAccountType = AccountType.user;
+      } 
+     } else {
+       currAccountType = AccountType.guest;
+     }
   }
 }

@@ -2,9 +2,10 @@ import 'dart:js_util';
 
 import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/user.dart';
+import 'package:agile_project/models/userInfo.dart';
 import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
-import 'package:agile_project/scenes/authentication/LoginScene.dart';
-import 'package:agile_project/scenes/authentication/RegisterScene.dart';
+import 'package:agile_project/scenes/authentication/login/LoginScene.dart';
+import 'package:agile_project/scenes/authentication/register/RegisterScene.dart';
 import 'package:agile_project/scenes/debug/debug_auth.dart';
 import 'package:agile_project/scenes/debug/debug_image.dart';
 import 'package:agile_project/scenes/debug/debug_retrieve.dart';
@@ -13,6 +14,8 @@ import 'package:agile_project/scenes/product/ManageProductScene.dart';
 import 'package:agile_project/scenes/product/ViewProductScene.dart';
 import 'package:agile_project/scenes/user/ProfileScene.dart';
 import 'package:agile_project/scenes/user/WishlistScene.dart';
+import 'package:agile_project/services/databaseService.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -29,8 +32,7 @@ class _WrapperState extends State<Wrapper> {
  //initial scene for bottom navigator
   int _selectedNavIndex = 0;
   AccountType accountType = AccountType.guest;
-
-  
+  var user;
   void _onItemTapped(int index){
     setState(() => {
     _selectedNavIndex = index,
@@ -49,8 +51,8 @@ class _WrapperState extends State<Wrapper> {
   
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<AppUser?>(context);
-    accountType = (user == null) ? AccountType.guest : AccountType.admin;
+    user = Provider.of<AppUser?>(context);
+    isAdmin();
     return Scaffold(
       //top bar
       appBar: AppBar(
@@ -65,11 +67,7 @@ class _WrapperState extends State<Wrapper> {
           IconButton(
             icon: const Icon(Icons.account_circle),
             onPressed: ()=>{
-              accountType = (accountType == AccountType.admin) ? AccountType.guest : AccountType.admin,
-              //for refresh purpose
-              setState(() => {
-                _initialBottomNavigationScene(),
-              }),
+              print(user),
             },
           ),
           //debug purpose
@@ -77,34 +75,26 @@ class _WrapperState extends State<Wrapper> {
             itemBuilder: (context) => [
               const PopupMenuItem<int>(
                 value: 0,
-                child: Text("Login"),
-              ),
-              const PopupMenuItem<int>(
-                value: 1,
-                child: Text("Register"),
-              ),
-              const PopupMenuItem<int>(
-                value: 2,
                 child: Text("StockLevel"),
               ),              
               const PopupMenuItem<int>(
-                value: 3,
+                value: 1,
                 child: Text("View"),
               ),
               const PopupMenuItem<int>(
-                value: 4,
+                value: 2,
                 child: Text("Manage"),
               ),    
               const PopupMenuItem<int>(
-                value: 5,
+                value: 3,
                 child: Text("Debug-Auth"),
               ),    
               const PopupMenuItem<int>(
-                value: 6,
+                value: 4,
                 child: Text("Debug-Image"),
               ),    
               const PopupMenuItem<int>(
-                value: 7,
+                value: 5,
                 child: Text("Debug-Retrieve"),
               ),               
             ], 
@@ -161,15 +151,9 @@ class _WrapperState extends State<Wrapper> {
   void debugHandler(BuildContext context, int i){
     switch (i){
       case 0:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyLoginScene()));
-        break;
-      case 1:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyRegisterScene()));
-        break;
-      case 2:
         Navigator.push(context, MaterialPageRoute(builder: (context) => const MyStockLevelScene()));    
         break;
-      case 3:
+      case 1:
         List<String> items = <String>[];
         items.add("A");
         items.add("B");
@@ -189,19 +173,33 @@ class _WrapperState extends State<Wrapper> {
                 builder: (context) => MyViewProductScene(
                     viewManagement: ViewManagement.public, book: tempBook)));
         break;
-      case 4:
+      case 2:
         Navigator.push(context, MaterialPageRoute(builder: (context) => MyManageProductScene(bookManagement: BookManagement.create,)));    
         break;     
-      case 5: 
+      case 3: 
         Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugAuth()));    
         break;
-      case 6:
+      case 4:
         Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugImage()));    
       break;
-      case 7:
+      case 5:
         Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugRetrieve()));
       break;
     }
+  }
+
+  void isAdmin(){
+     
+     if (user != null){
+      if (user.uid == "AJDG4Ze3wpdav5bThoGHMfCekmI2"){
+        accountType = AccountType.admin;
+     } else {
+       accountType = AccountType.user;
+      } 
+     } else {
+       accountType = AccountType.guest;
+     }
+     
   }
   
 }

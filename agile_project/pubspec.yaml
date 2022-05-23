@@ -43,6 +43,7 @@ dependencies:
   table_calendar: ^3.0.5
   intl: ^0.17.0
   searchbar_animation: ^0.0.2
+  flutter_svg: ^1.0.3
 
 dev_dependencies:
   flutter_test:

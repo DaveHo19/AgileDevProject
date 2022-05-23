@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:agile_project/scenes/authentication/components/LoginBody.dart';
+import 'package:agile_project/scenes/authentication/login/LoginBody.dart';
 
 class MyLoginScene extends StatefulWidget {
   const MyLoginScene({Key? key}) : super(key: key);
@@ -22,13 +22,7 @@ class _MyLoginSceneState extends State<MyLoginScene> {
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
       ),
-      body: Login(),
-
-      // const SafeArea(
-      // child: Center(
-      //   child: Text("Login Scene Here")
-      // ),
-      // ),
+      body: const Login(),
     );
   }
 }

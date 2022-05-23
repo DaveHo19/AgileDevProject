@@ -16,6 +16,7 @@ class _MyLoginSceneState extends State<MyLoginScene>{
 
   @override
   Widget build(BuildContext context) {
+ 
     return Scaffold(
         appBar: AppBar(
           title: const Text("Login"),
@@ -24,9 +25,8 @@ class _MyLoginSceneState extends State<MyLoginScene>{
         ),
         body: const SafeArea(
           child: Center(
-            child: Text("Login Scene Here")
+              child: Text("Login screen")),
           ),
-        ),
     );
   }
 }

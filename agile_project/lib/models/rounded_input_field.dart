@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:agile_project/components/text_field_container.dart';
+import 'package:agile_project/models/text_field_container.dart';
 import 'package:agile_project/constants.dart';
 
 class RoundedInputField extends StatelessWidget {
@@ -18,11 +18,11 @@ class RoundedInputField extends StatelessWidget {
     return TextFieldContainer(
       child: TextField(
         onChanged: onChanged,
-        cursorColor: kPrimaryColor ,
+        cursorColor: kPrimaryColor,
         decoration: InputDecoration(
           icon: Icon(
             icon,
-            color: kPrimaryColor ,
+            color: kPrimaryColor,
           ),
           hintText: hintText,
           border: InputBorder.none,

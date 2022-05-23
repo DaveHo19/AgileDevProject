@@ -19,34 +19,33 @@ import 'package:provider/provider.dart';
 import 'models/enumList.dart';
 
 class Wrapper extends StatefulWidget {
-  const Wrapper({ Key? key }) : super(key: key);
+  const Wrapper({Key? key}) : super(key: key);
 
   @override
   State<Wrapper> createState() => _WrapperState();
 }
 
 class _WrapperState extends State<Wrapper> {
- //initial scene for bottom navigator
+  //initial scene for bottom navigator
   int _selectedNavIndex = 0;
   AccountType accountType = AccountType.guest;
 
-  
-  void _onItemTapped(int index){
+  void _onItemTapped(int index) {
     setState(() => {
-    _selectedNavIndex = index,
-    });
+          _selectedNavIndex = index,
+        });
   }
 
-  //for navigation scene 
+  //for navigation scene
   static final List<Widget> _bottomNavigationScene = <Widget>[];
-  
+
   @override
   void initState() {
     super.initState();
     //for linking navigation scene
     _initialBottomNavigationScene();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<AppUser?>(context);
@@ -64,12 +63,14 @@ class _WrapperState extends State<Wrapper> {
           //debug purpose
           IconButton(
             icon: const Icon(Icons.account_circle),
-            onPressed: ()=>{
-              accountType = (accountType == AccountType.admin) ? AccountType.guest : AccountType.admin,
+            onPressed: () => {
+              accountType = (accountType == AccountType.admin)
+                  ? AccountType.guest
+                  : AccountType.admin,
               //for refresh purpose
               setState(() => {
-                _initialBottomNavigationScene(),
-              }),
+                    _initialBottomNavigationScene(),
+                  }),
             },
           ),
           //debug purpose
@@ -86,7 +87,7 @@ class _WrapperState extends State<Wrapper> {
               const PopupMenuItem<int>(
                 value: 2,
                 child: Text("StockLevel"),
-              ),              
+              ),
               const PopupMenuItem<int>(
                 value: 3,
                 child: Text("View"),
@@ -94,114 +95,126 @@ class _WrapperState extends State<Wrapper> {
               const PopupMenuItem<int>(
                 value: 4,
                 child: Text("Manage"),
-              ),    
+              ),
               const PopupMenuItem<int>(
                 value: 5,
                 child: Text("Debug-Auth"),
-              ),    
+              ),
               const PopupMenuItem<int>(
                 value: 6,
                 child: Text("Debug-Image"),
-              ),    
+              ),
               const PopupMenuItem<int>(
                 value: 7,
                 child: Text("Debug-Retrieve"),
-              ),               
-            ], 
-            onSelected: (int i) => {
-              debugHandler(context, i)
-            },),
+              ),
+            ],
+            onSelected: (int i) => {debugHandler(context, i)},
+          ),
         ],
-      
       ),
-      body: SafeArea(
-        child: _bottomNavigationScene.elementAt(_selectedNavIndex)),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: "Home",
+      body:
+          SafeArea(child: _bottomNavigationScene.elementAt(_selectedNavIndex)),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: "Wishlist",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: "Profile",
+          ),
+        ],
+        currentIndex: _selectedNavIndex,
+        onTap: _onItemTapped,
+      ),
+      floatingActionButton: (accountType == AccountType.admin)
+          ? FloatingActionButton(
+              backgroundColor: Colors.black,
+              child: const Icon(
+                Icons.settings,
+                color: Colors.white,
               ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
-              label: "Wishlist",
-              ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: "Profile",
-              ),
-          ],
-          currentIndex: _selectedNavIndex,
-          onTap: _onItemTapped,
-        ),
-        floatingActionButton: (accountType == AccountType.admin) ? 
-          FloatingActionButton(
-            backgroundColor: Colors.black,
-            child: const Icon(Icons.settings, color: Colors.white,),
-            onPressed: _onFabTapped)
+              onPressed: _onFabTapped)
           : null,
-      );
+    );
   }
 
   //for passing function purpose
-  void pass(){}
+  void pass() {}
 
-  void _initialBottomNavigationScene(){
+  void _initialBottomNavigationScene() {
     _bottomNavigationScene.clear();
     _bottomNavigationScene.add(const MyHomeScene());
     _bottomNavigationScene.add(const MyWishlistScene());
     _bottomNavigationScene.add(const MyProfileScene());
   }
 
-  void _onFabTapped(){
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const MyStockLevelScene(
-    )));
+  void _onFabTapped() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const MyStockLevelScene()));
   }
 
-  void debugHandler(BuildContext context, int i){
-    switch (i){
+  void debugHandler(BuildContext context, int i) {
+    switch (i) {
       case 0:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyLoginScene()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const MyLoginScene()));
         break;
       case 1:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyRegisterScene()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const MyRegisterScene()));
         break;
       case 2:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyStockLevelScene()));    
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const MyStockLevelScene()));
         break;
       case 3:
         List<String> items = <String>[];
         items.add("A");
         items.add("B");
         Book tempBook = Book(
-          ISBN_13: "Test", 
-          title: "Testing", 
-          author: "Mr. Test", 
-          publishedDate: DateTime.now(), 
-          imageCoverURL: "https://firebasestorage.googleapis.com/v0/b/agileproject-abd4b.appspot.com/o/bookCoverImage%2F0-7475-4215-9?alt=media&token=5e98a0d1-3b3d-4c4a-9abf-f62356c3c395", 
-          tags: items, 
-          tradePrice: 12.2324242, 
-          retailPrice: 15.51861218, 
-          quantity: 5);
- Navigator.push(
+            ISBN_13: "Test",
+            title: "Testing",
+            author: "Mr. Test",
+            publishedDate: DateTime.now(),
+            imageCoverURL:
+                "https://firebasestorage.googleapis.com/v0/b/agileproject-abd4b.appspot.com/o/bookCoverImage%2F0-7475-4215-9?alt=media&token=5e98a0d1-3b3d-4c4a-9abf-f62356c3c395",
+            tags: items,
+            tradePrice: 12.2324242,
+            retailPrice: 15.51861218,
+            quantity: 5);
+        Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => MyViewProductScene(
                     viewManagement: ViewManagement.public, book: tempBook)));
         break;
       case 4:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => MyManageProductScene(bookManagement: BookManagement.create,)));    
-        break;     
-      case 5: 
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugAuth()));    
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MyManageProductScene(
+                      bookManagement: BookManagement.create,
+                    )));
+        break;
+      case 5:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const DebugAuth()));
         break;
       case 6:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugImage()));    
-      break;
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const DebugImage()));
+        break;
       case 7:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugRetrieve()));
-      break;
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const DebugRetrieve()));
+        break;
     }
   }
-  
 }

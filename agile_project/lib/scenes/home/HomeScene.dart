@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:agile_project/components/_enumList.dart';
+import 'package:agile_project/models/enumList.dart';
 
 class MyHomeScene extends StatefulWidget {
   const MyHomeScene({
     Key? key,
-    required this.currAccountType,
   }) : super(key: key);
 
-  final AccountType currAccountType;
   @override
   State<MyHomeScene> createState() => _MyHomeSceneState();
 }
@@ -32,8 +30,9 @@ class _MyHomeSceneState extends State<MyHomeScene> {
                   height: 200,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
-                      image:
-                          DecorationImage(image: AssetImage('images/book.jpg')),
+                      image: DecorationImage(
+                          image: AssetImage(
+                              'C:\Users\USER\Documents\GitHub\AgileDevProject\agile_project\assets\harryPotterCover.jpg')),
                       color: Colors.purple),
                 ),
               ],

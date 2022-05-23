@@ -2,7 +2,6 @@ import 'package:agile_project/models/book.dart';
 import 'package:agile_project/scenes/product/ViewProductScene.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:agile_project/viewDetailScene.dart';
 import 'package:agile_project/models/enumList.dart';
 
 class BookList extends StatefulWidget {

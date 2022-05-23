@@ -1,5 +1,5 @@
+import 'package:agile_project/models/text_field_container.dart';
 import 'package:flutter/material.dart';
-import 'package:agile_project/components/text_field_container.dart';
 import 'package:agile_project/constants.dart';
 
 class RoundedPasswordField extends StatelessWidget {
@@ -16,7 +16,7 @@ class RoundedPasswordField extends StatelessWidget {
         obscureText: true,
         onChanged: onChanged,
         cursorColor: kPrimaryColor,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           hintText: "Password",
           icon: Icon(
             Icons.lock,

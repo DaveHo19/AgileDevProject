@@ -28,7 +28,7 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   TextEditingController authorController = TextEditingController();
   TextEditingController tradePriceController = TextEditingController();
   TextEditingController retailPriceController = TextEditingController();
-  
+
   List<Widget> formWidgetList = [];
 
   @override
@@ -52,7 +52,9 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
         title: Text(isbnController.text),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
-        actions: (widget.viewManagement == ViewManagement.public) ? [] : [
+        actions: (widget.viewManagement == ViewManagement.public)
+            ? []
+            : [
                 PopupMenuButton(
                     itemBuilder: (context) {
                       return [
@@ -74,25 +76,30 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
                     },
                     onSelected: (int i) => {
                           menuItemHandler(context, i),
-                        })],
+                        })
+              ],
       ),
       body: SafeArea(
-              child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: formWidgetList.length,
-                  itemBuilder: (context, i) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: MediaQuery.of(context).size.width / 10),
-                      child: formWidgetList[i],
-                    );
-                  }),
-            ),
-      floatingActionButton: (widget.viewManagement == ViewManagement.private) ? null :
-        FloatingActionButton(
-            backgroundColor: Colors.black,
-            child: const Icon(Icons.shopping_bag, color: Colors.white,),            
-            onPressed: _addToCart),
+        child: ListView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: formWidgetList.length,
+            itemBuilder: (context, i) {
+              return Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width / 10),
+                child: formWidgetList[i],
+              );
+            }),
+      ),
+      floatingActionButton: (widget.viewManagement == ViewManagement.private)
+          ? null
+          : FloatingActionButton(
+              backgroundColor: Colors.black,
+              child: const Icon(
+                Icons.shopping_bag,
+                color: Colors.white,
+              ),
+              onPressed: _addToCart),
     );
   }
 
@@ -100,32 +107,35 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
     switch (index) {
       case 0:
         //for edit
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("This features in implement in future!")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("This features in implement in future!")));
         break;
       case 1:
         //for delete
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("This features in implement in future!")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("This features in implement in future!")));
         break;
-      }
+    }
   }
 
-void _addToCart(){
-  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("This features in implement in future!")));
-}
-Widget _buildSpace() {
+  void _addToCart() {
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("This features in implement in future!")));
+  }
+
+  Widget _buildSpace() {
     return const SizedBox(height: 20);
   }
 
   Widget _buildImageField() {
     return Center(
       child: Container(
-        width: 300,
-        height: 400,
-        padding: const EdgeInsets.all(2),
-        decoration: boxDecoration,
-        child: Image.network(widget.book.imageCoverURL, fit: BoxFit.fill)
-        ),
-      );
+          width: 300,
+          height: 400,
+          padding: const EdgeInsets.all(2),
+          decoration: boxDecoration,
+          child: Image.network(widget.book.imageCoverURL, fit: BoxFit.fill)),
+    );
   }
 
   Widget _buildIDTextField(String fieldName) {
@@ -134,7 +144,7 @@ Widget _buildSpace() {
       controller: isbnController,
       decoration: inputDecoration(fieldName),
       readOnly: true,
-      );
+    );
   }
 
   Widget _buildTitleTextField(String fieldName) {
@@ -170,6 +180,7 @@ Widget _buildSpace() {
     categoryController.text = widget.book.tags.toString();
     return TextFormField(
       decoration: dateInputDecoration(fieldName),
+      readOnly: true,
       controller: categoryController,
     );
   }
@@ -204,29 +215,29 @@ Widget _buildSpace() {
 
   Widget _buildQuantity(String fieldName) {
     int quantity = widget.book.quantity.toInt();
-      return TextFormField(
+    return TextFormField(
       controller: quantityController,
       decoration: inputDecoration(fieldName),
       readOnly: true,
     );
   }
 
-
-  void initialController(){
+  void initialController() {
     isbnController.text = widget.book.ISBN_13;
     titleController.text = widget.book.title;
     authorController.text = widget.book.author;
-    descController.text = widget.book.description??"";
-    dateController.text = DateFormat('yyyy-MM-dd').format(widget.book.publishedDate);
+    descController.text = widget.book.description ?? "";
+    dateController.text =
+        DateFormat('yyyy-MM-dd').format(widget.book.publishedDate);
     tradePriceController.text = widget.book.tradePrice.toStringAsFixed(2);
     retailPriceController.text = widget.book.retailPrice.toStringAsFixed(2);
     quantityController.text = widget.book.quantity.toString();
     widget.book.tags.forEach((element) {
       categoryController.text += element + "; ";
     });
+  }
 
-  } 
-  void initialPrivateView(){
+  void initialPrivateView() {
     formWidgetList.clear();
     formWidgetList.add(_buildImageField());
     formWidgetList.add(_buildSpace());
@@ -253,7 +264,7 @@ Widget _buildSpace() {
     formWidgetList.add(_buildSpace());
   }
 
-  void initialPublicView(){
+  void initialPublicView() {
     formWidgetList.clear();
     formWidgetList.add(_buildImageField());
     formWidgetList.add(_buildSpace());
@@ -274,6 +285,5 @@ Widget _buildSpace() {
     // formWidgetList.add(_buildButton());
     formWidgetList.add(_buildSpace());
     formWidgetList.add(_buildSpace());
-
   }
 }

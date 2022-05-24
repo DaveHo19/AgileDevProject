@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:agile_project/models/text_field_container.dart';
+import 'package:flutter/material.dart';
 import 'package:agile_project/constants.dart';
 
 class RoundedInputField extends StatelessWidget {

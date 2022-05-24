@@ -1,16 +1,24 @@
+import 'package:agile_project/models/book.dart';
+import 'package:agile_project/models/user.dart';
+import 'package:agile_project/scenes/home/HomeBookList.dart';
+import 'package:agile_project/services/databaseService.dart';
 import 'package:flutter/material.dart';
 import 'package:agile_project/models/enumList.dart';
+import 'package:provider/provider.dart';
 
-class MyHomeScene extends StatefulWidget {
+class MyHomeScene extends StatefulWidget{
   const MyHomeScene({
     Key? key,
-  }) : super(key: key);
+    }) : super (key: key);
 
   @override
   State<MyHomeScene> createState() => _MyHomeSceneState();
 }
 
-class _MyHomeSceneState extends State<MyHomeScene> {
+class _MyHomeSceneState extends State<MyHomeScene>{
+
+  var user;
+  AccountType currAccountType = AccountType.guest;
   @override
   void initState() {
     super.initState();
@@ -18,26 +26,55 @@ class _MyHomeSceneState extends State<MyHomeScene> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3, crossAxisSpacing: 2, childAspectRatio: 0.5),
-          itemBuilder: (context, index) {
-            return Column(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(5),
-                  height: 200,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      image: DecorationImage(
-                          image: AssetImage(
-                              'C:\Users\USER\Documents\GitHub\AgileDevProject\agile_project\assets\harryPotterCover.jpg')),
-                      color: Colors.purple),
+    return StreamProvider<List<Book>>.value(
+          value: DatabaseService().books,
+          initialData: const [],
+          catchError: (_, error) => errorMessage(context, error),
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text("Stock Level"),
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
+              actions: const [
+                IconButton(
+                  icon: Icon(Icons.search),
+                  tooltip: "Search",
+                  onPressed: null,
                 ),
               ],
-            );
-          }),
+            ),
+            body: const HomeBookList(),)
+        );
+  }
+  List<Book> errorMessage(BuildContext context, var data) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(data.toString())));
+
+    return <Book>[];
+  }
+
+  Widget _buildList(){
+    return ListView.builder(
+        itemCount: 7,
+        itemBuilder: (_, i) {
+            return _horizontalListView();
+        },
     );
   }
+
+Widget _horizontalListView() {
+    return SizedBox(
+      height: 120,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (_, __) => _buildBox(color: Colors.orange),
+      ),
+    );
+  }
+
+  Widget _buildBox({Color? color}) {
+    return Container(margin: EdgeInsets.all(12), height: 100, width: 200, color: color);
+  }
+
+   
 }

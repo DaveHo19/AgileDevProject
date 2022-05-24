@@ -1,3 +1,5 @@
+import 'package:agile_project/models/userInfo.dart';
+import 'package:agile_project/services/databaseService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:agile_project/models/user.dart';
 
@@ -44,8 +46,16 @@ class AuthService{
       UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       User? user = result.user;
       if( user != null){
-        //await DatabaseService(uid: user.uid).updateUserData("0", "new crew member", 100);
-        //await DatabaseService(uid: user.uid).updateUserData2("Book", "Info");
+        dynamic result = await DatabaseService().createUserProfile(UserInfomation(
+          uid: user.uid, 
+          userName: "New User", 
+          emailAddress: email, 
+          accountLevel: 1));
+          
+        if (result == null){
+          AppUser newUser = AppUser(uid: user.uid);
+        }
+      
       }
       return _userFromFirebase(user);
     } catch (e){

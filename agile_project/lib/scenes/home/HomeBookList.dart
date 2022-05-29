@@ -1,4 +1,6 @@
 import 'package:agile_project/models/book.dart';
+import 'package:agile_project/models/enumList.dart';
+import 'package:agile_project/scenes/product/ViewProductScene.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -40,7 +42,7 @@ class _HomeBookListState extends State<HomeBookList> {
       });
     }
     return SizedBox(
-      height: 120,
+      height: 500,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: tempList.length,
@@ -48,6 +50,7 @@ class _HomeBookListState extends State<HomeBookList> {
       ),
     );
   }
+
   Widget _buildRemainRow() {
     final book = Provider.of<List<Book>>(context);
     List<Book> tempList = [];
@@ -70,23 +73,32 @@ class _HomeBookListState extends State<HomeBookList> {
 
   Widget _buildBook(Book book){
     return Container(
-      height: 500,
-      width: 200,
-      child: Card(
-        elevation: 2,
-        child: Column(
-          children: [
-            Expanded(
-              flex: 2,
-              child: Image.network(book.imageCoverURL, fit: BoxFit.fill,)),
-            Expanded(
-              flex: 1,
-              child: Text(
-                book.title,
+      height: 400,
+      width: 100,
+      child: GestureDetector(
+        child: Card(
+          elevation: 2,
+          child: Column(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Image.network(book.imageCoverURL, fit: BoxFit.fill,)),
+              Expanded(
+                flex: 1,
+                child: Text(
+                  book.title,
+                  ),
                 ),
-              ),
-          ],
-        )
+            ],
+          ),
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MyViewProductScene(
+                    viewManagement: ViewManagement.public, book: book)));
+        }
       ),
     );
   }

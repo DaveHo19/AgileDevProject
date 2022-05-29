@@ -217,7 +217,7 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
           suffixIcon: IconButton(
               onPressed: _callCalendar,
               icon: const Icon(Icons.calendar_month))),
-      readOnly: true,
+      validator: (String? val) => (val != null && val.isEmpty) ? "Select a date" : null,
       controller: dateController,
     );
   }
@@ -313,13 +313,14 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
                     isProcess = true;
                   });
                   String url = await dbService.uploadBookCover(imgSrc!, id);
+                  DateTime pDate = DateFormat("yyyy-MM-dd").parse(dateController.text);
                   if (url.isNotEmpty) {
                     Book newBook = Book(
                         ISBN_13: id,
                         title: name,
                         author: author,
                         description: description,
-                        publishedDate: publishedDate,
+                        publishedDate: pDate,
                         imageCoverURL: url,
                         tags: category,
                         tradePrice: tradePrice,
@@ -463,6 +464,9 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
         (imgSrc != null));
   }
 
+  bool dateValidation(){
+    return RegExp(r"^[0-2][0-9][0-9][0-9]-[0-1][0-9]-[0-4][0-9]").hasMatch(dateController.text);
+  }
   void initialCreateView() {
     formWidgetList.clear();
     dateController.text = DateFormat("yyyy-MM-dd").format(publishedDate);

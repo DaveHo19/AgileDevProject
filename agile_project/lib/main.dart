@@ -1,13 +1,21 @@
 import 'package:agile_project/models/user.dart';
+import 'package:agile_project/scenes/cart/CartProvider.dart';
 import 'package:agile_project/services/firebase_auth.dart';
 import 'package:agile_project/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Initialize hive
+  await Hive.initFlutter();
+  // Open the peopleBox
+  await Hive.openBox('cartBox');
   if (kIsWeb) {
     await Firebase.initializeApp(
         options: const FirebaseOptions(
@@ -29,16 +37,18 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<AppUser?>.value(
-      initialData: null,
-      value: AuthService().user,
-      child: MaterialApp(
-        title: "Agile Project",
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: const Wrapper(),
-      ),
-    );
+    return ChangeNotifierProvider(
+        create: (_) => CartProvider(),
+        child: StreamProvider<AppUser?>.value(
+          initialData: null,
+          value: AuthService().user,
+          child: MaterialApp(
+            title: "Agile Project",
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+            home: const Wrapper(),
+          ),
+        ));
   }
 }

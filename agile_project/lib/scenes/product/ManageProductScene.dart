@@ -17,9 +17,11 @@ class MyManageProductScene extends StatefulWidget {
   MyManageProductScene({
     Key? key,
     required this.bookManagement,
+    this.passedBook,
   }) : super(key: key);
 
   final BookManagement bookManagement;
+  Book? passedBook;
   @override
   State<MyManageProductScene> createState() => _MyManageProductSceneState();
 }
@@ -50,17 +52,25 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
   TextEditingController dateController = TextEditingController();
   TextEditingController categoryController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
-
+  TextEditingController isbnController = TextEditingController();
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descController = TextEditingController();
+  TextEditingController authorController = TextEditingController();
+  TextEditingController tradePriceController = TextEditingController();
+  TextEditingController retailPriceController = TextEditingController();
   List<Widget> formWidgetList = [];
+
   @override
   void initState() {
     super.initState();
 
+    publishedDate = (widget.bookManagement == BookManagement.create) ? DateTime.now() : widget.passedBook!.publishedDate;
     switch (widget.bookManagement) {
       case BookManagement.create:
         initialCreateView();
         break;
       case BookManagement.edit:
+        initialEditView();
         break;
       case BookManagement.delete:
         break;
@@ -123,9 +133,10 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
               ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text("No image selected")));
             } else {
-              imgSrc = imgResult.files.single.bytes;
-              isNewCover = true;
-              setState(() {});
+              setState(() {
+                imgSrc = imgResult.files.single.bytes;
+                isNewCover = true;
+              });
             }
           },
           child: (imgSrc == null)
@@ -139,6 +150,7 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
   Widget _buildIDTextField(String fieldName) {
     DatabaseService databaseService = DatabaseService();
     return TextFormField(
+      controller: isbnController,
       validator: (String? val) =>
           (val != null && val.isEmpty) ? "Enter the $fieldName" : null,
       onChanged: (val) {
@@ -154,17 +166,19 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
                 const SnackBar(content: Text("ISBN field is empty!")));
           }
           setState(() {
-            initialCreateView();
+            //initialCreateView();
           });
         },
-        icon: isExistedID ? Icon(Icons.sync) : Icon(Icons.check),
-        color: isExistedID ? Colors.grey : Colors.green,
+        icon: (widget.bookManagement == BookManagement.create) ? isExistedID ? Icon(Icons.sync) : Icon(Icons.check) : Icon(Icons.lock),
+        color: (widget.bookManagement == BookManagement.create) ? isExistedID ? Colors.grey : Colors.green : Colors.transparent,
       )),
+      readOnly: !(widget.bookManagement == BookManagement.create),
     );
   }
 
   Widget _buildTitleTextField(String fieldName) {
     return TextFormField(
+      controller: titleController,
       validator: (String? val) =>
           (val != null && val.isEmpty) ? "Enter the $fieldName" : null,
       onChanged: (val) {
@@ -176,6 +190,7 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
 
   Widget _buildAuthorTextField(String fieldName) {
     return TextFormField(
+      controller: authorController,
       validator: (String? val) =>
           (val != null && val.isEmpty) ? "Enter the $fieldName" : null,
       onChanged: (val) {
@@ -187,6 +202,7 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
 
   Widget _buildDescriptionTextField(String fieldName) {
     return TextFormField(
+      controller: descController,
       validator: (String? val) =>
           (val != null && val.isEmpty) ? "Enter the $fieldName" : null,
       onChanged: (val) {
@@ -354,6 +370,28 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
                 }
                 break;
               case BookManagement.edit:
+                setState(()=>isProcess = true,);
+                DateTime pDate = DateFormat("yyyy-MM-dd").parse(dateController.text);
+                Book updBook = Book(
+                    ISBN_13: widget.passedBook!.ISBN_13,
+                    title: name,
+                    author: author,
+                    description: description,
+                    publishedDate: pDate,
+                    imageCoverURL: widget.passedBook!.imageCoverURL,
+                    tags: category,
+                    tradePrice: tradePrice,
+                    retailPrice: retailPrice,
+                    quantity: quantity);
+                    var result = await dbService.updateBook(updBook);
+                    if (result == null){
+                      setState(() => isProcess = false,);
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Book update successfully")));
+                      Navigator.pop(context);
+                    } else {
+                      setState((() => isProcess = false));
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Result failed to update")));
+                    }
                 break;
               case BookManagement.delete:
                 break;
@@ -457,17 +495,35 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
   }
 
   bool validation() {
+    
+    print("Category: ${category.length}");
+    print("TPrice: {$tradePrice}");
+    print("RPrice: {$tradePrice}");
+    print("Qty: {$tradePrice}");
+
     return ((category.isNotEmpty) &&
         (tradePrice > 0) &&
         (retailPrice > 0) &&
         (quantity > 0) &&
-        (imgSrc != null));
+        ((imgSrc != null) || (widget.bookManagement == BookManagement.edit)));
+        
   }
 
   bool dateValidation(){
     return RegExp(r"^[0-2][0-9][0-9][0-9]-[0-1][0-9]-[0-4][0-9]").hasMatch(dateController.text);
   }
   void initialCreateView() {
+    
+    dateController.text = "";
+    categoryController.text = "";
+    quantityController.text = "";
+    isbnController.text = "";
+    titleController.text = "";
+    descController.text = "";
+    authorController.text = "";
+    tradePriceController.text = "";
+    retailPriceController.text = "";
+
     formWidgetList.clear();
     dateController.text = DateFormat("yyyy-MM-dd").format(publishedDate);
     formWidgetList.add(_buildImageField());
@@ -493,5 +549,57 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
     formWidgetList.add(_buildButton());
     formWidgetList.add(_buildSpace());
     formWidgetList.add(_buildSpace());
+  }
+
+  void initialEditView(){
+    dateController.text = DateFormat("yyyy-MM-dd").format(widget.passedBook!.publishedDate);
+    quantityController.text = widget.passedBook!.quantity.toString();
+    isbnController.text = widget.passedBook!.ISBN_13;
+    titleController.text = widget.passedBook!.title;
+    descController.text = widget.passedBook!.description??"";
+    authorController.text = widget.passedBook!.author;
+    //tradePriceController.text =  widget.passedBook!.tradePrice.toStringAsFixed(2);
+    //retailPriceController.text = widget.passedBook!.retailPrice.toStringAsFixed(2);
+    tradePrice = widget.passedBook!.tradePrice;
+    retailPrice = widget.passedBook!.retailPrice;
+    
+    id = widget.passedBook!.ISBN_13;
+    name = widget.passedBook!.title;
+    author = widget.passedBook!.author;
+    description = widget.passedBook!.description??"";
+    tradePrice = widget.passedBook!.tradePrice;
+    retailPrice = widget.passedBook!.retailPrice;
+    quantity = widget.passedBook!.quantity;
+
+    widget.passedBook!.tags.forEach((element) {
+      categoryController.text += element + "; ";
+      category.add(element);
+    });
+
+    formWidgetList.clear();
+    dateController.text = DateFormat("yyyy-MM-dd").format(publishedDate);
+    formWidgetList.add(_buildImageField());
+    formWidgetList.add(_buildSpace());
+    formWidgetList.add(_buildIDTextField("ISBN-13 No"));
+    formWidgetList.add(_buildSpace());
+    formWidgetList.add(_buildTitleTextField("Book Name"));
+    formWidgetList.add(_buildSpace());
+    formWidgetList.add(_buildAuthorTextField("Book Author"));
+    formWidgetList.add(_buildSpace());
+    formWidgetList.add(_buildCategoryField("Book Category"));
+    formWidgetList.add(_buildSpace());
+    formWidgetList.add(_buildDescriptionTextField("Book Description"));
+    formWidgetList.add(_buildSpace());
+    formWidgetList.add(_buildDateField("Published Date"));
+    formWidgetList.add(_buildSpace());
+    formWidgetList.add(_buildTradePriceField("Trade Price"));
+    formWidgetList.add(_buildSpace());
+    formWidgetList.add(_buildRetailPriceField("Retail Price"));
+    formWidgetList.add(_buildSpace());
+    formWidgetList.add(_buildQuantity("Book Quantity"));
+    formWidgetList.add(_buildSpace());
+    formWidgetList.add(_buildButton());
+    formWidgetList.add(_buildSpace());
+    formWidgetList.add(_buildSpace());    
   }
 }

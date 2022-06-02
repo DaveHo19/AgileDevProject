@@ -49,6 +49,26 @@ class DatabaseService {
     });
   }
 
+  Future updateBook(Book updateBook) async {
+    return await bookCollectionRef.doc(updateBook.ISBN_13).update({
+      "ISBN_13": updateBook.ISBN_13,
+      "title": updateBook.title,
+      "desc": updateBook.description,
+      "author": updateBook.author,
+      "publishedDate": updateBook.publishedDate,
+      "imgCoverUrl": updateBook.imageCoverURL,
+      "tags": updateBook.tags,
+      "tradePrice": updateBook.tradePrice,
+      "retailPrice": updateBook.retailPrice,
+      "quantity": updateBook.quantity,
+    });
+  }
+
+  Future deleteBook(String ISBN_No) async {
+    await fbStorage.ref("bookCoverImage/$ISBN_No").delete();
+
+    return await bookCollectionRef.doc(ISBN_No).delete(); 
+  }
   List<Book> bookListFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.docs.map((item) {
       return Book(

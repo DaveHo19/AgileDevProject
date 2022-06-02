@@ -1,7 +1,10 @@
 import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/enumList.dart';
+import 'package:agile_project/scenes/product/ManageProductScene.dart';
 import 'package:agile_project/scenes/sharedProperties/boxBorder.dart';
+import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
+import 'package:agile_project/services/databaseService.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -31,6 +34,8 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   
   List<Widget> formWidgetList = [];
 
+  bool isProcess = false;
+
   @override
   void initState() {
     super.initState();
@@ -47,7 +52,7 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return isProcess ? const Loading() : Scaffold(
       appBar: AppBar(
         title: Text(isbnController.text),
         backgroundColor: Colors.black,
@@ -96,15 +101,33 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
     );
   }
 
-  void menuItemHandler(BuildContext context, int index) {
+  void menuItemHandler(BuildContext context, int index) async {
     switch (index) {
       case 0:
         //for edit
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("This features in implement in future!")));
+        //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("This features in implement in future!")));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MyManageProductScene(
+                    bookManagement: BookManagement.edit, passedBook: widget.book)));
         break;
       case 1:
         //for delete
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("This features in implement in future!")));
+        setState(() {
+          isProcess = true;
+        });
+        DatabaseService dbService = DatabaseService();
+        var result = await dbService.deleteBook(widget.book.ISBN_13);
+        if (result == null){
+          setState(() {
+            isProcess = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Book is successfully deleted")));
+          Navigator.pop(context);         
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to delete book")));
+        }
         break;
       }
   }
@@ -185,7 +208,6 @@ Widget _buildSpace() {
   }
 
   Widget _buildTradePriceField(String fieldName) {
-    double tradePrice = widget.book.tradePrice.toDouble();
     return TextFormField(
       controller: tradePriceController,
       decoration: inputDecoration(fieldName),
@@ -194,7 +216,6 @@ Widget _buildSpace() {
   }
 
   Widget _buildRetailPriceField(String fieldName) {
-    double retailPrice = widget.book.retailPrice.toDouble();
     return TextFormField(
       controller: retailPriceController,
       decoration: inputDecoration(fieldName),
@@ -203,7 +224,6 @@ Widget _buildSpace() {
   }
 
   Widget _buildQuantity(String fieldName) {
-    int quantity = widget.book.quantity.toInt();
       return TextFormField(
       controller: quantityController,
       decoration: inputDecoration(fieldName),

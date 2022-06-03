@@ -1,9 +1,11 @@
 import 'package:agile_project/scenes/cart/CartProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import '../cart/CartProvider.dart';
 import '../cart/cart_item.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:agile_project/models/cart.dart';
 
 class MyCartScene extends StatefulWidget {
   const MyCartScene({Key? key}) : super(key: key);
@@ -13,9 +15,19 @@ class MyCartScene extends StatefulWidget {
 }
 
 class _MyCartSceneState extends State<MyCartScene> {
+  late Box<Cart> cartBox;
+
+  @override
+  void initState() {
+    super.initState();
+    cartBox = Hive.box("cart_items");
+    // cartBox.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<CartProvider>(context);
+    // print(cart.getTotalPrice());
     // cart.clearPref();
     return Scaffold(
       appBar: AppBar(
@@ -32,19 +44,22 @@ class _MyCartSceneState extends State<MyCartScene> {
       body: Column(
         children: <Widget>[
           Expanded(
-            child: ListView.builder(
-                itemCount: cart.items.length,
-                itemBuilder: (context, index) => CartItem(
-                      ISBN_13: cart.items.values.toList()[index].ISBN_13,
-                      title: cart.items.values.toList()[index].title,
-                      imageCoverURL:
-                          cart.items.values.toList()[index].imageCoverURL,
-                      retailPrice:
-                          cart.items.values.toList()[index].retailPrice,
-                      quantity: cart.items.values.toList()[index].quantity,
-                      cartQuantity:
-                          cart.items.values.toList()[index].cartQuantity,
-                    )),
+            child: ValueListenableBuilder(
+                valueListenable: cartBox.listenable(),
+                builder: (context, Box<Cart> box, _) {
+                  List<Cart> carts = box.values.toList().cast<Cart>();
+
+                  return ListView.builder(
+                      itemCount: carts.length,
+                      itemBuilder: (context, index) => CartItem(
+                            ISBN_13: carts.toList()[index].ISBN_13,
+                            title: carts.toList()[index].title,
+                            imageCoverURL: carts.toList()[index].imageCoverURL,
+                            retailPrice: carts.toList()[index].retailPrice,
+                            quantity: carts.toList()[index].quantity,
+                            cartQuantity: carts.toList()[index].cartQuantity,
+                          ));
+                }),
           ),
         ],
       ),
@@ -54,7 +69,8 @@ class _MyCartSceneState extends State<MyCartScene> {
             color: Color.fromARGB(255, 238, 69, 69),
             child: InkWell(
               onTap: () {
-                //print('called on tap');
+                cartBox.clear();
+                cart.clear();
               },
               child: const SizedBox(
                 height: kToolbarHeight,

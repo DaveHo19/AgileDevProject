@@ -1,3 +1,4 @@
+import 'package:agile_project/models/cart.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/cart/CartProvider.dart';
 import 'package:agile_project/services/firebase_auth.dart';
@@ -14,8 +15,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize hive
   await Hive.initFlutter();
+  Hive.registerAdapter(CartAdapter());
   // Open the peopleBox
-  await Hive.openBox('cartBox');
+  await Hive.openBox<Cart>('cart_items');
   if (kIsWeb) {
     await Firebase.initializeApp(
         options: const FirebaseOptions(

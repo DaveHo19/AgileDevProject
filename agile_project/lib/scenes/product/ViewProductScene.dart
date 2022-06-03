@@ -1,9 +1,18 @@
+import 'dart:convert';
+
 import 'package:agile_project/models/book.dart';
+import 'package:agile_project/scenes/cart/CartProvider.dart';
+import 'package:agile_project/scenes/cart/CartScene.dart';
 import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/scenes/sharedProperties/boxBorder.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '../cart/CartProvider.dart';
+import 'package:badges/badges.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:agile_project/models/cart.dart';
 
 class MyViewProductScene extends StatefulWidget {
   const MyViewProductScene({
@@ -30,6 +39,7 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   TextEditingController retailPriceController = TextEditingController();
 
   List<Widget> formWidgetList = [];
+  late Box<Cart> cartBox;
 
   @override
   void initState() {
@@ -43,17 +53,46 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
         initialPublicView();
         break;
     }
+    cartBox = Hive.box("cart_items");
   }
 
   @override
   Widget build(BuildContext context) {
+    final cart = Provider.of<CartProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(isbnController.text),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         actions: (widget.viewManagement == ViewManagement.public)
-            ? []
+            ? [
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 20.0),
+                    child: Badge(
+                      badgeContent: Consumer<CartProvider>(
+                        builder: (context, value, child) {
+                          return Text(value.getCounter().toString(),
+                              style: TextStyle(color: Colors.white));
+                        },
+                      ),
+                      animationDuration: Duration(milliseconds: 300),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.shopping_cart,
+                          size: 30,
+                        ),
+                        onPressed: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const MyCartScene()))
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ]
             : [
                 PopupMenuButton(
                     itemBuilder: (context) {
@@ -99,7 +138,9 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
                 Icons.shopping_bag,
                 color: Colors.white,
               ),
-              onPressed: _addToCart),
+              onPressed: () {
+                _addToCart(cart);
+              }),
     );
   }
 
@@ -118,9 +159,41 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
     }
   }
 
-  void _addToCart() {
-    ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("This features in implement in future!")));
+  void _addToCart(cart) {
+    cart.addItem(
+        widget.book.ISBN_13,
+        widget.book.title,
+        widget.book.imageCoverURL,
+        widget.book.retailPrice,
+        widget.book.quantity,
+        1);
+
+    Cart cartObject = Cart(
+        ISBN_13: widget.book.ISBN_13,
+        title: widget.book.title,
+        imageCoverURL: widget.book.imageCoverURL,
+        retailPrice: widget.book.retailPrice,
+        quantity: widget.book.quantity,
+        cartQuantity: 1);
+
+    if (cartBox.containsKey(cartObject.ISBN_13)) {
+      int cartQuantity = cartBox.get(cartObject.ISBN_13)!.cartQuantity + 1;
+
+      Cart tempObject = Cart(
+          ISBN_13: widget.book.ISBN_13,
+          title: widget.book.title,
+          imageCoverURL: widget.book.imageCoverURL,
+          retailPrice: widget.book.retailPrice,
+          quantity: widget.book.quantity,
+          cartQuantity: cartQuantity);
+
+      cartBox.put(cartObject.ISBN_13, tempObject);
+    } else {
+      cartBox.put(cartObject.ISBN_13, cartObject);
+    }
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text("Book Added into Cart!")));
   }
 
   Widget _buildSpace() {

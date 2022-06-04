@@ -1,5 +1,6 @@
 import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/enumList.dart';
+import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/product/ManageProductScene.dart';
 import 'package:agile_project/scenes/sharedProperties/boxBorder.dart';
 import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
@@ -7,6 +8,7 @@ import 'package:agile_project/scenes/sharedProperties/textField.dart';
 import 'package:agile_project/services/databaseService.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class MyViewProductScene extends StatefulWidget {
   const MyViewProductScene({
@@ -52,6 +54,7 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
 
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<AppUser?>(context);
     return isProcess ? const Loading() : Scaffold(
       appBar: AppBar(
         title: Text(isbnController.text),
@@ -93,7 +96,7 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
                     );
                   }),
             ),
-      floatingActionButton: (widget.viewManagement == ViewManagement.private) ? null :
+      floatingActionButton: (widget.viewManagement == ViewManagement.private || user == null) ? null :
         FloatingActionButton(
             backgroundColor: Colors.black,
             child: const Icon(Icons.shopping_bag, color: Colors.white,),            

@@ -51,7 +51,11 @@ class _CartItemState extends State<CartItem> {
               ? IconButton(
                   icon: const Icon(Icons.remove),
                   onPressed: () {
-                    cart.removeItem(widget.ISBN_13, 1);
+                    cart.removeItem(
+                        widget.ISBN_13,
+                        1,
+                        double.parse((widget.retailPrice * widget.cartQuantity)
+                            .toStringAsFixed(2)));
 
                     if (cartBox.containsKey(widget.ISBN_13)) {
                       int cartQuantity =
@@ -127,8 +131,12 @@ class _CartItemState extends State<CartItem> {
             alignment: Alignment.topRight,
             icon: const Icon(Icons.delete),
             onPressed: () => {
-              // cartBox.delete(widget.ISBN_13),
-              // cart.removeItem(widget.ISBN_13, widget.cartQuantity),
+              cartBox.delete(widget.ISBN_13),
+              cart.removeItem(
+                  widget.ISBN_13,
+                  widget.cartQuantity,
+                  double.parse((widget.retailPrice * widget.cartQuantity)
+                      .toStringAsFixed(2))),
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text("Removed the Book : ${widget.title}"),
                 duration: const Duration(seconds: 1),

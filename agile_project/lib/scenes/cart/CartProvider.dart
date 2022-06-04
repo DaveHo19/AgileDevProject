@@ -103,9 +103,10 @@ class CartProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeItem(String ISBN_13, int i) {
+  void removeItem(String ISBN_13, int i, double totalItemPrice) {
     _items.remove(ISBN_13);
     removeCounter(i);
+    removeTotalPrice(totalItemPrice);
     notifyListeners();
   }
 

@@ -55,6 +55,7 @@ class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
     user = Provider.of<AppUser?>(context);
+    final cart = Provider.of<CartProvider>(context);
     isAdmin();
     return Scaffold(
       //top bar
@@ -62,6 +63,20 @@ class _WrapperState extends State<Wrapper> {
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         actions: [
+          Container(
+            margin: const EdgeInsets.only(top: 20, bottom: 10),
+            decoration: BoxDecoration(
+              color: Color.fromARGB(255, 241, 167, 63),
+              borderRadius: BorderRadius.all(
+                  Radius.circular(5.0) //         <--- border radius here
+                  ),
+            ),
+            child: Padding(
+              padding: EdgeInsets.only(top: 5, left: 3, right: 3),
+              child: Text(
+                  "Total Price: RM ${double.parse(cart.getTotalPrice().toStringAsFixed(2))}"),
+            ),
+          ),
           Center(
             child: Badge(
               badgeContent: Consumer<CartProvider>(
@@ -70,12 +85,15 @@ class _WrapperState extends State<Wrapper> {
                       style: TextStyle(color: Colors.white));
                 },
               ),
+              animationType: BadgeAnimationType.slide,
               animationDuration: Duration(milliseconds: 300),
               child: IconButton(
                 icon: const Icon(
                   Icons.shopping_cart,
                   size: 30,
                 ),
+                tooltip:
+                    "Total Price: RM ${double.parse(cart.getTotalPrice().toStringAsFixed(2))}",
                 onPressed: () => {
                   Navigator.push(
                       context,

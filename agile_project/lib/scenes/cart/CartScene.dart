@@ -27,7 +27,7 @@ class _MyCartSceneState extends State<MyCartScene> {
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<CartProvider>(context);
-    // print(cart.getTotalPrice());
+    print(double.parse(cart.getTotalPrice().toStringAsFixed(2)));
     // cart.clearPref();
     return Scaffold(
       appBar: AppBar(

@@ -73,7 +73,7 @@ class _HomeBookListState extends State<HomeBookList> {
 
   Widget _buildBook(Book book){
     return Container(
-      height: 400,
+      height: 120,
       width: 100,
       child: GestureDetector(
         child: Card(

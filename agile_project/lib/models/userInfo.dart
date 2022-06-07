@@ -10,9 +10,12 @@ class UserInfomation{
     1 = Client 
   */
   final int accountLevel;
+  
+  String? phoneNumber;
+  String? gender;
 
   List<String> wishList;
-  Map<String, String> addressMap;
+  Map<String, dynamic> addressMap;
 
   //future uses
   List<String> orderList;
@@ -22,6 +25,8 @@ class UserInfomation{
     required this.userName,
     required this.emailAddress,
     required this.accountLevel,
+    this.gender,
+    this.phoneNumber,
     this.wishList = const [],
     this.addressMap = const {},
     this.orderList = const [],

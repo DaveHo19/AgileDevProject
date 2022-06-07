@@ -9,6 +9,7 @@ import 'package:agile_project/scenes/authentication/register/RegisterScene.dart'
 import 'package:agile_project/scenes/debug/debug_auth.dart';
 import 'package:agile_project/scenes/debug/debug_image.dart';
 import 'package:agile_project/scenes/debug/debug_retrieve.dart';
+import 'package:agile_project/scenes/debug/debug_wishlist.dart';
 import 'package:agile_project/scenes/home/HomeScene.dart';
 import 'package:agile_project/scenes/product/ManageProductScene.dart';
 import 'package:agile_project/scenes/product/ViewProductScene.dart';
@@ -95,7 +96,7 @@ class _WrapperState extends State<Wrapper> {
               ),    
               const PopupMenuItem<int>(
                 value: 5,
-                child: Text("Debug-Retrieve"),
+                child: Text("Debug-Wishlist"),
               ),               
             ], 
             onSelected: (int i) => {
@@ -183,7 +184,7 @@ class _WrapperState extends State<Wrapper> {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugImage()));    
       break;
       case 5:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugRetrieve()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugWishlist()));
       break;
     }
   }

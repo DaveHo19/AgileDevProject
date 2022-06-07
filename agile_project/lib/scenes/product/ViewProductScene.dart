@@ -34,8 +34,10 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   TextEditingController tradePriceController = TextEditingController();
   TextEditingController retailPriceController = TextEditingController();
   
-  List<Widget> formWidgetList = [];
+  List<Widget> formWidgetList = <Widget>[];
+  List<String> userWishlist = <String>[];
 
+  String currUserID = "";
   bool isProcess = false;
 
   @override
@@ -55,12 +57,28 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   @override
   Widget build(BuildContext context) {
     var user = Provider.of<AppUser?>(context);
+    if(user != null){
+      currUserID = user.uid;
+    }
+    initialWishlist();
     return isProcess ? const Loading() : Scaffold(
       appBar: AppBar(
         title: Text(isbnController.text),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
-        actions: (widget.viewManagement == ViewManagement.public) ? [] : [
+        actions: (widget.viewManagement == ViewManagement.public) ? 
+        [
+            (user != null) ? IconButton(
+              onPressed: () async {
+                manageWishlist();
+              }, 
+              icon: 
+              ///This comment block is for identifing which one had been stored into wishlist but currently it will not initial the wishlist items so just comment out first -by Dave
+              /* userWishlist.contains(widget.book.ISBN_13) ? 
+                    const Icon(Icons.favorite, color: Colors.red) : const Icon(Icons.favorite_outline)) */ 
+                    const Icon(Icons.favorite, color: Colors.red)) : Container(),
+        ] : 
+        [
                 PopupMenuButton(
                     itemBuilder: (context) {
                       return [
@@ -234,7 +252,35 @@ Widget _buildSpace() {
     );
   }
 
+  void manageWishlist() async {
+    DatabaseService dbService = DatabaseService();
+    bool add = true;
 
+    if (currUserID.isNotEmpty){
+      setState(() {
+        isProcess = true;
+      });
+      if (userWishlist.contains(widget.book.ISBN_13)) {
+        userWishlist.remove(widget.book.ISBN_13); 
+        add = false;
+      } else { 
+        userWishlist.add(widget.book.ISBN_13);
+        add = true;
+      }
+      dynamic result = dbService.updateUserWishlist(currUserID, userWishlist);
+      if (result != null){
+        setState(() {
+          isProcess = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: add ? const Text("Book Added To Wishlist!") : const Text("Book Removed From Wishlist!")));
+      } else {
+        setState(() {
+          isProcess = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to perform this actions!")));
+      }
+    }
+  }
   void initialController(){
     isbnController.text = widget.book.ISBN_13;
     titleController.text = widget.book.title;
@@ -298,5 +344,12 @@ Widget _buildSpace() {
     formWidgetList.add(_buildSpace());
     formWidgetList.add(_buildSpace());
 
+  }
+
+  void initialWishlist() async {
+    if (currUserID.isNotEmpty){
+      DatabaseService dbService = DatabaseService();
+      userWishlist = await dbService.getUserWishlist(currUserID);
+    }
   }
 }

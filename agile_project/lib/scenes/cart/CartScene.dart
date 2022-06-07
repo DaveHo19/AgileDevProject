@@ -27,7 +27,7 @@ class _MyCartSceneState extends State<MyCartScene> {
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<CartProvider>(context);
-    print(double.parse(cart.getTotalPrice().toStringAsFixed(2)));
+    // print(double.parse(cart.getTotalPrice().toStringAsFixed(2)));
     // cart.clearPref();
     return Scaffold(
       appBar: AppBar(
@@ -49,16 +49,28 @@ class _MyCartSceneState extends State<MyCartScene> {
                 builder: (context, Box<Cart> box, _) {
                   List<Cart> carts = box.values.toList().cast<Cart>();
 
-                  return ListView.builder(
-                      itemCount: carts.length,
-                      itemBuilder: (context, index) => CartItem(
-                            ISBN_13: carts.toList()[index].ISBN_13,
-                            title: carts.toList()[index].title,
-                            imageCoverURL: carts.toList()[index].imageCoverURL,
-                            retailPrice: carts.toList()[index].retailPrice,
-                            quantity: carts.toList()[index].quantity,
-                            cartQuantity: carts.toList()[index].cartQuantity,
-                          ));
+                  return carts.isNotEmpty
+                      ? ListView.builder(
+                          itemCount: carts.length,
+                          itemBuilder: (context, index) => CartItem(
+                                ISBN_13: carts.toList()[index].ISBN_13,
+                                title: carts.toList()[index].title,
+                                imageCoverURL:
+                                    carts.toList()[index].imageCoverURL,
+                                retailPrice: carts.toList()[index].retailPrice,
+                                quantity: carts.toList()[index].quantity,
+                                cartQuantity:
+                                    carts.toList()[index].cartQuantity,
+                              ))
+                      : Container(
+                          padding: EdgeInsets.all(30),
+                          child: Column(
+                            children: <Widget>[
+                              Image.asset("empty-box.png", fit: BoxFit.fill),
+                              Text("There is no item in cart currently !")
+                            ],
+                          ),
+                        );
                 }),
           ),
         ],

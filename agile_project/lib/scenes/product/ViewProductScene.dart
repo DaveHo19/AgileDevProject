@@ -160,14 +160,6 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   }
 
   void _addToCart(cart) {
-    cart.addItem(
-        widget.book.ISBN_13,
-        widget.book.title,
-        widget.book.imageCoverURL,
-        widget.book.retailPrice,
-        widget.book.quantity,
-        1);
-
     Cart cartObject = Cart(
         ISBN_13: widget.book.ISBN_13,
         title: widget.book.title,
@@ -178,22 +170,47 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
 
     if (cartBox.containsKey(cartObject.ISBN_13)) {
       int cartQuantity = cartBox.get(cartObject.ISBN_13)!.cartQuantity + 1;
+      if (cartQuantity <= widget.book.quantity) {
+        cart.addItem(
+            widget.book.ISBN_13,
+            widget.book.title,
+            widget.book.imageCoverURL,
+            widget.book.retailPrice,
+            widget.book.quantity,
+            1);
 
-      Cart tempObject = Cart(
-          ISBN_13: widget.book.ISBN_13,
-          title: widget.book.title,
-          imageCoverURL: widget.book.imageCoverURL,
-          retailPrice: widget.book.retailPrice,
-          quantity: widget.book.quantity,
-          cartQuantity: cartQuantity);
+        Cart tempObject = Cart(
+            ISBN_13: widget.book.ISBN_13,
+            title: widget.book.title,
+            imageCoverURL: widget.book.imageCoverURL,
+            retailPrice: widget.book.retailPrice,
+            quantity: widget.book.quantity,
+            cartQuantity: cartQuantity);
 
-      cartBox.put(cartObject.ISBN_13, tempObject);
+        cartBox.put(cartObject.ISBN_13, tempObject);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Book Added into Cart!"),
+          duration: const Duration(seconds: 2),
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              "Fail to Add Book into Cart due to reaching maximum quantity in the stock!"),
+          duration: const Duration(seconds: 2),
+        ));
+      }
     } else {
+      cart.addItem(
+          widget.book.ISBN_13,
+          widget.book.title,
+          widget.book.imageCoverURL,
+          widget.book.retailPrice,
+          widget.book.quantity,
+          1);
       cartBox.put(cartObject.ISBN_13, cartObject);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Book Added into Cart!")));
     }
-
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text("Book Added into Cart!")));
   }
 
   Widget _buildSpace() {

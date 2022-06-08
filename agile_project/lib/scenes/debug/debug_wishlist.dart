@@ -1,3 +1,4 @@
+import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/services/databaseService.dart';
 import "package:flutter/material.dart";
@@ -12,6 +13,7 @@ class DebugWishlist extends StatefulWidget {
 
 class _DebugWishlistState extends State<DebugWishlist> {
   List<String> wishList = <String>[];
+  List<Book> wishListForBook = <Book>[];
   Map<String, dynamic> billingAddress = <String, dynamic>{};
   String userId = "";
   @override
@@ -23,7 +25,6 @@ class _DebugWishlistState extends State<DebugWishlist> {
   @override
   Widget build(BuildContext context) {
     initialUserInfo();
-    
     return Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
@@ -37,15 +38,21 @@ class _DebugWishlistState extends State<DebugWishlist> {
                 ElevatedButton(
                   onPressed: () async {
                   print("test");
-                  addDummyDataForWishList("Test");
+                  //addDummyDataForWishList("Test");
                   },
                 child: const Text("Test"),),
                 ElevatedButton(
                   onPressed: () async {
-                  print("test2");
-                  addDummyDataForWishList("Test2");
+                  print("Debug");
+                  printDebug();
                   },
-                child: const Text("Test2"),)
+                child: const Text("Test2"),),
+                ElevatedButton(
+                  onPressed: () async {
+                    print("retrieve");
+                    await displayBookList();
+                  }, 
+                  child: const Text("Retrieve book"))
           ])),
         ),
       );
@@ -54,44 +61,13 @@ class _DebugWishlistState extends State<DebugWishlist> {
   void initialUserInfo() async {
     print("initialUserInfo run #1");
     var user = Provider.of<AppUser?>(context);
-    // DatabaseService dbService = DatabaseService();
-    // if (user != null){
-    //   print("initialUserInfo run #2 - user not null");
-    //   UserInfomation userInfo = await dbService.getUserInformation(user.uid);
-    //   // Map<String, String> currentAddressMap = userInfo.addressMap;
-    //   print("initialUserInfo run #2.5 - created userInfo");
-    //   billingAddress = userInfo.addressMap;
-    //   print("initialUserInfo run #3 - Get billing address");   
-    //   if (billingAddress.isNotEmpty){
-    //     print("initialUserInfo run #4 - billing address not null");
-    //     billingAddress.forEach((key, value) {
-    //       print(key.toString());
-    //       print(value.toString());
-          
-    //     });
-    //   } else {
-    //     print ("Map is currently empty");
-    //   }
-    //   List<dynamic> tempList = userInfo.wishList;
-    //   print("initialUserInfo run #5 - get wish list");
-    //   if (tempList.isNotEmpty){
-    //     print("initialUserInfo run #6 - Wislist not null");
-    //     tempList.forEach((element) {
-    //       wishList.add(element.toString());
-    //     });
-    //   } else {
-    //     print ("Wishlist is currently empty");
-    //   }
-    // } else {
-    //   print("There is no user login");
-    // }   
     DatabaseService dbService = DatabaseService();
     if (user != null){
       userId = user.uid;
-    List<dynamic> tList = await dbService.getUserWishlist(userId);
+    List<String> tList = await dbService.getUserWishlist(userId);
     if (tList.isNotEmpty){
       tList.forEach((element) {
-        wishList.add(tList.toString());
+        wishList.add(element);
       });
     } else{
       print ("List is empty");
@@ -108,8 +84,6 @@ class _DebugWishlistState extends State<DebugWishlist> {
     } else {
       wishList.add(val);
     }
-
-
     DatabaseService dbService = DatabaseService();
     dynamic result = await dbService.updateUserWishlist(userId, wishList);
     if (result == null){ 
@@ -117,5 +91,18 @@ class _DebugWishlistState extends State<DebugWishlist> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed!")));
     }
+  }
+  
+  Future displayBookList() async {
+    print("D-Booklist Checked #1");
+    DatabaseService dbService = DatabaseService();
+    wishListForBook = await dbService.getBookListByWishlist(wishList);
+    for (int i=0; i < wishListForBook.length; i++){
+      wishListForBook.elementAt(i).toInfo();
+    }
+  }
+
+  void printDebug(){
+    print(wishListForBook.length);
   }
 }

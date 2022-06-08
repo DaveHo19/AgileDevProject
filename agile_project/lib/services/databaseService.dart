@@ -105,20 +105,44 @@ class DatabaseService {
     return result;
   }
 
+  Future<List<Book>> getBookListByWishlist(List<String> list) async {
+    List<Book> bookList = [];
+   
+    // Future.forEach(list, (element) async {
+    //   Book book = await getBookByISBN(element.toString());
+    //   bookList.add(book);
+    //   print(element);
+    // }).then((value) {
+    //   print("complete");
+    //   return bookList;
+    // });
+
+    for (int i=0; i < list.length; i++){
+      Book book = await getBookByISBN(list.elementAt(i));
+      bookList.add(book);
+    }
+    // list.forEach((element) async {
+    //   Book book = await getBookByISBN(element.toString());
+    //   print(book.ISBN_13);
+    //   bookList.add(book);  
+    // });
+    return bookList;
+  }
+
   Future<Book> getBookByISBN(String bookISBN) async {
-    return await bookCollectionRef.doc(bookISBN).get().then((doc) => 
-      Book(
-        ISBN_13: doc.get("ISBN_13") ?? "", 
-        title: doc.get("title") ?? "", 
-        description: doc.get("desc"),
-        author: doc.get("author") ?? "", 
-        publishedDate: doc.get("publishedDate").toDate(), 
-        imageCoverURL: doc.get("imgCoverUrl") ?? "", 
-        tags: List<String>.from(doc.get("tags")), 
-        tradePrice: doc.get("tradePrice") ?? 0, 
-        retailPrice: doc.get("retailPrice") ?? 0, 
-        quantity: doc.get("quantity") ?? 0),
-    );
+    return await bookCollectionRef.doc(bookISBN).get().then((doc) { 
+      return Book(
+          ISBN_13: doc.get("ISBN_13") ?? "",
+          title: doc.get("title") ?? "",
+          description: doc.get("desc") ?? "",
+          author: doc.get("author") ?? "",
+          publishedDate: doc.get("publishedDate").toDate(),
+          imageCoverURL: doc.get("imgCoverUrl") ?? "",
+          tags: doc.get("tags").cast<String>(),
+          tradePrice: doc.get("tradePrice") ?? 0,
+          retailPrice: doc.get("retailPrice") ?? 0,
+          quantity: doc.get("quantity") ?? 0);
+      });
   }
 
   Future createUserProfile(UserInfomation userInfo) async {

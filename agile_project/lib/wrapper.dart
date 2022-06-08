@@ -55,8 +55,12 @@ class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
     user = Provider.of<AppUser?>(context);
-    final cart = Provider.of<CartProvider>(context);
     isAdmin();
+    return (user != null) ? _Login() : _noLogin();
+  }
+
+  Widget _Login() {
+    final cart = Provider.of<CartProvider>(context);
     return Scaffold(
       //top bar
       appBar: AppBar(
@@ -103,6 +107,88 @@ class _WrapperState extends State<Wrapper> {
               ),
             ),
           ),
+          //debug purpose
+          IconButton(
+            icon: const Icon(
+              Icons.account_circle,
+              size: 30,
+            ),
+            onPressed: () => {
+              print(user),
+            },
+          ),
+          //debug purpose
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              const PopupMenuItem<int>(
+                value: 0,
+                child: Text("StockLevel"),
+              ),
+              const PopupMenuItem<int>(
+                value: 1,
+                child: Text("View"),
+              ),
+              const PopupMenuItem<int>(
+                value: 2,
+                child: Text("Manage"),
+              ),
+              const PopupMenuItem<int>(
+                value: 3,
+                child: Text("Debug-Auth"),
+              ),
+              const PopupMenuItem<int>(
+                value: 4,
+                child: Text("Debug-Image"),
+              ),
+              const PopupMenuItem<int>(
+                value: 5,
+                child: Text("Debug-Retrieve"),
+              ),
+            ],
+            onSelected: (int i) => {debugHandler(context, i)},
+          ),
+        ],
+      ),
+      body:
+          SafeArea(child: _bottomNavigationScene.elementAt(_selectedNavIndex)),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: "Wishlist",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: "Profile",
+          ),
+        ],
+        currentIndex: _selectedNavIndex,
+        onTap: _onItemTapped,
+      ),
+      floatingActionButton: (accountType == AccountType.admin)
+          ? FloatingActionButton(
+              backgroundColor: Colors.black,
+              child: const Icon(
+                Icons.settings,
+                color: Colors.white,
+              ),
+              onPressed: _onFabTapped)
+          : null,
+    );
+  }
+
+  Widget _noLogin() {
+    final cart = Provider.of<CartProvider>(context);
+    return Scaffold(
+      //top bar
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        actions: [
           //debug purpose
           IconButton(
             icon: const Icon(

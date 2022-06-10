@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:agile_project/scenes/authentication/register/RegisterBody.dart';
 
 class MyRegisterScene extends StatefulWidget{
   const MyRegisterScene({Key? key}) : super (key: key);
@@ -22,11 +23,7 @@ class _MyRegisterSceneState extends State<MyRegisterScene>{
           backgroundColor: Colors.black,
           foregroundColor: Colors.white,
         ),
-        body: const SafeArea(
-          child: Center(
-            child: Text("Register Scene Here")
-          ),
-        ),
+        body: RegisterBody(),
     );
   }
 }

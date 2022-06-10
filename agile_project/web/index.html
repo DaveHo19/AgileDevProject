@@ -100,5 +100,24 @@
       loadMainDartJs();
     }
   </script>
+
+<script src="httpsL//www.gstatic.com/firebasejs/9.7.0/firebase-firestore.js"></script>
+<script src="httpsL//www.gstatic.com/firebasejs/9.7.0/firebase-analytics.js"></script>
+<script src="httpsL//www.gstatic.com/firebasejs/9.7.0/firebase-app.js"></script>
+
+<script type="module">
+  const firebaseConfig = {
+    apiKey: "AIzaSyCwVr4eW2AcEDK9PBboyihxqia_piR4BCE",
+    authDomain: "agileproject-abd4b.firebaseapp.com",
+    projectId: "agileproject-abd4b",
+    storageBucket: "agileproject-abd4b.appspot.com",
+    messagingSenderId: "1003614072630",
+    appId: "1:1003614072630:web:c50df18ecafc2dbc384d97"
+  };
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
 </body>
 </html>

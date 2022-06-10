@@ -1,6 +1,7 @@
 import 'dart:html';
 import 'dart:typed_data';
 
+import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/category.dart';
 import 'package:agile_project/models/enumList.dart';
@@ -8,6 +9,7 @@ import 'package:agile_project/scenes/sharedProperties/boxBorder.dart';
 import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
 import 'package:agile_project/services/databaseService.dart';
+import 'package:agile_project/utilities/field_validation.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -72,8 +74,6 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
       case BookManagement.edit:
         initialEditView();
         break;
-      case BookManagement.delete:
-        break;
       default:
         break;
     }
@@ -88,12 +88,9 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
               title: Text((widget.bookManagement == BookManagement.create)
                   ? "Book Creation"
                   : (widget.bookManagement == BookManagement.edit)
-                      ? "Book Update"
-                      : (widget.bookManagement == BookManagement.delete)
-                          ? "Book Deletion"
-                          : "Undefined Action"),
-              backgroundColor: Colors.black,
-              foregroundColor: Colors.white,
+                      ? "Book Update" : "Undefined Action"),
+              backgroundColor: kPrimaryColor,
+              foregroundColor: kPrimaryLightColor,
             ),
             body: SafeArea(
                 child: Form(
@@ -318,94 +315,39 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
 
   Widget _buildButton() {
     DatabaseService dbService = DatabaseService();
+    //For validation processes
+    FieldValidation validation = FieldValidation();
     return ElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          if (validation()) {
-            switch (widget.bookManagement) {
-              case BookManagement.create:
-                if (!isExistedID) {
-                  setState(() {
-                    isProcess = true;
-                  });
-                  String url = await dbService.uploadBookCover(imgSrc!, id);
-                  DateTime pDate = DateFormat("yyyy-MM-dd").parse(dateController.text);
-                  if (url.isNotEmpty) {
-                    Book newBook = Book(
-                        ISBN_13: id,
-                        title: name,
-                        author: author,
-                        description: description,
-                        publishedDate: pDate,
-                        imageCoverURL: url,
-                        tags: category,
-                        tradePrice: tradePrice,
-                        retailPrice: retailPrice,
-                        quantity: quantity);
-                    var result = await dbService.createBook(newBook);
-                    if (result == null) {
-                      setState(() {
-                        isProcess = false;
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text("Book created successfully")));
-                      Navigator.pop(context);
-                    } else {
-                      setState(() {
-                        isProcess = false;
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text("Result failed to update!")));
-                    }
-                  } else {
-                    setState(() {
-                      isProcess = false;
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text("Book cover failed to upload!")));
-                  }
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("Please check the ISBN-No first")));
-                }
-                break;
-              case BookManagement.edit:
-                setState(()=>isProcess = true,);
-                DateTime pDate = DateFormat("yyyy-MM-dd").parse(dateController.text);
-                Book updBook = Book(
-                    ISBN_13: widget.passedBook!.ISBN_13,
-                    title: name,
-                    author: author,
-                    description: description,
-                    publishedDate: pDate,
-                    imageCoverURL: widget.passedBook!.imageCoverURL,
-                    tags: category,
-                    tradePrice: tradePrice,
-                    retailPrice: retailPrice,
-                    quantity: quantity);
-                    var result = await dbService.updateBook(updBook);
-                    if (result == null){
-                      setState(() => isProcess = false,);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Book update successfully")));
-                      Navigator.pop(context);
-                    } else {
-                      setState((() => isProcess = false));
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Result failed to update")));
-                    }
-                break;
-              case BookManagement.delete:
-                break;
-            }
+          if (validation.bookFieldValidation(category, tradePrice, retailPrice, quantity, imgSrc, BookManagement.create)){
+            if(validation.dateValidation(dateController.text)){
+              switch (widget.bookManagement) {
+                case BookManagement.create:
+                  await createBookProcess();
+                  break;
+                case BookManagement.edit:
+                  await editBookProcess();
+                  break;
+              }
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text("Date input is in wrong format! Please follow [yyyy-mm-dd] format!")));
+            } 
           } else {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text("The value field cannot less than 1!!")));
+                content: Text("Some of the fields are in wrong value!")));
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text("There are some field does not entered!!")));
         }
       },
-      child: const Text("Debug"),
+      child: Text(
+          widget.bookManagement == BookManagement.create ? "Create" :
+          widget.bookManagement == BookManagement.edit ? "Edit" :
+          "??" 
+          ),
     );
   }
 
@@ -422,9 +364,10 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
               added ? category.add(items) : category.remove(items);
               categoryController.text = "";
               if (category.isNotEmpty) {
-                category.forEach((element) {
-                  categoryController.text += element + "; ";
-                });
+                for (int i=0; i < category.length; i++){
+                  categoryController.text += category[i] + "; ";
+
+                }
               }
             },
           ),
@@ -432,6 +375,7 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
       );
     });
   }
+
 
   void _callMultiSelectDialog() {
     List<String> categoryList = getCategoryList();
@@ -494,19 +438,78 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
             )));
   }
 
-  bool validation() {
-    
-    print("Category: ${category.length}");
-    print("TPrice: {$tradePrice}");
-    print("RPrice: {$tradePrice}");
-    print("Qty: {$tradePrice}");
+  Future<void> createBookProcess() async {
+    DatabaseService dbService = DatabaseService();
+    if (!isExistedID) {
+      setState(() {
+        isProcess = true;
+      });
+      String url = await dbService.uploadBookCover(imgSrc!, id);
+      DateTime pDate = DateFormat("yyyy-MM-dd").parse(dateController.text);
+      if (url.isNotEmpty) {
+        Book newBook = Book(
+            ISBN_13: id,
+            title: name,
+            author: author,
+            description: description,
+            publishedDate: pDate,
+            imageCoverURL: url,
+            tags: category,
+            tradePrice: tradePrice,
+            retailPrice: retailPrice,
+            quantity: quantity);
+        var result = await dbService.createBook(newBook);
+        if (result == null) {
+          setState(() {
+            isProcess = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Book created successfully")));
+          Navigator.pop(context);
+        } else {
+          setState(() {
+            isProcess = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Result failed to update!")));
+        }
+      } else {
+        setState(() {
+          isProcess = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Book cover failed to upload!")));
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Please check the ISBN-No first")));
+    }
+  }
 
-    return ((category.isNotEmpty) &&
-        (tradePrice > 0) &&
-        (retailPrice > 0) &&
-        (quantity > 0) &&
-        ((imgSrc != null) || (widget.bookManagement == BookManagement.edit)));
-        
+  Future<void> editBookProcess() async {
+    DatabaseService dbService = DatabaseService();
+    setState(()=>isProcess = true,);
+    DateTime pDate = DateFormat("yyyy-MM-dd").parse(dateController.text);
+    Book updBook = Book(
+        ISBN_13: widget.passedBook!.ISBN_13,
+        title: name,
+        author: author,
+        description: description,
+        publishedDate: pDate,
+        imageCoverURL: widget.passedBook!.imageCoverURL,
+        tags: category,
+        tradePrice: tradePrice,
+        retailPrice: retailPrice,
+        quantity: quantity);
+        var result = await dbService.updateBook(updBook);
+        if (result == null){
+          setState(() => isProcess = false,);
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Book update successfully")));
+          Navigator.pop(context);
+        } else {
+          setState((() => isProcess = false));
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Result failed to update")));
+    }
   }
 
   bool dateValidation(){

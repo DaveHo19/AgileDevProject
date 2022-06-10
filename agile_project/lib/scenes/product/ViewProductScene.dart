@@ -6,6 +6,7 @@ import 'package:agile_project/scenes/sharedProperties/boxBorder.dart';
 import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
 import 'package:agile_project/services/databaseService.dart';
+import 'package:agile_project/utilities/custom_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -134,21 +135,11 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
                     bookManagement: BookManagement.edit, passedBook: widget.book)));
         break;
       case 1:
-        //for delete
-        setState(() {
-          isProcess = true;
-        });
-        DatabaseService dbService = DatabaseService();
-        var result = await dbService.deleteBook(widget.book.ISBN_13);
-        if (result == null){
-          setState(() {
-            isProcess = false;
-          });
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Book is successfully deleted")));
-          Navigator.pop(context);         
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to delete book")));
-        }
+        CustomDialog customDialog = CustomDialog();
+        bool result = await customDialog.confirm_dialog(widget.book, context, "Confirmation", "Are you sure to delete ${widget.book.title}? This action cannot undo!");
+        if (result){
+          await deleteBookProcess();
+        } 
         break;
       }
   }
@@ -281,6 +272,24 @@ Widget _buildSpace() {
       }
     }
   }
+
+  Future<void> deleteBookProcess() async {
+    //for delete
+    setState(() {
+      isProcess = true;
+    });
+    DatabaseService dbService = DatabaseService();
+    var result = await dbService.deleteBook(widget.book.ISBN_13);
+    if (result == null){
+      setState(() {
+        isProcess = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Book is successfully deleted")));
+      Navigator.pop(context);         
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to delete book")));
+    }
+  }
   void initialController(){
     isbnController.text = widget.book.ISBN_13;
     titleController.text = widget.book.title;
@@ -290,10 +299,9 @@ Widget _buildSpace() {
     tradePriceController.text = widget.book.tradePrice.toStringAsFixed(2);
     retailPriceController.text = widget.book.retailPrice.toStringAsFixed(2);
     quantityController.text = widget.book.quantity.toString();
-    widget.book.tags.forEach((element) {
-      categoryController.text += element + "; ";
-    });
-
+    for(int i=0; i < widget.book.tags.length; i++){
+      categoryController.text += widget.book.tags[i] + "; ";
+    }
   } 
   void initialPrivateView(){
     formWidgetList.clear();

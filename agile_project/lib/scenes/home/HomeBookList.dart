@@ -35,14 +35,14 @@ class _HomeBookListState extends State<HomeBookList> {
     final book = Provider.of<List<Book>>(context);
     List<Book> tempList = [];
     if(book.isNotEmpty){
-      book.forEach((element) {
-        if (element.tags.contains("Fantasy")){
-          tempList.add(element);
+      for (int i=0; i < book.length; i++){
+        if (book[i].tags.contains("Fantasy")){
+            tempList.add(book[i]);
         }
-      });
+      }
     }
     return SizedBox(
-      height: 500,
+      height: 150,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: tempList.length,
@@ -51,18 +51,18 @@ class _HomeBookListState extends State<HomeBookList> {
     );
   }
 
-  Widget _buildRemainRow() {
+  Widget _buildNotFantasyRow() {
     final book = Provider.of<List<Book>>(context);
     List<Book> tempList = [];
     if(book.isNotEmpty){
-      book.forEach((element) {
-        if (!element.tags.contains("Fantasy")){
-          tempList.add(element);
+      for (int i=0; i < book.length; i++){
+        if (!book[i].tags.contains("Fantasy")){
+            tempList.add(book[i]);
         }
-      });
+      }
     }
     return SizedBox(
-      height: 120,
+      height: 150,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: tempList.length,
@@ -73,8 +73,8 @@ class _HomeBookListState extends State<HomeBookList> {
 
   Widget _buildBook(Book book){
     return Container(
-      height: 120,
-      width: 100,
+      height: 100,
+      width: 200,
       child: GestureDetector(
         child: Card(
           elevation: 2,

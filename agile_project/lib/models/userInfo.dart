@@ -14,6 +14,9 @@ class UserInfomation{
   List<String> wishList;
   Map<String, String> addressMap;
 
+  String? gender;
+  String? phoneNumber;
+
   //future uses
   List<String> orderList;
 
@@ -22,6 +25,8 @@ class UserInfomation{
     required this.userName,
     required this.emailAddress,
     required this.accountLevel,
+    this.gender,
+    this.phoneNumber,
     this.wishList = const [],
     this.addressMap = const {},
     this.orderList = const [],

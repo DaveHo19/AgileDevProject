@@ -1,9 +1,0 @@
-class BillingAddress {
-    String address;
-    bool user;
-
-    BillingAddress (
-      
-      this.address,
-      
-      );

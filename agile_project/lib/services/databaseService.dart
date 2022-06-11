@@ -179,6 +179,12 @@ class DatabaseService {
     });
   }
 
+  Future<List<String>> getBillingAdress(String uid) async {
+    return await userCollectionRef.doc(uid).get().then((doc) {
+      return List<String>.from(doc.get("address"));
+    });
+  }
+  
   Future updateUserBillingAddress(String userID, Map<String, String> billingAddress) async {
     return await userCollectionRef.doc(userID).update({
       "address": billingAddress,

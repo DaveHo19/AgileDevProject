@@ -19,7 +19,5 @@ class _MyHomeSceneState extends State<MyHomeScene> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    
-  }
+  Widget build(BuildContext context) {}
 }

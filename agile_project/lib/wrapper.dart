@@ -6,6 +6,7 @@ import 'package:agile_project/models/userInfo.dart';
 import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
 import 'package:agile_project/scenes/authentication/login/LoginScene.dart';
 import 'package:agile_project/scenes/authentication/register/RegisterScene.dart';
+import 'package:agile_project/scenes/debug/debug_address.dart';
 import 'package:agile_project/scenes/debug/debug_auth.dart';
 import 'package:agile_project/scenes/debug/debug_image.dart';
 import 'package:agile_project/scenes/debug/debug_retrieve.dart';
@@ -88,7 +89,7 @@ class _WrapperState extends State<Wrapper> {
               ),    
               const PopupMenuItem<int>(
                 value: 3,
-                child: Text("Debug-Auth"),
+                child: Text("Debug-address"),
               ),    
               const PopupMenuItem<int>(
                 value: 4,
@@ -178,7 +179,7 @@ class _WrapperState extends State<Wrapper> {
         Navigator.push(context, MaterialPageRoute(builder: (context) => MyManageProductScene(bookManagement: BookManagement.create,)));    
         break;     
       case 3: 
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugAuth()));    
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugAddress()));    
         break;
       case 4:
         Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugImage()));    

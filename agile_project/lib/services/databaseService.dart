@@ -179,9 +179,9 @@ class DatabaseService {
     });
   }
 
-  Future<List<String>> getBillingAdress(String uid) async {
+  Future<Map<String, String>> getBillingAdress(String uid) async {
     return await userCollectionRef.doc(uid).get().then((doc) {
-      return List<String>.from(doc.get("address"));
+      return Map.from(doc.get("address"));
     });
   }
   
@@ -198,8 +198,10 @@ class DatabaseService {
         userName: value["userName"],
         emailAddress: value["emailAddress"],
         accountLevel: value["accountLevel"],
+        gender: value["gender"],
+        phoneNumber: value["phoneNumber"],
         wishList: value["wishList"].cast<String>(), 
-        //addressMap: value["address"],
+        addressMap: value["address"],
         orderList: value["orderList"],
       );
     });

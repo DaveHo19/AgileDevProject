@@ -1,4 +1,5 @@
 import 'package:agile_project/constants.dart';
+import 'package:agile_project/scenes/user/AddressInformation.dart';
 import 'package:flutter/material.dart';
 import 'package:agile_project/scenes/user/profile_pic.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -36,6 +37,30 @@ class ProfileBody extends StatelessWidget {
           press: () {
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => EmailScene()));
+          },
+        ),
+        ProfileMenu(
+          icon: "images/signup_top.png",
+          text: "My Address",
+          press: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => MyAddressScene()));
+          },
+        ),
+        ProfileMenu(
+          icon: "images/signup_top.png",
+          text: "My Order",
+          press: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ContactNumberScene()));
+          },
+        ),
+        ProfileMenu(
+          icon: "images/signup_top.png",
+          text: "Logout",
+          press: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ContactNumberScene()));
           },
         ),
       ],

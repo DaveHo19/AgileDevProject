@@ -1,10 +1,11 @@
 import 'package:agile_project/constants.dart';
+import 'package:agile_project/scenes/user/profile_pic.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:agile_project/scenes/user/AddressInformation.dart';
 import 'package:agile_project/scenes/user/Address1Scene.dart';
-import 'package:agile_project/scenes/user/Address2Scene.dart';
-import 'package:agile_project/scenes/user/Address3Scene.dart';
+// import 'package:agile_project/scenes/user/Address2Scene.dart';
+// import 'package:agile_project/scenes/user/Address3Scene.dart';
 import 'package:agile_project/scenes/user/AddNewAddressScene.dart';
 //import 'profile_pic.dart';
 
@@ -13,7 +14,7 @@ class AddressBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        //ProfilePic(),
+        ProfilePic(),
         SizedBox(height: 20),
         ProfileMenu(
           icon: "icons/usericon.png",
@@ -23,21 +24,21 @@ class AddressBody extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => Address1Scene()));
           },
         ),
-        ProfileMenu(
-          icon: "images/signup_top.png",
-          text: "Address 2",
-          press: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => Address2Scene()));
-          },
-        ),
-        ProfileMenu(
-          icon: "images/signup_top.png",
-          text: "Address 3",
-          press: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => Address3Scene()));
-          },
+        // ProfileMenu(
+        //   icon: "images/signup_top.png",
+        //   text: "Address 2",
+        //   press: () {
+        //     Navigator.push(context,
+        //         MaterialPageRoute(builder: (context) => Address2Scene()));
+        //   },
+        // ),
+        // ProfileMenu(
+        //   icon: "images/signup_top.png",
+        //   text: "Address 3",
+        //   press: () {
+        //     Navigator.push(context,
+        //         MaterialPageRoute(builder: (context) => Address3Scene()));
+        },
         ),
         ProfileMenu(
           icon: "images/signup_top.png",

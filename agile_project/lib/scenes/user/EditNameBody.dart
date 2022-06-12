@@ -1,18 +1,28 @@
+import 'package:agile_project/models/rounded_button.dart';
+import 'package:agile_project/scenes/sharedProperties/textField.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:agile_project/scenes/user/UserName.dart';
-import 'package:agile_project/scenes/user/ProfileBody.dart';
 
 class EditNameBody extends StatelessWidget {
+  String name = "";
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-
-        // NameMenu(
-        //   text: "Input your username here",
-        //   press: () {},
-        //   ),
-        );
+    return Center(
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: TextFormField(
+              decoration: inputDecoration("Name"),
+            ),
+          ),
+          RoundedButton(
+            text: "Save",
+            press: () {},
+          ),
+        ],
+      ),
+    );
   }
 }
 

@@ -1,10 +1,9 @@
-class UserInfomation{
-
+class UserInfomation {
   final String uid;
   final String userName;
   final String emailAddress;
 
-    /*
+  /*
     account level
     0 = Admin
     1 = Client 
@@ -29,5 +28,5 @@ class UserInfomation{
     this.wishList = const [],
     this.addressMap = const {},
     this.orderList = const [],
-    });
+  });
 }

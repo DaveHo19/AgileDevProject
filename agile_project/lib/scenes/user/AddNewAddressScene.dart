@@ -1,12 +1,8 @@
 import 'dart:html';
 import 'package:agile_project/models/rounded_button.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
-import 'package:agile_project/scenes/user/EditNewAddressBody.dart';
 import 'package:agile_project/services/databaseService.dart';
 import 'package:flutter/material.dart';
-import 'package:agile_project/scenes/user/ProfileScene.dart';
-import 'package:agile_project/scenes/user/ProfileBody.dart';
-import 'package:agile_project/scenes/user/AddressBody.dart';
 
 class NewAddressScene extends StatefulWidget {
   const NewAddressScene({Key? key, required this.uid}) : super(key: key);
@@ -21,11 +17,17 @@ class _NewAddressSceneState extends State<NewAddressScene> {
   TextEditingController addressController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Add New Address"),
+    return WillPopScope(
+      onWillPop: (){
+        Navigator.pop(context, false);
+        return Future.value(false);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Add New Address"),
+        ),
+        body: buildContent(),
       ),
-      body: buildContent(),
     );
   }
 
@@ -34,14 +36,14 @@ class _NewAddressSceneState extends State<NewAddressScene> {
       child: Column(
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: TextFormField(
               decoration: inputDecoration("Address Name"),
               controller: nameController,
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: TextFormField(
               decoration: inputDecoration("New Address"),
               controller: addressController,
@@ -52,7 +54,7 @@ class _NewAddressSceneState extends State<NewAddressScene> {
           RoundedButton(
             text: "Save",
             press: () async {
-              UpdateAddress();
+              createAddress();
             },
           ),
         ],
@@ -60,7 +62,7 @@ class _NewAddressSceneState extends State<NewAddressScene> {
     );
   }
 
-  void UpdateAddress() async {
+  void createAddress() async {
     DatabaseService dbService = DatabaseService();
     Map<String, String> map = await dbService.getBillingAddress(widget.uid);
     if (!map.containsKey(nameController.text)) {
@@ -70,10 +72,13 @@ class _NewAddressSceneState extends State<NewAddressScene> {
       if (result == null) {
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("Sucess")));
+          Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("Failed")));
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The address name is already exitst!")));
     }
   }
 }

@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:agile_project/models/rounded_button.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
 import 'package:agile_project/services/databaseService.dart';
-import 'package:agile_project/scenes/user/ProfileScene.dart';
-import 'package:agile_project/scenes/user/ProfileBody.dart';
-import 'package:agile_project/scenes/user/EditContactNumberBody.dart';
 
 class ContactNumberScene extends StatefulWidget {
   const ContactNumberScene({
@@ -33,11 +30,17 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Edit Contact Number"),
+    return WillPopScope(
+      onWillPop: (){
+        Navigator.pop(context, false);
+        return Future.value(false);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Edit Contact Number"),
+        ),
+        body: buildContent(),
       ),
-      body: buildContent(),
     );
   }
 
@@ -73,6 +76,7 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
     if (result == null) {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Sucess")));
+          Navigator.pop(context, true);
     } else {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Failed")));

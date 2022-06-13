@@ -30,11 +30,17 @@ class _UserNameFieldSceneState extends State<UserNameFieldScene> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Edit Name"),
+    return WillPopScope(
+      onWillPop: (){
+        Navigator.pop(context, false);
+        return Future.value(false);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Edit Name"),
+        ),
+        body: buildContent(),
       ),
-      body: buildContent(),
     );
   }
 
@@ -69,6 +75,7 @@ class _UserNameFieldSceneState extends State<UserNameFieldScene> {
     if (result == null) {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Sucess")));
+      Navigator.pop(context, true);
     } else {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Failed")));

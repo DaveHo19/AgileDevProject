@@ -11,7 +11,7 @@ class EditNewAddressBody extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: TextFormField(
               decoration: inputDecoration("New Address"),
               minLines: 5,

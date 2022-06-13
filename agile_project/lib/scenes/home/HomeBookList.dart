@@ -1,18 +1,18 @@
 import 'package:agile_project/models/book.dart';
-import 'package:agile_project/models/enumList.dart';
-import 'package:agile_project/scenes/product/ViewProductScene.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/enumList.dart';
+import '../product/ViewProductScene.dart';
+
 class HomeBookList extends StatefulWidget {
-  const HomeBookList({ Key? key }) : super(key: key);
+  const HomeBookList({Key? key}) : super(key: key);
 
   @override
   State<HomeBookList> createState() => _HomeBookListState();
 }
 
 class _HomeBookListState extends State<HomeBookList> {
-
   List<Widget> layoutList = [];
   @override
   void initState() {
@@ -34,15 +34,15 @@ class _HomeBookListState extends State<HomeBookList> {
   Widget _buildFantasyRow() {
     final book = Provider.of<List<Book>>(context);
     List<Book> tempList = [];
-    if(book.isNotEmpty){
-      for (int i=0; i < book.length; i++){
-        if (book[i].tags.contains("Fantasy")){
-            tempList.add(book[i]);
+    if (book.isNotEmpty) {
+      book.forEach((element) {
+        if (element.tags.contains("Fantasy")) {
+          tempList.add(element);
         }
-      }
+      });
     }
     return SizedBox(
-      height: 150,
+      height: 120,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: tempList.length,
@@ -51,18 +51,18 @@ class _HomeBookListState extends State<HomeBookList> {
     );
   }
 
-  Widget _buildNotFantasyRow() {
+  Widget _buildRemainRow() {
     final book = Provider.of<List<Book>>(context);
     List<Book> tempList = [];
-    if(book.isNotEmpty){
-      for (int i=0; i < book.length; i++){
-        if (!book[i].tags.contains("Fantasy")){
-            tempList.add(book[i]);
+    if (book.isNotEmpty) {
+      book.forEach((element) {
+        if (!element.tags.contains("Fantasy")) {
+          tempList.add(element);
         }
-      }
+      });
     }
     return SizedBox(
-      height: 150,
+      height: 120,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: tempList.length,
@@ -71,42 +71,44 @@ class _HomeBookListState extends State<HomeBookList> {
     );
   }
 
-  Widget _buildBook(Book book){
+  Widget _buildBook(Book book) {
     return Container(
-      height: 100,
-      width: 200,
-      child: GestureDetector(
-        child: Card(
-          elevation: 2,
-          child: Column(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Image.network(book.imageCoverURL, fit: BoxFit.fill,)),
-              Expanded(
-                flex: 1,
-                child: Text(
-                  book.title,
+        height: 500,
+        width: 200,
+        child: GestureDetector(
+          child: Card(
+              elevation: 2,
+              child: Column(
+                children: [
+                  Expanded(
+                      flex: 2,
+                      child: Image.network(
+                        book.imageCoverURL,
+                        fit: BoxFit.fill,
+                      )),
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      book.title,
+                    ),
                   ),
-                ),
-            ],
-          ),
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => MyViewProductScene(
-                    viewManagement: ViewManagement.public, book: book)));
-        }
-      ),
-    );
+                ],
+              )),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MyViewProductScene(
+                        viewManagement: ViewManagement.public, book: book)));
+          },
+        ));
   }
 
-  Widget _buildSpace(){
+  Widget _buildSpace() {
     return const SizedBox(height: 50);
   }
-  void layoutInitialize(){
+
+  void layoutInitialize() {
     layoutList.clear();
     layoutList.add(_buildSpace());
     layoutList.add(_buildFantasyRow());

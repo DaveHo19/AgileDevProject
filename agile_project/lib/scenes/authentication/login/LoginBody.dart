@@ -5,7 +5,7 @@ import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/services/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:agile_project/scenes/authentication/login/LoginBackground.dart';
-
+import 'package:agile_project/wrapper.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -21,66 +21,78 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return isLoading ? const Loading() : Background(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Text(
-            "LOG IN",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          RoundedInputField(
-            hintText: "Your Email",
-            onChanged: (value) {
-              email = value;
-            },
-          ),
-          RoundedPasswordField(
-            onChanged: (value) {
-              psw = value;
-            },
-          ),
-          RoundedButton(
-            text: "Login",
-            press: login,
-          ),
-        ],
-      ),
-    );
+    return isLoading
+        ? const Loading()
+        : Background(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text(
+                  "LOG IN",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                RoundedInputField(
+                  hintText: "Your Email",
+                  onChanged: (value) {
+                    email = value;
+                  },
+                ),
+                RoundedPasswordField(
+                  onChanged: (value) {
+                    psw = value;
+                  },
+                ),
+                RoundedButton(
+                  text: "Login",
+                  press: login,
+                ),
+              ],
+            ),
+          );
   }
 
   void login() async {
-if (isFilledAll(email, psw)){
-      if(validateEmail(email)){
+    if (isFilledAll(email, psw)) {
+      if (validateEmail(email)) {
+        setState(() {
+          isLoading = true;
+        });
+        AuthService authService = AuthService();
+        dynamic result =
+            await authService.signInWithEmailAndPassword(email, psw);
+        if (result != null) {
+          isLoading = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Login successfully!!")));
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Wrapper()),
+            (Route<dynamic> route) => false,
+          );
+        } else {
           setState(() {
-            isLoading = true;
-          });
-          AuthService authService = AuthService();
-          dynamic result = await authService.signInWithEmailAndPassword(email, psw);
-          if(result != null){
             isLoading = false;
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Login successfully!!")));
-            Navigator.pop(context);
-          } else {
-            setState(() {
-              isLoading = false;
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to login with the email and password")));
-            });
-          }
-        
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text("Failed to login with the email and password")));
+          });
+        }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Invalid format for email address!")));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Invalid format for email address!")));
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("There are some field is empty!")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("There are some field is empty!")));
     }
   }
 
-  bool validateEmail(String email){
-    return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(email);
+  bool validateEmail(String email) {
+    return RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(email);
   }
 
-    bool isFilledAll(String email, String psw){
+  bool isFilledAll(String email, String psw) {
     return ((email.isNotEmpty) && (psw.isNotEmpty));
   }
 }

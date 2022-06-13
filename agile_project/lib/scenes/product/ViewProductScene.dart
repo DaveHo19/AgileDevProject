@@ -1,15 +1,18 @@
+import 'dart:convert';
+
 import 'package:agile_project/models/book.dart';
+import 'package:agile_project/scenes/cart/CartProvider.dart';
+import 'package:agile_project/scenes/cart/CartScene.dart';
 import 'package:agile_project/models/enumList.dart';
-import 'package:agile_project/models/user.dart';
-import 'package:agile_project/scenes/product/ManageProductScene.dart';
 import 'package:agile_project/scenes/sharedProperties/boxBorder.dart';
-import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
-import 'package:agile_project/services/databaseService.dart';
-import 'package:agile_project/utilities/custom_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../cart/CartProvider.dart';
+import 'package:badges/badges.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:agile_project/models/cart.dart';
 
 class MyViewProductScene extends StatefulWidget {
   const MyViewProductScene({
@@ -34,12 +37,9 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   TextEditingController authorController = TextEditingController();
   TextEditingController tradePriceController = TextEditingController();
   TextEditingController retailPriceController = TextEditingController();
-  
-  List<Widget> formWidgetList = <Widget>[];
-  List<String> userWishlist = <String>[];
 
-  String currUserID = "";
-  bool isProcess = false;
+  List<Widget> formWidgetList = [];
+  late Box<Cart> cartBox;
 
   @override
   void initState() {
@@ -53,33 +53,47 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
         initialPublicView();
         break;
     }
+    cartBox = Hive.box("cart_items");
   }
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<AppUser?>(context);
-    if(user != null){
-      currUserID = user.uid;
-    }
-    initialWishlist();
-    return isProcess ? const Loading() : Scaffold(
+    final cart = Provider.of<CartProvider>(context);
+    return Scaffold(
       appBar: AppBar(
         title: Text(isbnController.text),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
-        actions: (widget.viewManagement == ViewManagement.public) ? 
-        [
-            (user != null) ? IconButton(
-              onPressed: () async {
-                manageWishlist();
-              }, 
-              icon: 
-              ///This comment block is for identifing which one had been stored into wishlist but currently it will not initial the wishlist items so just comment out first -by Dave
-              /* userWishlist.contains(widget.book.ISBN_13) ? 
-                    const Icon(Icons.favorite, color: Colors.red) : const Icon(Icons.favorite_outline)) */ 
-                    const Icon(Icons.favorite, color: Colors.red)) : Container(),
-        ] : 
-        [
+        actions: (widget.viewManagement == ViewManagement.public)
+            ? [
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 20.0),
+                    child: Badge(
+                      badgeContent: Consumer<CartProvider>(
+                        builder: (context, value, child) {
+                          return Text(value.getCounter().toString(),
+                              style: TextStyle(color: Colors.white));
+                        },
+                      ),
+                      animationDuration: Duration(milliseconds: 300),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.shopping_cart,
+                          size: 30,
+                        ),
+                        onPressed: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const MyCartScene()))
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ]
+            : [
                 PopupMenuButton(
                     itemBuilder: (context) {
                       return [
@@ -101,66 +115,117 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
                     },
                     onSelected: (int i) => {
                           menuItemHandler(context, i),
-                        })],
+                        })
+              ],
       ),
       body: SafeArea(
-              child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: formWidgetList.length,
-                  itemBuilder: (context, i) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: MediaQuery.of(context).size.width / 10),
-                      child: formWidgetList[i],
-                    );
-                  }),
-            ),
-      floatingActionButton: (widget.viewManagement == ViewManagement.private || user == null) ? null :
-        FloatingActionButton(
-            backgroundColor: Colors.black,
-            child: const Icon(Icons.shopping_bag, color: Colors.white,),            
-            onPressed: _addToCart),
+        child: ListView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: formWidgetList.length,
+            itemBuilder: (context, i) {
+              return Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width / 10),
+                child: formWidgetList[i],
+              );
+            }),
+      ),
+      floatingActionButton: (widget.viewManagement == ViewManagement.private)
+          ? null
+          : FloatingActionButton(
+              backgroundColor: Colors.black,
+              child: const Icon(
+                Icons.shopping_bag,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                _addToCart(cart);
+              }),
     );
   }
 
-  void menuItemHandler(BuildContext context, int index) async {
+  void menuItemHandler(BuildContext context, int index) {
     switch (index) {
       case 0:
         //for edit
-        //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("This features in implement in future!")));
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => MyManageProductScene(
-                    bookManagement: BookManagement.edit, passedBook: widget.book)));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("This features in implement in future!")));
         break;
       case 1:
-        CustomDialog customDialog = CustomDialog();
-        bool result = await customDialog.confirm_dialog(context, "Confirmation", "Are you sure to delete ${widget.book.title}? This action cannot undo!");
-        if (result){
-          await deleteBookProcess();
-        } 
+        //for delete
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("This features in implement in future!")));
         break;
-      }
+    }
   }
 
-void _addToCart(){
-  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("This features in implement in future!")));
-}
-Widget _buildSpace() {
+  void _addToCart(cart) {
+    Cart cartObject = Cart(
+        ISBN_13: widget.book.ISBN_13,
+        title: widget.book.title,
+        imageCoverURL: widget.book.imageCoverURL,
+        retailPrice: widget.book.retailPrice,
+        quantity: widget.book.quantity,
+        cartQuantity: 1);
+
+    if (cartBox.containsKey(cartObject.ISBN_13)) {
+      int cartQuantity = cartBox.get(cartObject.ISBN_13)!.cartQuantity + 1;
+      if (cartQuantity <= widget.book.quantity) {
+        cart.addItem(
+            widget.book.ISBN_13,
+            widget.book.title,
+            widget.book.imageCoverURL,
+            widget.book.retailPrice,
+            widget.book.quantity,
+            1);
+
+        Cart tempObject = Cart(
+            ISBN_13: widget.book.ISBN_13,
+            title: widget.book.title,
+            imageCoverURL: widget.book.imageCoverURL,
+            retailPrice: widget.book.retailPrice,
+            quantity: widget.book.quantity,
+            cartQuantity: cartQuantity);
+
+        cartBox.put(cartObject.ISBN_13, tempObject);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Book Added into Cart!"),
+          duration: const Duration(seconds: 2),
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              "Fail to Add Book into Cart due to reaching maximum quantity in the stock!"),
+          duration: const Duration(seconds: 2),
+        ));
+      }
+    } else {
+      cart.addItem(
+          widget.book.ISBN_13,
+          widget.book.title,
+          widget.book.imageCoverURL,
+          widget.book.retailPrice,
+          widget.book.quantity,
+          1);
+      cartBox.put(cartObject.ISBN_13, cartObject);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Book Added into Cart!")));
+    }
+  }
+
+  Widget _buildSpace() {
     return const SizedBox(height: 20);
   }
 
   Widget _buildImageField() {
     return Center(
       child: Container(
-        width: 300,
-        height: 400,
-        padding: const EdgeInsets.all(2),
-        decoration: boxDecoration,
-        child: Image.network(widget.book.imageCoverURL, fit: BoxFit.fill)
-        ),
-      );
+          width: 300,
+          height: 400,
+          padding: const EdgeInsets.all(2),
+          decoration: boxDecoration,
+          child: Image.network(widget.book.imageCoverURL, fit: BoxFit.fill)),
+    );
   }
 
   Widget _buildIDTextField(String fieldName) {
@@ -169,7 +234,7 @@ Widget _buildSpace() {
       controller: isbnController,
       decoration: inputDecoration(fieldName),
       readOnly: true,
-      );
+    );
   }
 
   Widget _buildTitleTextField(String fieldName) {
@@ -205,6 +270,7 @@ Widget _buildSpace() {
     categoryController.text = widget.book.tags.toString();
     return TextFormField(
       decoration: dateInputDecoration(fieldName),
+      readOnly: true,
       controller: categoryController,
     );
   }
@@ -220,6 +286,7 @@ Widget _buildSpace() {
   }
 
   Widget _buildTradePriceField(String fieldName) {
+    double tradePrice = widget.book.tradePrice.toDouble();
     return TextFormField(
       controller: tradePriceController,
       decoration: inputDecoration(fieldName),
@@ -228,6 +295,7 @@ Widget _buildSpace() {
   }
 
   Widget _buildRetailPriceField(String fieldName) {
+    double retailPrice = widget.book.retailPrice.toDouble();
     return TextFormField(
       controller: retailPriceController,
       decoration: inputDecoration(fieldName),
@@ -236,74 +304,30 @@ Widget _buildSpace() {
   }
 
   Widget _buildQuantity(String fieldName) {
-      return TextFormField(
+    int quantity = widget.book.quantity.toInt();
+    return TextFormField(
       controller: quantityController,
       decoration: inputDecoration(fieldName),
       readOnly: true,
     );
   }
 
-  void manageWishlist() async {
-    DatabaseService dbService = DatabaseService();
-    bool add = true;
-
-    if (currUserID.isNotEmpty){
-      setState(() {
-        isProcess = true;
-      });
-      if (userWishlist.contains(widget.book.ISBN_13)) {
-        userWishlist.remove(widget.book.ISBN_13); 
-        add = false;
-      } else { 
-        userWishlist.add(widget.book.ISBN_13);
-        add = true;
-      }
-      dynamic result = dbService.updateUserWishlist(currUserID, userWishlist);
-      if (result != null){
-        setState(() {
-          isProcess = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: add ? const Text("Book Added To Wishlist!") : const Text("Book Removed From Wishlist!")));
-      } else {
-        setState(() {
-          isProcess = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to perform this actions!")));
-      }
-    }
-  }
-
-  Future<void> deleteBookProcess() async {
-    //for delete
-    setState(() {
-      isProcess = true;
-    });
-    DatabaseService dbService = DatabaseService();
-    var result = await dbService.deleteBook(widget.book.ISBN_13);
-    if (result == null){
-      setState(() {
-        isProcess = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Book is successfully deleted")));
-      Navigator.pop(context);         
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to delete book")));
-    }
-  }
-  void initialController(){
+  void initialController() {
     isbnController.text = widget.book.ISBN_13;
     titleController.text = widget.book.title;
     authorController.text = widget.book.author;
-    descController.text = widget.book.description??"";
-    dateController.text = DateFormat('yyyy-MM-dd').format(widget.book.publishedDate);
+    descController.text = widget.book.description ?? "";
+    dateController.text =
+        DateFormat('yyyy-MM-dd').format(widget.book.publishedDate);
     tradePriceController.text = widget.book.tradePrice.toStringAsFixed(2);
     retailPriceController.text = widget.book.retailPrice.toStringAsFixed(2);
     quantityController.text = widget.book.quantity.toString();
-    for(int i=0; i < widget.book.tags.length; i++){
-      categoryController.text += widget.book.tags[i] + "; ";
-    }
-  } 
-  void initialPrivateView(){
+    widget.book.tags.forEach((element) {
+      categoryController.text += element + "; ";
+    });
+  }
+
+  void initialPrivateView() {
     formWidgetList.clear();
     formWidgetList.add(_buildImageField());
     formWidgetList.add(_buildSpace());
@@ -330,7 +354,7 @@ Widget _buildSpace() {
     formWidgetList.add(_buildSpace());
   }
 
-  void initialPublicView(){
+  void initialPublicView() {
     formWidgetList.clear();
     formWidgetList.add(_buildImageField());
     formWidgetList.add(_buildSpace());
@@ -351,13 +375,5 @@ Widget _buildSpace() {
     // formWidgetList.add(_buildButton());
     formWidgetList.add(_buildSpace());
     formWidgetList.add(_buildSpace());
-
-  }
-
-  void initialWishlist() async {
-    if (currUserID.isNotEmpty){
-      DatabaseService dbService = DatabaseService();
-      userWishlist = await dbService.getUserWishlist(currUserID);
-    }
   }
 }

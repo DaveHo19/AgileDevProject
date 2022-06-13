@@ -1,22 +1,22 @@
 import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
-import 'package:agile_project/scenes/debug/debug_address.dart';
 import 'package:agile_project/scenes/cart/CartProvider.dart';
 import 'package:agile_project/scenes/cart/CartScene.dart';
 import 'package:agile_project/scenes/authentication/login/LoginScene.dart';
 import 'package:agile_project/scenes/authentication/register/RegisterScene.dart';
 import 'package:agile_project/scenes/debug/debug_auth.dart';
+import 'package:agile_project/scenes/debug/debug_address.dart';
 import 'package:agile_project/scenes/debug/debug_image.dart';
 import 'package:agile_project/scenes/debug/debug_wishlist.dart';
 import 'package:agile_project/scenes/home/HomeScene.dart';
 import 'package:agile_project/scenes/product/ManageProductScene.dart';
 import 'package:agile_project/scenes/product/ViewProductScene.dart';
 import 'package:agile_project/scenes/user/ProfileScene.dart';
-import 'package:agile_project/scenes/wish-list/WishlistScene.dart';
 import 'package:agile_project/services/databaseService.dart';
-//import 'package:badges/badges.dart';
+import 'package:badges/badges.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:agile_project/scenes/wish-list/WishlistScene.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -79,32 +79,32 @@ class _WrapperState extends State<Wrapper> {
                   "Total Price: RM ${double.parse(cart.getTotalPrice().toStringAsFixed(2))}"),
             ),
           ),
-          // Center(
-          //   child: Badge(
-          //     badgeContent: Consumer<CartProvider>(
-          //       builder: (context, value, child) {
-          //         return Text(value.getCounter().toString(),
-          //             style: TextStyle(color: Colors.white));
-          //       },
-          //     ),
-          //     animationType: BadgeAnimationType.slide,
-          //     animationDuration: Duration(milliseconds: 300),
-          //     child: IconButton(
-          //       icon: const Icon(
-          //         Icons.shopping_cart,
-          //         size: 30,
-          //       ),
-          //       tooltip:
-          //           "Total Price: RM ${double.parse(cart.getTotalPrice().toStringAsFixed(2))}",
-          //       onPressed: () => {
-          //         Navigator.push(
-          //             context,
-          //             MaterialPageRoute(
-          //                 builder: (context) => const MyCartScene()))
-          //       },
-          //     ),
-          //   ),
-          // ),
+          Center(
+            child: Badge(
+              badgeContent: Consumer<CartProvider>(
+                builder: (context, value, child) {
+                  return Text(value.getCounter().toString(),
+                      style: TextStyle(color: Colors.white));
+                },
+              ),
+              animationType: BadgeAnimationType.slide,
+              animationDuration: Duration(milliseconds: 300),
+              child: IconButton(
+                icon: const Icon(
+                  Icons.shopping_cart,
+                  size: 30,
+                ),
+                tooltip:
+                    "Total Price: RM ${double.parse(cart.getTotalPrice().toStringAsFixed(2))}",
+                onPressed: () => {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MyCartScene()))
+                },
+              ),
+            ),
+          ),
           //debug purpose
           IconButton(
             icon: const Icon(
@@ -133,7 +133,7 @@ class _WrapperState extends State<Wrapper> {
               const PopupMenuItem<int>(
                 value: 3,
                 child: Text("Debug-address"),
-              ),    
+              ),
               const PopupMenuItem<int>(
                 value: 4,
                 child: Text("Debug-Image"),
@@ -141,11 +141,10 @@ class _WrapperState extends State<Wrapper> {
               const PopupMenuItem<int>(
                 value: 5,
                 child: Text("Debug-Wishlist"),
-              ),               
-            ], 
-            onSelected: (int i) => {
-              debugHandler(context, i)
-            },),
+              ),
+            ],
+            onSelected: (int i) => {debugHandler(context, i)},
+          ),
         ],
       ),
       body:
@@ -305,18 +304,25 @@ class _WrapperState extends State<Wrapper> {
                     viewManagement: ViewManagement.public, book: tempBook)));
         break;
       case 2:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => MyManageProductScene(bookManagement: BookManagement.create,)));    
-        break;     
-      case 3: 
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugAddress()));    
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MyManageProductScene(
+                      bookManagement: BookManagement.create,
+                    )));
+        break;
+      case 3:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const DebugAddress()));
         break;
       case 4:
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const DebugImage()));
         break;
       case 5:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugWishlist()));
-      break;
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const DebugWishlist()));
+        break;
     }
   }
 

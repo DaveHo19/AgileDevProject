@@ -4,8 +4,13 @@ import 'package:agile_project/models/book.dart';
 import 'package:agile_project/scenes/cart/CartProvider.dart';
 import 'package:agile_project/scenes/cart/CartScene.dart';
 import 'package:agile_project/models/enumList.dart';
+import 'package:agile_project/models/user.dart';
+import 'package:agile_project/scenes/product/ManageProductScene.dart';
 import 'package:agile_project/scenes/sharedProperties/boxBorder.dart';
+import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
+import 'package:agile_project/services/databaseService.dart';
+import 'package:agile_project/utilities/custom_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -38,8 +43,13 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   TextEditingController tradePriceController = TextEditingController();
   TextEditingController retailPriceController = TextEditingController();
 
-  List<Widget> formWidgetList = [];
+  List<Widget> formWidgetList = <Widget>[];
+  List<String> userWishlist = <String>[];
+
   late Box<Cart> cartBox;
+
+  String currUserID = "";
+  bool isProcess = false;
 
   @override
   void initState() {
@@ -59,102 +69,136 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<CartProvider>(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(isbnController.text),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        actions: (widget.viewManagement == ViewManagement.public)
-            ? [
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 20.0),
-                    child: Badge(
-                      badgeContent: Consumer<CartProvider>(
-                        builder: (context, value, child) {
-                          return Text(value.getCounter().toString(),
-                              style: TextStyle(color: Colors.white));
-                        },
-                      ),
-                      animationDuration: Duration(milliseconds: 300),
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.shopping_cart,
-                          size: 30,
-                        ),
-                        onPressed: () => {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const MyCartScene()))
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-              ]
-            : [
-                PopupMenuButton(
-                    itemBuilder: (context) {
-                      return [
-                        const PopupMenuItem<int>(
-                          value: 0,
-                          child: Icon(
-                            Icons.edit,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const PopupMenuItem<int>(
-                          value: 1,
-                          child: Icon(
-                            Icons.delete,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ];
-                    },
-                    onSelected: (int i) => {
-                          menuItemHandler(context, i),
-                        })
-              ],
-      ),
-      body: SafeArea(
-        child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: formWidgetList.length,
-            itemBuilder: (context, i) {
-              return Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width / 10),
-                child: formWidgetList[i],
-              );
-            }),
-      ),
-      floatingActionButton: (widget.viewManagement == ViewManagement.private)
-          ? null
-          : FloatingActionButton(
+    var user = Provider.of<AppUser?>(context);
+    if (user != null) {
+      currUserID = user.uid;
+    }
+    initialWishlist();
+    return isProcess
+        ? const Loading()
+        : Scaffold(
+            appBar: AppBar(
+              title: Text(isbnController.text),
               backgroundColor: Colors.black,
-              child: const Icon(
-                Icons.shopping_bag,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                _addToCart(cart);
-              }),
-    );
+              foregroundColor: Colors.white,
+              actions: (widget.viewManagement == ViewManagement.public)
+                  ? [
+                      (user != null)
+                          ? Center(
+                              child: Padding(
+                                padding: EdgeInsets.only(right: 20.0),
+                                child: Badge(
+                                  badgeContent: Consumer<CartProvider>(
+                                    builder: (context, value, child) {
+                                      return Text(value.getCounter().toString(),
+                                          style:
+                                              TextStyle(color: Colors.white));
+                                    },
+                                  ),
+                                  animationDuration:
+                                      Duration(milliseconds: 300),
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.shopping_cart,
+                                      size: 30,
+                                    ),
+                                    onPressed: () => {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const MyCartScene()))
+                                    },
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Container(),
+                      (user != null)
+                          ? IconButton(
+                              onPressed: () async {
+                                manageWishlist();
+                              },
+                              icon:
+
+                                  ///This comment block is for identifing which one had been stored into wishlist but currently it will not initial the wishlist items so just comment out first -by Dave
+                                  /* userWishlist.contains(widget.book.ISBN_13) ? 
+                    const Icon(Icons.favorite, color: Colors.red) : const Icon(Icons.favorite_outline)) */
+                                  const Icon(Icons.favorite, color: Colors.red))
+                          : Container(),
+                    ]
+                  : [
+                      PopupMenuButton(
+                          itemBuilder: (context) {
+                            return [
+                              const PopupMenuItem<int>(
+                                value: 0,
+                                child: Icon(
+                                  Icons.edit,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const PopupMenuItem<int>(
+                                value: 1,
+                                child: Icon(
+                                  Icons.delete,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ];
+                          },
+                          onSelected: (int i) => {
+                                menuItemHandler(context, i),
+                              })
+                    ],
+            ),
+            body: SafeArea(
+              child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: formWidgetList.length,
+                  itemBuilder: (context, i) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width / 10),
+                      child: formWidgetList[i],
+                    );
+                  }),
+            ),
+            floatingActionButton:
+                (widget.viewManagement == ViewManagement.private ||
+                        user == null)
+                    ? null
+                    : FloatingActionButton(
+                        backgroundColor: Colors.black,
+                        child: const Icon(
+                          Icons.shopping_bag,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          _addToCart(cart);
+                        }),
+          );
   }
 
-  void menuItemHandler(BuildContext context, int index) {
+  void menuItemHandler(BuildContext context, int index) async {
     switch (index) {
       case 0:
         //for edit
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("This features in implement in future!")));
+        //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("This features in implement in future!")));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MyManageProductScene(
+                    bookManagement: BookManagement.edit,
+                    passedBook: widget.book)));
         break;
       case 1:
-        //for delete
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("This features in implement in future!")));
+        CustomDialog customDialog = CustomDialog();
+        bool result = await customDialog.confirm_dialog(context, "Confirmation",
+            "Are you sure to delete ${widget.book.title}? This action cannot undo!");
+        if (result) {
+          await deleteBookProcess();
+        }
         break;
     }
   }
@@ -286,7 +330,6 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   }
 
   Widget _buildTradePriceField(String fieldName) {
-    double tradePrice = widget.book.tradePrice.toDouble();
     return TextFormField(
       controller: tradePriceController,
       decoration: inputDecoration(fieldName),
@@ -295,7 +338,6 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   }
 
   Widget _buildRetailPriceField(String fieldName) {
-    double retailPrice = widget.book.retailPrice.toDouble();
     return TextFormField(
       controller: retailPriceController,
       decoration: inputDecoration(fieldName),
@@ -304,12 +346,65 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   }
 
   Widget _buildQuantity(String fieldName) {
-    int quantity = widget.book.quantity.toInt();
     return TextFormField(
       controller: quantityController,
       decoration: inputDecoration(fieldName),
       readOnly: true,
     );
+  }
+
+  void manageWishlist() async {
+    DatabaseService dbService = DatabaseService();
+    bool add = true;
+
+    if (currUserID.isNotEmpty) {
+      setState(() {
+        isProcess = true;
+      });
+      if (userWishlist.contains(widget.book.ISBN_13)) {
+        userWishlist.remove(widget.book.ISBN_13);
+        add = false;
+      } else {
+        userWishlist.add(widget.book.ISBN_13);
+        add = true;
+      }
+      dynamic result = dbService.updateUserWishlist(currUserID, userWishlist);
+      if (result != null) {
+        setState(() {
+          isProcess = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: add
+                ? const Text("Book Added To Wishlist!")
+                : const Text("Book Removed From Wishlist!")));
+      } else {
+        setState(() {
+          isProcess = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Failed to perform this actions!")));
+      }
+    }
+  }
+
+  Future<void> deleteBookProcess() async {
+    //for delete
+    setState(() {
+      isProcess = true;
+    });
+    DatabaseService dbService = DatabaseService();
+    var result = await dbService.deleteBook(widget.book.ISBN_13);
+    if (result == null) {
+      setState(() {
+        isProcess = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Book is successfully deleted")));
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Failed to delete book")));
+    }
   }
 
   void initialController() {
@@ -322,9 +417,9 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
     tradePriceController.text = widget.book.tradePrice.toStringAsFixed(2);
     retailPriceController.text = widget.book.retailPrice.toStringAsFixed(2);
     quantityController.text = widget.book.quantity.toString();
-    widget.book.tags.forEach((element) {
-      categoryController.text += element + "; ";
-    });
+    for (int i = 0; i < widget.book.tags.length; i++) {
+      categoryController.text += widget.book.tags[i] + "; ";
+    }
   }
 
   void initialPrivateView() {
@@ -375,5 +470,12 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
     // formWidgetList.add(_buildButton());
     formWidgetList.add(_buildSpace());
     formWidgetList.add(_buildSpace());
+  }
+
+  void initialWishlist() async {
+    if (currUserID.isNotEmpty) {
+      DatabaseService dbService = DatabaseService();
+      userWishlist = await dbService.getUserWishlist(currUserID);
+    }
   }
 }

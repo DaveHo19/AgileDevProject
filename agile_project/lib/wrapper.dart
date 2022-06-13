@@ -1,23 +1,14 @@
-import 'dart:js_util';
-
 import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/user.dart';
-import 'package:agile_project/models/userInfo.dart';
 import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
-import 'package:agile_project/scenes/authentication/login/LoginScene.dart';
-import 'package:agile_project/scenes/authentication/register/RegisterScene.dart';
 import 'package:agile_project/scenes/debug/debug_address.dart';
-import 'package:agile_project/scenes/debug/debug_auth.dart';
 import 'package:agile_project/scenes/debug/debug_image.dart';
-import 'package:agile_project/scenes/debug/debug_retrieve.dart';
 import 'package:agile_project/scenes/debug/debug_wishlist.dart';
 import 'package:agile_project/scenes/home/HomeScene.dart';
 import 'package:agile_project/scenes/product/ManageProductScene.dart';
 import 'package:agile_project/scenes/product/ViewProductScene.dart';
 import 'package:agile_project/scenes/user/ProfileScene.dart';
-import 'package:agile_project/scenes/user/WishlistScene.dart';
-import 'package:agile_project/services/databaseService.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:agile_project/scenes/wish-list/WishlistScene.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -5,7 +5,7 @@ class CustomDialog{
 
   CustomDialog();
 
-  Future<bool> confirm_dialog(Book item, BuildContext context, String title, String description, {String textForTrue = "Yes", String textForFalse = "No"}) async {
+  Future<bool> confirm_dialog(BuildContext context, String title, String description, {String textForTrue = "Yes", String textForFalse = "No"}) async {
     bool result = false;
     await showDialog(
       context: context,

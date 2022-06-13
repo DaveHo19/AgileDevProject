@@ -136,7 +136,7 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
         break;
       case 1:
         CustomDialog customDialog = CustomDialog();
-        bool result = await customDialog.confirm_dialog(widget.book, context, "Confirmation", "Are you sure to delete ${widget.book.title}? This action cannot undo!");
+        bool result = await customDialog.confirm_dialog(context, "Confirmation", "Are you sure to delete ${widget.book.title}? This action cannot undo!");
         if (result){
           await deleteBookProcess();
         } 

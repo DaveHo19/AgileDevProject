@@ -1,4 +1,6 @@
 import 'package:agile_project/models/book.dart';
+import 'package:agile_project/models/enumList.dart';
+import 'package:agile_project/scenes/product/ViewProductScene.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -35,14 +37,14 @@ class _HomeBookListState extends State<HomeBookList> {
     final book = Provider.of<List<Book>>(context);
     List<Book> tempList = [];
     if (book.isNotEmpty) {
-      book.forEach((element) {
-        if (element.tags.contains("Fantasy")) {
-          tempList.add(element);
+      for (int i = 0; i < book.length; i++) {
+        if (book[i].tags.contains("Fantasy")) {
+          tempList.add(book[i]);
         }
-      });
+      }
     }
     return SizedBox(
-      height: 120,
+      height: 150,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: tempList.length,
@@ -51,18 +53,18 @@ class _HomeBookListState extends State<HomeBookList> {
     );
   }
 
-  Widget _buildRemainRow() {
+  Widget _buildNotFantasyRow() {
     final book = Provider.of<List<Book>>(context);
     List<Book> tempList = [];
     if (book.isNotEmpty) {
-      book.forEach((element) {
-        if (!element.tags.contains("Fantasy")) {
-          tempList.add(element);
+      for (int i = 0; i < book.length; i++) {
+        if (!book[i].tags.contains("Fantasy")) {
+          tempList.add(book[i]);
         }
-      });
+      }
     }
     return SizedBox(
-      height: 120,
+      height: 150,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: tempList.length,
@@ -73,35 +75,36 @@ class _HomeBookListState extends State<HomeBookList> {
 
   Widget _buildBook(Book book) {
     return Container(
-        height: 500,
-        width: 200,
-        child: GestureDetector(
+      height: 100,
+      width: 200,
+      child: GestureDetector(
           child: Card(
-              elevation: 2,
-              child: Column(
-                children: [
-                  Expanded(
-                      flex: 2,
-                      child: Image.network(
-                        book.imageCoverURL,
-                        fit: BoxFit.fill,
-                      )),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      book.title,
-                    ),
+            elevation: 2,
+            child: Column(
+              children: [
+                Expanded(
+                    flex: 2,
+                    child: Image.network(
+                      book.imageCoverURL,
+                      fit: BoxFit.fill,
+                    )),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    book.title,
                   ),
-                ],
-              )),
+                ),
+              ],
+            ),
+          ),
           onTap: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => MyViewProductScene(
                         viewManagement: ViewManagement.public, book: book)));
-          },
-        ));
+          }),
+    );
   }
 
   Widget _buildSpace() {

@@ -39,28 +39,4 @@ class _MyHomeSceneState extends State<MyHomeScene> {
 
     return <Book>[];
   }
-
-  Widget _buildList() {
-    return ListView.builder(
-      itemCount: 7,
-      itemBuilder: (_, i) {
-        return _horizontalListView();
-      },
-    );
-  }
-
-  Widget _horizontalListView() {
-    return SizedBox(
-      height: 120,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (_, __) => _buildBox(color: Colors.orange),
-      ),
-    );
-  }
-
-  Widget _buildBox({Color? color}) {
-    return Container(
-        margin: EdgeInsets.all(12), height: 100, width: 200, color: color);
-  }
 }

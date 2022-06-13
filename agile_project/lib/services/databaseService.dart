@@ -11,8 +11,10 @@ import 'package:flutter/material.dart';
 
 class DatabaseService {
   final FirebaseStorage fbStorage = FirebaseStorage.instance;
-  final CollectionReference bookCollectionRef = FirebaseFirestore.instance.collection("books");
-  final CollectionReference userCollectionRef = FirebaseFirestore.instance.collection("users");
+  final CollectionReference bookCollectionRef =
+      FirebaseFirestore.instance.collection("books");
+  final CollectionReference userCollectionRef =
+      FirebaseFirestore.instance.collection("users");
 
   //constructor
   DatabaseService();
@@ -67,10 +69,11 @@ class DatabaseService {
   Future deleteBook(String ISBN_No) async {
     await fbStorage.ref("bookCoverImage/$ISBN_No").delete();
 
-    return await bookCollectionRef.doc(ISBN_No).delete(); 
+    return await bookCollectionRef.doc(ISBN_No).delete();
   }
+
   List<Book> bookListFromSnapshot(QuerySnapshot snapshot) {
-    return snapshot.docs.map((item) { 
+    return snapshot.docs.map((item) {
       return Book(
         ISBN_13: item.get("ISBN_13") ?? "",
         title: item.get("title") ?? "",
@@ -107,7 +110,6 @@ class DatabaseService {
 
   Future<List<Book>> getBookListByWishlist(List<String> list) async {
     List<Book> bookList = [];
-   
     // Future.forEach(list, (element) async {
     //   Book book = await getBookByISBN(element.toString());
     //   bookList.add(book);
@@ -117,20 +119,20 @@ class DatabaseService {
     //   return bookList;
     // });
 
-    for (int i=0; i < list.length; i++){
+    for (int i = 0; i < list.length; i++) {
       Book book = await getBookByISBN(list.elementAt(i));
       bookList.add(book);
     }
     // list.forEach((element) async {
     //   Book book = await getBookByISBN(element.toString());
     //   print(book.ISBN_13);
-    //   bookList.add(book);  
+    //   bookList.add(book);
     // });
     return bookList;
   }
 
   Future<Book> getBookByISBN(String bookISBN) async {
-    return await bookCollectionRef.doc(bookISBN).get().then((doc) { 
+    return await bookCollectionRef.doc(bookISBN).get().then((doc) {
       return Book(
           ISBN_13: doc.get("ISBN_13") ?? "",
           title: doc.get("title") ?? "",
@@ -142,7 +144,7 @@ class DatabaseService {
           tradePrice: doc.get("tradePrice") ?? 0,
           retailPrice: doc.get("retailPrice") ?? 0,
           quantity: doc.get("quantity") ?? 0);
-      });
+    });
   }
 
   Future createUserProfile(UserInfomation userInfo) async {
@@ -165,43 +167,60 @@ class DatabaseService {
     });
   }
 
-  Future updateUserWishlist(String userID,List<String> newWishList) async {
+  Future updateUserWishlist(String userID, List<String> newWishList) async {
     return await userCollectionRef.doc(userID).update({
-      "wishList" : newWishList,
+      "wishList": newWishList,
     });
   }
 
   Future updateUserProfile(UserInfomation userInfo) async {
     return await userCollectionRef.doc(userInfo.uid).update({
       "userName": userInfo.userName,
-      "gender" : userInfo.gender,
+      "gender": userInfo.gender,
       "phoneNumber": userInfo.phoneNumber,
     });
   }
 
-  Future<List<String>> getBillingAdress(String uid) async {
-    return await userCollectionRef.doc(uid).get().then((doc) {
-      return List<String>.from(doc.get("address"));
+  Future<Map<String, String>> getBillingAddress(String uid) async {
+    return await userCollectionRef.doc(uid).get().then((value) {
+      return Map.from(value.get("address"));
     });
   }
-  
-  Future updateUserBillingAddress(String userID, Map<String, String> billingAddress) async {
+  // Future<List<String>> getBillingAdress(String uid) async {
+  //   return await userCollectionRef.doc(uid).get().then((doc) {
+  //     return List<String>.from(doc.get("address"));
+  //   });
+  // }
+
+  Future updateUserBillingAddress(
+      String userID, Map<String, String> billingAddress) async {
     return await userCollectionRef.doc(userID).update({
       "address": billingAddress,
     });
   }
-  Future<UserInfomation> getUserInformation(String uid) async{
-    return await userCollectionRef.doc(uid).get().then((value) 
-    {
+
+  Future<UserInfomation> getUserInformation(String uid) async {
+    return await userCollectionRef.doc(uid).get().then((value) {
       return UserInfomation(
-        uid: value["uid"],
-        userName: value["userName"],
-        emailAddress: value["emailAddress"],
-        accountLevel: value["accountLevel"],
-        wishList: value["wishList"].cast<String>(), 
-        //addressMap: value["address"],
-        orderList: value["orderList"],
+        uid: value.get("uid"),
+        userName: value.get("userName"),
+        emailAddress: value.get("emailAddress"),
+        gender: value.get("gender"),
+        phoneNumber: value.get("phoneNumber"),
+        accountLevel: value.get("accountLevel"),
       );
     });
-  } 
+  }
+
+  Future updateUserName(String uid, String val) async {
+    return await userCollectionRef.doc(uid).update({
+      "userName": val,
+    });
+  }
+
+  Future updatePhoneNumber(String uid, String val) async {
+    return await userCollectionRef.doc(uid).update({
+      "phoneNumber": val,
+    });
+  }
 }

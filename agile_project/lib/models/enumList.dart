@@ -1,7 +1,6 @@
 enum BookManagement{
   create,
   edit,
-  delete,
 }
 
 enum AccountType{

@@ -5,7 +5,6 @@ import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/services/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:agile_project/scenes/authentication/login/LoginBackground.dart';
-import 'package:agile_project/wrapper.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -64,11 +63,7 @@ class _LoginState extends State<Login> {
           isLoading = false;
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Login successfully!!")));
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => Wrapper()),
-            (Route<dynamic> route) => false,
-          );
+          Navigator.pop(context);
         } else {
           setState(() {
             isLoading = false;

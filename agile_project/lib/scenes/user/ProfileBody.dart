@@ -27,7 +27,11 @@ class ProfileBodyState extends State<ProfileBody> {
   AppUser? user;
 
   UserInfomation? information = UserInfomation(
-      emailAddress: "abc", uid: "abc", userName: "abc", accountLevel: 1);
+      emailAddress: "abc",
+      uid: "abc",
+      userName: "abc",
+      accountLevel: 1,
+      phoneNumber: "abc");
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +73,11 @@ class ProfileBodyState extends State<ProfileBody> {
           icons: const Icon(Icons.phone),
           value: information!.phoneNumber ?? "",
           press: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ContactNumberScene()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ContactNumberScene(
+                        uid: user!.uid, data: information!.phoneNumber ?? "")));
           },
         ),
         ProfileMenu(
@@ -98,20 +105,22 @@ class ProfileBodyState extends State<ProfileBody> {
           text: "My Order",
           icons: const Icon(Icons.shopping_bag),
           value: "",
-          press: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ContactNumberScene()));
-          },
+          press: () {},
+          // press: () {
+          //   Navigator.push(context,
+          //       MaterialPageRoute(builder: (context) => ContactNumberScene()));
+          // },
         ),
         ProfileMenu(
           icon: "images/signup_top.png",
           text: "Logout",
           icons: const Icon(Icons.exit_to_app),
           value: "",
-          press: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ContactNumberScene()));
-          },
+          press: () {},
+          // press: () {
+          //   Navigator.push(context,
+          //       MaterialPageRoute(builder: (context) => ContactNumberScene()));
+          // },
         ),
         ElevatedButton(onPressed: () {}, child: Text("Test")),
       ],

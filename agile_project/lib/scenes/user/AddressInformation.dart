@@ -86,8 +86,13 @@ class _MyAddressSceneState extends State<MyAddressScene> {
         // color: Color(0xFFF5F6F9),
         //onPressed: press,
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => Address1Scene()));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Address1Scene(
+                        uid: user!.uid,
+                        data: '',
+                      )));
         },
         child: Row(children: [
           // SvgPicture.asset(

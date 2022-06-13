@@ -3,6 +3,7 @@ import 'package:agile_project/models/rounded_input_field.dart';
 import 'package:agile_project/models/rounded_password_field.dart';
 import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/services/firebase_auth.dart';
+import 'package:agile_project/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:agile_project/scenes/authentication/login/LoginBackground.dart';
 
@@ -63,7 +64,11 @@ class _LoginState extends State<Login> {
           isLoading = false;
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Login successfully!!")));
-          Navigator.pop(context);
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Wrapper()),
+            (Route<dynamic> route) => false,
+          );
         } else {
           setState(() {
             isLoading = false;

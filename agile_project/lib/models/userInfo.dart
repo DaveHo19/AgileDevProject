@@ -9,15 +9,13 @@ class UserInfomation {
     1 = Client 
   */
   final int accountLevel;
-  
+
   String? phoneNumber;
   String? gender;
 
   List<String> wishList;
   Map<String, dynamic> addressMap;
 
-  String? gender;
-  String? phoneNumber;
   //future uses
   List<String> orderList;
 

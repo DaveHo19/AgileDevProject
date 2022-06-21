@@ -110,21 +110,9 @@ class CartProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeSingleItem(String ISBN_13) {
-    if (!_items.containsKey(ISBN_13)) {
-      return;
-    } else if (_items[ISBN_13]!.cartQuantity > 1) {
-      _items.update(
-          ISBN_13,
-          (existingcartQuantity) => Cart(
-              ISBN_13: existingcartQuantity.ISBN_13,
-              title: existingcartQuantity.title,
-              imageCoverURL: existingcartQuantity.imageCoverURL,
-              retailPrice: existingcartQuantity.retailPrice,
-              quantity: existingcartQuantity.quantity,
-              cartQuantity: existingcartQuantity.cartQuantity - 1));
-      removeCounter(1);
-    }
+  void removeSingleItem(String ISBN_13, int i, double price) {
+    removeTotalPrice(price);
+    removeCounter(1);
     notifyListeners();
   }
 

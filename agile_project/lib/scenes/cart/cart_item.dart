@@ -51,13 +51,13 @@ class _CartItemState extends State<CartItem> {
               ? IconButton(
                   icon: const Icon(Icons.remove),
                   onPressed: () {
-                    cart.removeItem(
-                        widget.ISBN_13,
-                        1,
-                        double.parse((widget.retailPrice * widget.cartQuantity)
-                            .toStringAsFixed(2)));
-
                     if (cartBox.containsKey(widget.ISBN_13)) {
+                      cart.removeSingleItem(
+                          widget.ISBN_13,
+                          1,
+                          double.parse(
+                              (widget.retailPrice).toStringAsFixed(2)));
+
                       int cartQuantity =
                           cartBox.get(widget.ISBN_13)!.cartQuantity - 1;
 
@@ -96,14 +96,6 @@ class _CartItemState extends State<CartItem> {
               : IconButton(
                   icon: const Icon(Icons.add),
                   onPressed: () {
-                    cart.addItem(
-                        widget.ISBN_13,
-                        widget.title,
-                        widget.imageCoverURL,
-                        widget.retailPrice,
-                        widget.quantity,
-                        1);
-
                     Cart cartObject = Cart(
                         ISBN_13: widget.ISBN_13,
                         title: widget.title,
@@ -113,6 +105,14 @@ class _CartItemState extends State<CartItem> {
                         cartQuantity: 1);
 
                     if (cartBox.containsKey(cartObject.ISBN_13)) {
+                      cart.addItem(
+                          widget.ISBN_13,
+                          widget.title,
+                          widget.imageCoverURL,
+                          widget.retailPrice,
+                          widget.quantity,
+                          1);
+
                       int cartQuantity =
                           cartBox.get(cartObject.ISBN_13)!.cartQuantity + 1;
 

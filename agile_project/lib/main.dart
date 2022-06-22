@@ -1,6 +1,5 @@
 import 'package:agile_project/models/cart.dart';
 import 'package:agile_project/models/user.dart';
-import 'package:agile_project/scenes/cart/CartProvider.dart';
 import 'package:agile_project/services/firebase_auth.dart';
 import 'package:agile_project/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -13,11 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Initialize hive
-  await Hive.initFlutter();
-  Hive.registerAdapter(CartAdapter());
-  // Open the peopleBox
-  await Hive.openBox<Cart>('cart_items');
+
   if (kIsWeb) {
     await Firebase.initializeApp(
         options: const FirebaseOptions(
@@ -39,9 +34,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (_) => CartProvider(),
-        child: StreamProvider<AppUser?>.value(
+    return  StreamProvider<AppUser?>.value(
           initialData: null,
           value: AuthService().user,
           child: MaterialApp(
@@ -51,6 +44,6 @@ class MyApp extends StatelessWidget {
             ),
             home: const Wrapper(),
           ),
-        ));
+        );
   }
 }

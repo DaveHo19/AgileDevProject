@@ -1,8 +1,6 @@
 import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
-import 'package:agile_project/scenes/cart/CartProvider.dart';
-import 'package:agile_project/scenes/cart/CartScene.dart';
 import 'package:agile_project/scenes/authentication/login/LoginScene.dart';
 import 'package:agile_project/scenes/authentication/register/RegisterScene.dart';
 import 'package:agile_project/scenes/debug/debug_auth.dart';
@@ -58,63 +56,12 @@ class _WrapperState extends State<Wrapper> {
   }
 
   Widget _Login() {
-    final cart = Provider.of<CartProvider>(context);
     return Scaffold(
       //top bar
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         actions: [
-          Container(
-            margin: const EdgeInsets.only(top: 20, bottom: 10),
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 241, 167, 63),
-              borderRadius: BorderRadius.all(
-                  Radius.circular(5.0) //         <--- border radius here
-                  ),
-            ),
-            child: Padding(
-              padding: EdgeInsets.only(top: 5, left: 3, right: 3),
-              child: Text(
-                  "Total Price: RM ${double.parse(cart.getTotalPrice().toStringAsFixed(2))}"),
-            ),
-          ),
-          Center(
-            child: Badge(
-              badgeContent: Consumer<CartProvider>(
-                builder: (context, value, child) {
-                  return Text(value.getCounter().toString(),
-                      style: TextStyle(color: Colors.white));
-                },
-              ),
-              animationType: BadgeAnimationType.slide,
-              animationDuration: Duration(milliseconds: 300),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.shopping_cart,
-                  size: 30,
-                ),
-                tooltip:
-                    "Total Price: RM ${double.parse(cart.getTotalPrice().toStringAsFixed(2))}",
-                onPressed: () => {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const MyCartScene()))
-                },
-              ),
-            ),
-          ),
-          //debug purpose
-          IconButton(
-            icon: const Icon(
-              Icons.account_circle,
-              size: 30,
-            ),
-            onPressed: () => {
-              print(user),
-            },
-          ),
           //debug purpose
           PopupMenuButton(
             itemBuilder: (context) => [
@@ -180,7 +127,6 @@ class _WrapperState extends State<Wrapper> {
   }
 
   Widget _noLogin() {
-    final cart = Provider.of<CartProvider>(context);
     return Scaffold(
       //top bar
       appBar: AppBar(

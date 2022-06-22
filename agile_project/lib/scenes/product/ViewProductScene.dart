@@ -1,8 +1,6 @@
 import 'dart:convert';
 
 import 'package:agile_project/models/book.dart';
-import 'package:agile_project/scenes/cart/CartProvider.dart';
-import 'package:agile_project/scenes/cart/CartScene.dart';
 import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/product/ManageProductScene.dart';
@@ -14,10 +12,6 @@ import 'package:agile_project/utilities/custom_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../cart/CartProvider.dart';
-import 'package:badges/badges.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:agile_project/models/cart.dart';
 
 class MyViewProductScene extends StatefulWidget {
   const MyViewProductScene({
@@ -46,7 +40,6 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   List<Widget> formWidgetList = <Widget>[];
   List<String> userWishlist = <String>[];
 
-  late Box<Cart> cartBox;
 
   String currUserID = "";
   bool isProcess = false;
@@ -63,12 +56,10 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
         initialPublicView();
         break;
     }
-    cartBox = Hive.box("cart_items");
   }
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<CartProvider>(context);
     var user = Provider.of<AppUser?>(context);
     if (user != null) {
       currUserID = user.uid;
@@ -83,38 +74,7 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
               foregroundColor: Colors.white,
               actions: (widget.viewManagement == ViewManagement.public)
                   ? [
-                      (user != null)
-                          ? Center(
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 20.0),
-                                child: Badge(
-                                  badgeContent: Consumer<CartProvider>(
-                                    builder: (context, value, child) {
-                                      return Text(value.getCounter().toString(),
-                                          style:
-                                              TextStyle(color: Colors.white));
-                                    },
-                                  ),
-                                  animationDuration:
-                                      Duration(milliseconds: 300),
-                                  child: IconButton(
-                                    icon: const Icon(
-                                      Icons.shopping_cart,
-                                      size: 30,
-                                    ),
-                                    onPressed: () => {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const MyCartScene()))
-                                    },
-                                  ),
-                                ),
-                              ),
-                            )
-                          : Container(),
-                      (user != null)
+                        (user != null)
                           ? IconButton(
                               onPressed: () async {
                                 manageWishlist();
@@ -175,7 +135,6 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
                           color: Colors.white,
                         ),
                         onPressed: () {
-                          _addToCart(cart);
                         }),
           );
   }
@@ -200,60 +159,6 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
           await deleteBookProcess();
         }
         break;
-    }
-  }
-
-  void _addToCart(cart) {
-    Cart cartObject = Cart(
-        ISBN_13: widget.book.ISBN_13,
-        title: widget.book.title,
-        imageCoverURL: widget.book.imageCoverURL,
-        retailPrice: widget.book.retailPrice,
-        quantity: widget.book.quantity,
-        cartQuantity: 1);
-
-    if (cartBox.containsKey(cartObject.ISBN_13)) {
-      int cartQuantity = cartBox.get(cartObject.ISBN_13)!.cartQuantity + 1;
-      if (cartQuantity <= widget.book.quantity) {
-        cart.addItem(
-            widget.book.ISBN_13,
-            widget.book.title,
-            widget.book.imageCoverURL,
-            widget.book.retailPrice,
-            widget.book.quantity,
-            1);
-
-        Cart tempObject = Cart(
-            ISBN_13: widget.book.ISBN_13,
-            title: widget.book.title,
-            imageCoverURL: widget.book.imageCoverURL,
-            retailPrice: widget.book.retailPrice,
-            quantity: widget.book.quantity,
-            cartQuantity: cartQuantity);
-
-        cartBox.put(cartObject.ISBN_13, tempObject);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Book Added into Cart!"),
-          duration: const Duration(seconds: 2),
-        ));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text(
-              "Fail to Add Book into Cart due to reaching maximum quantity in the stock!"),
-          duration: const Duration(seconds: 2),
-        ));
-      }
-    } else {
-      cart.addItem(
-          widget.book.ISBN_13,
-          widget.book.title,
-          widget.book.imageCoverURL,
-          widget.book.retailPrice,
-          widget.book.quantity,
-          1);
-      cartBox.put(cartObject.ISBN_13, cartObject);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Book Added into Cart!")));
     }
   }
 

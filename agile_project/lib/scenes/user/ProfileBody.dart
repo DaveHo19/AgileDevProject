@@ -1,3 +1,4 @@
+import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/models/userInfo.dart';
 import 'package:agile_project/scenes/authentication/login/LoginScene.dart';
@@ -103,6 +104,9 @@ class ProfileSceneState extends State<ProfileScene> {
                               MaterialPageRoute(
                                   builder: (context) => ContactNumberScene(
                                       uid: user!.uid, data: information!.phoneNumber ?? "")));
+            if(result){
+              setState(() {});
+            }
           },
         ),
         ProfileMenu(
@@ -114,12 +118,21 @@ class ProfileSceneState extends State<ProfileScene> {
           notDisplayArrow: true,
         ),
         ProfileMenu(
-          text: "My Address",
+          text: "My Billing Address",
           icons: const Icon(Icons.location_city),
           value: "",
           press: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const MyAddressScene()));
+                MaterialPageRoute(builder: (context) =>  const MyAddressScene(addressType: AddressType.billing,)));
+          },
+        ),
+        ProfileMenu(
+          text: "My Shipping Address",
+          icons: const Icon(Icons.location_city),
+          value: "",
+          press: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const MyAddressScene(addressType:  AddressType.shipping,)));
           },
         ),
         ProfileMenu(

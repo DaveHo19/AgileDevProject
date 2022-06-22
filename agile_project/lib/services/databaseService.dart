@@ -110,40 +110,32 @@ class DatabaseService {
 
   Future<List<Book>> getBookListByWishlist(List<String> list) async {
     List<Book> bookList = [];
-    // Future.forEach(list, (element) async {
-    //   Book book = await getBookByISBN(element.toString());
-    //   bookList.add(book);
-    //   print(element);
-    // }).then((value) {
-    //   print("complete");
-    //   return bookList;
-    // });
 
     for (int i = 0; i < list.length; i++) {
       Book book = await getBookByISBN(list.elementAt(i));
       bookList.add(book);
     }
-    // list.forEach((element) async {
-    //   Book book = await getBookByISBN(element.toString());
-    //   print(book.ISBN_13);
-    //   bookList.add(book);
-    // });
     return bookList;
   }
 
   Future<Book> getBookByISBN(String bookISBN) async {
     return await bookCollectionRef.doc(bookISBN).get().then((doc) {
-      return Book(
-          ISBN_13: doc.get("ISBN_13") ?? "",
-          title: doc.get("title") ?? "",
-          description: doc.get("desc") ?? "",
-          author: doc.get("author") ?? "",
-          publishedDate: doc.get("publishedDate").toDate(),
-          imageCoverURL: doc.get("imgCoverUrl") ?? "",
-          tags: doc.get("tags").cast<String>(),
-          tradePrice: doc.get("tradePrice") ?? 0,
-          retailPrice: doc.get("retailPrice") ?? 0,
-          quantity: doc.get("quantity") ?? 0);
+      if (doc.exists){
+        return Book(
+                  ISBN_13: doc.get("ISBN_13") ?? "",
+                  title: doc.get("title") ?? "",
+                  description: doc.get("desc") ?? "",
+                  author: doc.get("author") ?? "",
+                  publishedDate: doc.get("publishedDate").toDate(),
+                  imageCoverURL: doc.get("imgCoverUrl") ?? "",
+                  tags: doc.get("tags").cast<String>(),
+                  tradePrice: doc.get("tradePrice") ?? 0,
+                  retailPrice: doc.get("retailPrice") ?? 0,
+                  quantity: doc.get("quantity") ?? 0);
+      } else {
+        print("No data");
+        return Future.error("No Data");
+      } 
     });
   }
 
@@ -156,8 +148,10 @@ class DatabaseService {
       "phoneNumber": userInfo.phoneNumber,
       "accountLevel": userInfo.accountLevel,
       "wishList": List<String>.from(userInfo.wishList),
-      "address": userInfo.addressMap,
+      "billingAddress": userInfo.billingAddressMap,
+      "shippingAddress": userInfo.shippingAddressMap,
       "orderList": userInfo.orderList,
+      "carts": userInfo.carts,
     });
   }
 
@@ -183,21 +177,30 @@ class DatabaseService {
 
   Future<Map<String, String>> getBillingAddress(String uid) async {
     return await userCollectionRef.doc(uid).get().then((value) {
-      return Map.from(value.get("address"));
+      return Map.from(value.get("billingAddress"));
     });
   }
-  // Future<List<String>> getBillingAdress(String uid) async {
-  //   return await userCollectionRef.doc(uid).get().then((doc) {
-  //     return List<String>.from(doc.get("address"));
-  //   });
-  // }
 
   Future updateUserBillingAddress(
       String userID, Map<String, String> billingAddress) async {
     return await userCollectionRef.doc(userID).update({
-      "address": billingAddress,
+      "billingAddress": billingAddress,
     });
   }
+
+  Future<Map<String, String>> getShippingAddress(String uid) async {
+    return await userCollectionRef.doc(uid).get().then((value) {
+      return Map.from(value.get("shippingAddress"));
+    });
+  }
+
+  Future updateUserShippingAddress(
+      String userID, Map<String, String> shippingAddress) async {
+    return await userCollectionRef.doc(userID).update({
+      "shippingAddress": shippingAddress,
+    });
+  }
+
 
   Future<UserInfomation> getUserInformation(String uid) async {
     return await userCollectionRef.doc(uid).get().then((value) {

@@ -31,7 +31,7 @@ class _DebugAddressState extends State<DebugAddress> {
     DatabaseService dbService = DatabaseService();
     if (user != null){
       print(user!.uid);
-      Map<String, String> data = await dbService.getBillingAdress(user!.uid);
+      Map<String, String> data = await dbService.getBillingAddress(user!.uid);
       if (data.isNotEmpty){
         // for (int i =0; i < data.keys.length; i++){
         //   print(data);

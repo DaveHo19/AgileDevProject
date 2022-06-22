@@ -372,6 +372,8 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
     formWidgetList.add(_buildSpace());
     formWidgetList.add(_buildRetailPriceField("Retail Price"));
     formWidgetList.add(_buildSpace());
+    formWidgetList.add(_buildQuantity("Available In Stock"));
+    formWidgetList.add(_buildSpace());
     // formWidgetList.add(_buildButton());
     formWidgetList.add(_buildSpace());
     formWidgetList.add(_buildSpace());

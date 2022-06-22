@@ -6,11 +6,12 @@ import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
 import 'package:agile_project/scenes/debug/debug_auth.dart';
 import 'package:agile_project/scenes/debug/debug_image.dart';
 import 'package:agile_project/scenes/debug/debug_retrieve.dart';
+import 'package:agile_project/scenes/debug/debug_wishlist.dart';
 import 'package:agile_project/scenes/home/HomeScene.dart';
 import 'package:agile_project/scenes/product/ManageProductScene.dart';
 import 'package:agile_project/scenes/product/ViewProductScene.dart';
 import 'package:agile_project/scenes/user/ProfileBody.dart';
-import 'package:agile_project/scenes/user/WishlistScene.dart';
+import 'package:agile_project/scenes/wish-list/WishlistScene.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -179,7 +180,7 @@ class _WrapperState extends State<Wrapper> {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugImage()));    
       break;
       case 5:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugRetrieve()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugWishlist()));
       break;
     }
   }

@@ -320,7 +320,7 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
     return ElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          if (validation.bookFieldValidation(category, tradePrice, retailPrice, quantity, imgSrc, BookManagement.create)){
+          if (validation.bookFieldValidation(category, tradePrice, retailPrice, quantity, imgSrc, widget.bookManagement)){
             if(validation.dateValidation(dateController.text)){
               switch (widget.bookManagement) {
                 case BookManagement.create:
@@ -561,8 +561,6 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
     titleController.text = widget.passedBook!.title;
     descController.text = widget.passedBook!.description??"";
     authorController.text = widget.passedBook!.author;
-    //tradePriceController.text =  widget.passedBook!.tradePrice.toStringAsFixed(2);
-    //retailPriceController.text = widget.passedBook!.retailPrice.toStringAsFixed(2);
     tradePrice = widget.passedBook!.tradePrice;
     retailPrice = widget.passedBook!.retailPrice;
     
@@ -581,8 +579,6 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
 
     formWidgetList.clear();
     dateController.text = DateFormat("yyyy-MM-dd").format(publishedDate);
-    formWidgetList.add(_buildImageField());
-    formWidgetList.add(_buildSpace());
     formWidgetList.add(_buildIDTextField("ISBN-13 No"));
     formWidgetList.add(_buildSpace());
     formWidgetList.add(_buildTitleTextField("Book Name"));

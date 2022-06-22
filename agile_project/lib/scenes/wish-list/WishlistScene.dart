@@ -123,9 +123,7 @@ class _MyWishlistSceneState extends State<MyWishlistScene>{
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to Remove!")));
           }
         }
-
       }
     }
-    
   }
 }

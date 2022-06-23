@@ -201,6 +201,15 @@ class DatabaseService {
     });
   }
 
+  Future<Map<String, int>> getCartItems(String uid) async {
+    return await userCollectionRef.doc(uid).get().then((value){
+      return Map.from(value.get("carts"));
+    });
+  }
+
+  Future updateUserCartItems(String uid, Map<String, int> cartItems) async {
+    return await userCollectionRef.doc(uid).update({"carts" : cartItems});
+  }
 
   Future<UserInfomation> getUserInformation(String uid) async {
     return await userCollectionRef.doc(uid).get().then((value) {

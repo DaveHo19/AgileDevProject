@@ -448,9 +448,9 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
       DateTime pDate = DateFormat("yyyy-MM-dd").parse(dateController.text);
       if (url.isNotEmpty) {
         Book newBook = Book(
-            ISBN_13: id,
-            title: name,
-            author: author,
+            ISBN_13: id.trim(),
+            title: name.trim(),
+            author: author.trim(),
             description: description,
             publishedDate: pDate,
             imageCoverURL: url,
@@ -491,9 +491,9 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
     setState(()=>isProcess = true,);
     DateTime pDate = DateFormat("yyyy-MM-dd").parse(dateController.text);
     Book updBook = Book(
-        ISBN_13: widget.passedBook!.ISBN_13,
-        title: name,
-        author: author,
+        ISBN_13: widget.passedBook!.ISBN_13.trim(),
+        title: name.trim(),
+        author: author.trim(),
         description: description,
         publishedDate: pDate,
         imageCoverURL: widget.passedBook!.imageCoverURL,
@@ -578,6 +578,8 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
     });
 
     formWidgetList.clear();
+    formWidgetList.add(_buildSpace());
+    formWidgetList.add(_buildSpace());
     dateController.text = DateFormat("yyyy-MM-dd").format(publishedDate);
     formWidgetList.add(_buildIDTextField("ISBN-13 No"));
     formWidgetList.add(_buildSpace());

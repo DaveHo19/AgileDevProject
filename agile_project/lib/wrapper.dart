@@ -1,9 +1,11 @@
 import 'dart:js_util';
 
+import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
 import 'package:agile_project/scenes/debug/debug_auth.dart';
+import 'package:agile_project/scenes/debug/debug_cart.dart';
 import 'package:agile_project/scenes/debug/debug_image.dart';
 import 'package:agile_project/scenes/debug/debug_retrieve.dart';
 import 'package:agile_project/scenes/debug/debug_wishlist.dart';
@@ -52,8 +54,8 @@ class _WrapperState extends State<Wrapper> {
     return Scaffold(
       //top bar
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        backgroundColor: kPrimaryColor,
+        foregroundColor: kPrimaryLightColor,
         actions: [
           IconButton(
             icon: const Icon(Icons.shopping_cart),
@@ -91,7 +93,7 @@ class _WrapperState extends State<Wrapper> {
               ),    
               const PopupMenuItem<int>(
                 value: 5,
-                child: Text("Debug-Retrieve"),
+                child: Text("Debug-Cart"),
               ),               
             ], 
             onSelected: (int i) => {
@@ -180,7 +182,7 @@ class _WrapperState extends State<Wrapper> {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugImage()));    
       break;
       case 5:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugWishlist()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugCarts()));
       break;
     }
   }

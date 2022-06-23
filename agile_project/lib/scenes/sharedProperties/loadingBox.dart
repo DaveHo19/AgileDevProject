@@ -10,7 +10,7 @@ class Loading extends StatelessWidget {
       color: kPrimaryColor,
       child: const Center(
         child: CircularProgressIndicator(
-          strokeWidth: 20,
+          strokeWidth: 5,
           color: kPrimaryLightColor,
         ),
       ),

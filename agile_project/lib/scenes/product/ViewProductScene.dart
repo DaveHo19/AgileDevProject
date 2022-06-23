@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/book.dart';
+import 'package:agile_project/models/cartItem.dart';
 import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/product/ManageProductScene.dart';
@@ -39,11 +41,11 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
 
   List<Widget> formWidgetList = <Widget>[];
   List<String> userWishlist = <String>[];
+  Map<String, int> cartItemMap = {};
+  AppUser? user;
 
-
-  String currUserID = "";
   bool isProcess = false;
-
+  double estimatedPrice = 0;
   @override
   void initState() {
     super.initState();
@@ -60,30 +62,44 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<AppUser?>(context);
-    if (user != null) {
-      currUserID = user.uid;
-    }
-    initialWishlist();
+    user = Provider.of<AppUser?>(context);
     return isProcess
         ? const Loading()
-        : Scaffold(
+        : FutureBuilder(
+        future: initialDataInformation(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Loading();
+          } else {
+            return _buildContent();
+          }
+        });
+  }
+
+  Widget _buildContent(){
+    return  Scaffold(
             appBar: AppBar(
               title: Text(isbnController.text),
-              backgroundColor: Colors.black,
-              foregroundColor: Colors.white,
+              backgroundColor: kPrimaryColor,
+              foregroundColor: kPrimaryLightColor,
               actions: (widget.viewManagement == ViewManagement.public)
                   ? [
+                        (user != null) 
+                        ? ElevatedButton.icon(
+                          onPressed: () async {
+                            // manageCart();
+                          }, 
+                          icon: const Icon(Icons.shopping_cart),
+                          label: Text(estimatedPrice.toStringAsFixed(2)),
+                          style: ElevatedButton.styleFrom(primary: Colors.transparent)
+                          ) 
+                          : Container(),
                         (user != null)
                           ? IconButton(
                               onPressed: () async {
                                 manageWishlist();
                               },
                               icon:
-
-                                  ///This comment block is for identifing which one had been stored into wishlist but currently it will not initial the wishlist items so just comment out first -by Dave
-                                  /* userWishlist.contains(widget.book.ISBN_13) ? 
-                    const Icon(Icons.favorite, color: Colors.red) : const Icon(Icons.favorite_outline)) */
                                   const Icon(Icons.favorite, color: Colors.red))
                           : Container(),
                     ]
@@ -126,7 +142,7 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
             ),
             floatingActionButton:
                 (widget.viewManagement == ViewManagement.private ||
-                        user == null)
+                        user == null || widget.book.quantity == 0)
                     ? null
                     : FloatingActionButton(
                         backgroundColor: Colors.black,
@@ -135,6 +151,7 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
                           color: Colors.white,
                         ),
                         onPressed: () {
+                          manageCart();
                         }),
           );
   }
@@ -262,7 +279,7 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
     DatabaseService dbService = DatabaseService();
     bool add = true;
 
-    if (currUserID.isNotEmpty) {
+    if (user != null) {
       setState(() {
         isProcess = true;
       });
@@ -273,7 +290,7 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
         userWishlist.add(widget.book.ISBN_13);
         add = true;
       }
-      dynamic result = dbService.updateUserWishlist(currUserID, userWishlist);
+      dynamic result = dbService.updateUserWishlist(user!.uid, userWishlist);
       if (result != null) {
         setState(() {
           isProcess = false;
@@ -288,6 +305,50 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Failed to perform this actions!")));
+      }
+    }
+  }
+
+  void manageCart() async {
+    DatabaseService dbService = DatabaseService();
+    bool add = true;
+    bool reachLimit = false;
+    if (user != null){
+      setState(() {
+        isProcess = true;
+      });
+      if (cartItemMap.keys.contains(widget.book.ISBN_13)){
+        if (cartItemMap[widget.book.ISBN_13]! < widget.book.quantity){
+          print(cartItemMap);
+          int quantity = cartItemMap[widget.book.ISBN_13]!;
+          quantity++;
+          cartItemMap[widget.book.ISBN_13] = quantity;
+          // cartItemMap.update(widget.book.ISBN_13, (value) {
+          //   print(value);
+          //   return value++;
+          //   });
+          add = false;
+          print(cartItemMap);
+        } else {
+          reachLimit = true;
+        }
+      } else {
+          cartItemMap[widget.book.ISBN_13] = 1;
+          add = true;
+      }
+      if (!reachLimit){
+        dynamic result = dbService.updateUserCartItems(user!.uid, cartItemMap);
+        setState(() {
+          isProcess = false;
+        });
+        if (result != null){
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: add ? const Text("Book Added To Cart!") : const Text("Book Quantity in Cart Increased!")));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to perform this actions!")));
+        }
+      } else {
+        isProcess = false;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The quantity of this product is reach the stock limit in your cart!!")));
       }
     }
   }
@@ -312,6 +373,19 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
     }
   }
 
+  Future getEstimatePrice() async {
+    estimatedPrice = 0;
+    DatabaseService dbService = DatabaseService();
+    if (cartItemMap.isNotEmpty && user != null){
+      List<CartItem> cartItemList = [];
+      cartItemList = cartItemMap.entries.map((e) => CartItem(bookID: e.key, quantity: e.value)).toList();
+      for(int i = 0; i < cartItemList.length; i++){
+        Book tempBook = await dbService.getBookByISBN(cartItemList[i].bookID);
+        double priceForBook = tempBook.retailPrice * cartItemList[i].quantity;
+        estimatedPrice += priceForBook;
+      }
+    }
+  }
   void initialController() {
     isbnController.text = widget.book.ISBN_13;
     titleController.text = widget.book.title;
@@ -379,10 +453,12 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
     formWidgetList.add(_buildSpace());
   }
 
-  void initialWishlist() async {
-    if (currUserID.isNotEmpty) {
+  Future initialDataInformation() async {
+    if (user != null) {
       DatabaseService dbService = DatabaseService();
-      userWishlist = await dbService.getUserWishlist(currUserID);
+      userWishlist = await dbService.getUserWishlist(user!.uid);
+      cartItemMap = await dbService.getCartItems(user!.uid);
+      await getEstimatePrice();
     }
   }
 }

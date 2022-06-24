@@ -1,9 +1,11 @@
+import 'package:agile_project/models/enumList.dart';
+
 class Manager{
 
-  static int accountlevel = 0;
+  static AccountType currAccountType = AccountType.guest;
 
-  static void setAccountLevel(int level){
-    accountlevel = level;
-  }
+  static double estimatedPrice = 0;
+
+  static bool initialized = false;
 
 }

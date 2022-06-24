@@ -2,6 +2,7 @@ import 'dart:js_util';
 
 import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/book.dart';
+import 'package:agile_project/models/cartItem.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
 import 'package:agile_project/scenes/debug/debug_auth.dart';
@@ -10,10 +11,14 @@ import 'package:agile_project/scenes/debug/debug_image.dart';
 import 'package:agile_project/scenes/debug/debug_retrieve.dart';
 import 'package:agile_project/scenes/debug/debug_wishlist.dart';
 import 'package:agile_project/scenes/home/HomeScene.dart';
+import 'package:agile_project/scenes/product/CartScene.dart';
 import 'package:agile_project/scenes/product/ManageProductScene.dart';
 import 'package:agile_project/scenes/product/ViewProductScene.dart';
+import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/scenes/user/ProfileBody.dart';
 import 'package:agile_project/scenes/wish-list/WishlistScene.dart';
+import 'package:agile_project/services/databaseService.dart';
+import 'package:agile_project/services/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -29,8 +34,8 @@ class Wrapper extends StatefulWidget {
 class _WrapperState extends State<Wrapper> {
  //initial scene for bottom navigator
   int _selectedNavIndex = 0;
-  AccountType accountType = AccountType.guest;
-  var user;
+  
+  AppUser? user;
   void _onItemTapped(int index){
     setState(() => {
     _selectedNavIndex = index,
@@ -50,24 +55,38 @@ class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
     user = Provider.of<AppUser?>(context);
-    isAdmin();
-    return Scaffold(
+    return (user != null && !Manager.initialized) ? FutureBuilder(
+        future: initializeDataInformation(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Loading();
+          } else {
+            return buildContent();
+          }
+        }) : buildContent();
+  }
+
+  Widget buildContent(){
+    return  Scaffold(
       //top bar
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
         foregroundColor: kPrimaryLightColor,
         actions: [
-          IconButton(
+          (user != null) 
+          ? ElevatedButton.icon(
+            onPressed: () async {
+              bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) => const MyCartScene()));
+              if(result){
+                setState(() {
+                });
+              }
+            }, 
             icon: const Icon(Icons.shopping_cart),
-            onPressed: pass,
-          ),
-          //debug purpose
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: ()=>{
-              print(user),
-            },
-          ),
+            label: Text(Manager.estimatedPrice.toStringAsFixed(2)),
+            style: ElevatedButton.styleFrom(primary: Colors.transparent)
+            ) 
+            : Container(),
           //debug purpose
           PopupMenuButton(
             itemBuilder: (context) => [
@@ -122,7 +141,7 @@ class _WrapperState extends State<Wrapper> {
           currentIndex: _selectedNavIndex,
           onTap: _onItemTapped,
         ),
-        floatingActionButton: (accountType == AccountType.admin) ? 
+        floatingActionButton: (Manager.currAccountType == AccountType.admin) ? 
           FloatingActionButton(
             backgroundColor: Colors.black,
             child: const Icon(Icons.settings, color: Colors.white,),
@@ -187,18 +206,30 @@ class _WrapperState extends State<Wrapper> {
     }
   }
 
-  void isAdmin(){
-     
-     if (user != null){
-      if (user.uid == "AJDG4Ze3wpdav5bThoGHMfCekmI2"){
-        accountType = AccountType.admin;
-     } else {
-       accountType = AccountType.user;
-      } 
-     } else {
-       accountType = AccountType.guest;
-     }
-     
+  Future initializeDataInformation() async {
+    if (user != null){
+      DatabaseService dbService = DatabaseService();
+      int level = await dbService.getAccountLevel(user!.uid);
+      Manager.currAccountType = (level == 1) ? AccountType.user : 
+                                (level == 0) ? AccountType.admin : AccountType.guest;
+      await getEstimatePrice();
+    } 
+  }  
+
+  Future getEstimatePrice() async {
+    DatabaseService dbService = DatabaseService();
+    Manager.estimatedPrice = 0;
+    Map<String, int> cartItemMap = await dbService.getCartItems(user!.uid);
+    if (cartItemMap.isNotEmpty && user != null){
+      List<CartItem> cartItemList = [];
+      cartItemList = cartItemMap.entries.map((e) => CartItem(bookID: e.key, quantity: e.value)).toList();
+      for(int i = 0; i < cartItemList.length; i++){
+        Book tempBook = await dbService.getBookByISBN(cartItemList[i].bookID);
+        double priceForBook = tempBook.retailPrice * cartItemList[i].quantity;
+        Manager.estimatedPrice  += priceForBook;
+        Manager.initialized = true;
+      }
+    }
   }
-  
+
 }

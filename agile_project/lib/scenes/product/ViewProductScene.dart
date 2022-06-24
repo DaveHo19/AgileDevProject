@@ -5,11 +5,13 @@ import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/cartItem.dart';
 import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/models/user.dart';
+import 'package:agile_project/scenes/product/CartScene.dart';
 import 'package:agile_project/scenes/product/ManageProductScene.dart';
 import 'package:agile_project/scenes/sharedProperties/boxBorder.dart';
 import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
 import 'package:agile_project/services/databaseService.dart';
+import 'package:agile_project/services/manager.dart';
 import 'package:agile_project/utilities/custom_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -45,7 +47,8 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   AppUser? user;
 
   bool isProcess = false;
-  double estimatedPrice = 0;
+  bool priceChanges = false;
+
   @override
   void initState() {
     super.initState();
@@ -63,34 +66,44 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   @override
   Widget build(BuildContext context) {
     user = Provider.of<AppUser?>(context);
-    return isProcess
-        ? const Loading()
-        : FutureBuilder(
-        future: initialDataInformation(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Loading();
-          } else {
-            return _buildContent();
-          }
-        });
+    return WillPopScope(
+      onWillPop:() {
+        Navigator.pop(context, priceChanges);
+        return Future.value(priceChanges);
+      },
+      child: isProcess
+          ? const Loading()
+          : FutureBuilder(
+          future: initialDataInformation(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const Loading();
+            } else {
+              return _buildContent();
+            }
+          }),
+    );
   }
 
   Widget _buildContent(){
     return  Scaffold(
-            appBar: AppBar(
-              title: Text(isbnController.text),
-              backgroundColor: kPrimaryColor,
-              foregroundColor: kPrimaryLightColor,
-              actions: (widget.viewManagement == ViewManagement.public)
+          appBar: AppBar(
+            title: Text(isbnController.text),
+            backgroundColor: kPrimaryColor,
+            foregroundColor: kPrimaryLightColor,
+            actions: (widget.viewManagement == ViewManagement.public)
                   ? [
                         (user != null) 
                         ? ElevatedButton.icon(
                           onPressed: () async {
-                            // manageCart();
+                            bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) => const MyCartScene()));
+                            if (result){
+                              setState(() {
+                              });
+                            }
                           }, 
                           icon: const Icon(Icons.shopping_cart),
-                          label: Text(estimatedPrice.toStringAsFixed(2)),
+                          label: Text(Manager.estimatedPrice.toStringAsFixed(2)),
                           style: ElevatedButton.styleFrom(primary: Colors.transparent)
                           ) 
                           : Container(),
@@ -159,8 +172,6 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   void menuItemHandler(BuildContext context, int index) async {
     switch (index) {
       case 0:
-        //for edit
-        //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("This features in implement in future!")));
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -323,10 +334,6 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
           int quantity = cartItemMap[widget.book.ISBN_13]!;
           quantity++;
           cartItemMap[widget.book.ISBN_13] = quantity;
-          // cartItemMap.update(widget.book.ISBN_13, (value) {
-          //   print(value);
-          //   return value++;
-          //   });
           add = false;
           print(cartItemMap);
         } else {
@@ -374,7 +381,7 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   }
 
   Future getEstimatePrice() async {
-    estimatedPrice = 0;
+    Manager.estimatedPrice = 0;
     DatabaseService dbService = DatabaseService();
     if (cartItemMap.isNotEmpty && user != null){
       List<CartItem> cartItemList = [];
@@ -382,7 +389,8 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
       for(int i = 0; i < cartItemList.length; i++){
         Book tempBook = await dbService.getBookByISBN(cartItemList[i].bookID);
         double priceForBook = tempBook.retailPrice * cartItemList[i].quantity;
-        estimatedPrice += priceForBook;
+        Manager.estimatedPrice += priceForBook;
+        priceChanges = true;
       }
     }
   }

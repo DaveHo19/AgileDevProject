@@ -224,6 +224,10 @@ class DatabaseService {
     });
   }
 
+  Future<int> getAccountLevel(String uid) async {
+    return await userCollectionRef.doc(uid).get().then((value) => value.get("accountLevel"));
+  }
+
   Future updateUserName(String uid, String val) async {
     return await userCollectionRef.doc(uid).update({
       "userName": val,

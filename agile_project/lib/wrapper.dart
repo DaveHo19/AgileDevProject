@@ -1,5 +1,3 @@
-import 'dart:js_util';
-
 import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/cartItem.dart';
@@ -8,11 +6,10 @@ import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
 import 'package:agile_project/scenes/debug/debug_auth.dart';
 import 'package:agile_project/scenes/debug/debug_cart.dart';
 import 'package:agile_project/scenes/debug/debug_image.dart';
-import 'package:agile_project/scenes/debug/debug_retrieve.dart';
-import 'package:agile_project/scenes/debug/debug_wishlist.dart';
 import 'package:agile_project/scenes/home/HomeScene.dart';
 import 'package:agile_project/scenes/product/CartScene.dart';
 import 'package:agile_project/scenes/product/ManageProductScene.dart';
+import 'package:agile_project/scenes/product/OrderProductScene.dart';
 import 'package:agile_project/scenes/product/ViewProductScene.dart';
 import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/scenes/user/ProfileBody.dart';
@@ -34,11 +31,23 @@ class Wrapper extends StatefulWidget {
 class _WrapperState extends State<Wrapper> {
  //initial scene for bottom navigator
   int _selectedNavIndex = 0;
-  
+  String currentContentTitle = "Home";
   AppUser? user;
+
   void _onItemTapped(int index){
-    setState(() => {
-    _selectedNavIndex = index,
+    setState(() {
+    _selectedNavIndex = index;
+    switch(_selectedNavIndex){
+      case 0:
+        currentContentTitle = "Home";
+        break;
+      case 1:
+        currentContentTitle = "My Wishlist";
+        break;
+      case 2:
+        currentContentTitle = "My Profile";
+        break;
+    }
     });
   }
 
@@ -72,6 +81,7 @@ class _WrapperState extends State<Wrapper> {
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
         foregroundColor: kPrimaryLightColor,
+        title: Text(currentContentTitle),
         actions: [
           (user != null) 
           ? ElevatedButton.icon(
@@ -96,24 +106,8 @@ class _WrapperState extends State<Wrapper> {
               ),              
               const PopupMenuItem<int>(
                 value: 1,
-                child: Text("View"),
+                child: Text("Checkout"),
               ),
-              const PopupMenuItem<int>(
-                value: 2,
-                child: Text("Manage"),
-              ),    
-              const PopupMenuItem<int>(
-                value: 3,
-                child: Text("Debug-Auth"),
-              ),    
-              const PopupMenuItem<int>(
-                value: 4,
-                child: Text("Debug-Image"),
-              ),    
-              const PopupMenuItem<int>(
-                value: 5,
-                child: Text("Debug-Cart"),
-              ),               
             ], 
             onSelected: (int i) => {
               debugHandler(context, i)
@@ -172,37 +166,8 @@ class _WrapperState extends State<Wrapper> {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const MyStockLevelScene()));    
         break;
       case 1:
-        List<String> items = <String>[];
-        items.add("A");
-        items.add("B");
-        Book tempBook = Book(
-          ISBN_13: "Test", 
-          title: "Testing", 
-          author: "Mr. Test", 
-          publishedDate: DateTime.now(), 
-          imageCoverURL: "https://firebasestorage.googleapis.com/v0/b/agileproject-abd4b.appspot.com/o/bookCoverImage%2F0-7475-4215-9?alt=media&token=5e98a0d1-3b3d-4c4a-9abf-f62356c3c395", 
-          tags: items, 
-          tradePrice: 12.2324242, 
-          retailPrice: 15.51861218, 
-          quantity: 5);
- Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => MyViewProductScene(
-                    viewManagement: ViewManagement.public, book: tempBook)));
-        break;
-      case 2:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => MyManageProductScene(bookManagement: BookManagement.create,)));    
-        break;     
-      case 3: 
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugAuth()));    
-        break;
-      case 4:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugImage()));    
-      break;
-      case 5:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugCarts()));
-      break;
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyOrderProductScene()));    
+       break;
     }
   }
 

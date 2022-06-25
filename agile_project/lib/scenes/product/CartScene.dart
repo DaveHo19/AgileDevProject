@@ -2,9 +2,11 @@ import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/cartItem.dart';
 import 'package:agile_project/models/user.dart';
+import 'package:agile_project/scenes/product/OrderProductScene.dart';
 import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/services/databaseService.dart';
 import 'package:agile_project/services/manager.dart';
+import 'package:agile_project/utilities/custom_dialog.dart';
 import "package:flutter/material.dart";
 import 'package:provider/provider.dart';
 
@@ -19,7 +21,6 @@ class _CartSceneState extends State<MyCartScene> {
   AppUser? user;
   List<Book> bookList = [];
   Map<String, int> cartItemMap = {};
-  List<CartItem> cartItemList = [];
   bool isProcess = false;
   bool priceChanges = false;
 
@@ -56,8 +57,18 @@ class _CartSceneState extends State<MyCartScene> {
           ? const Center(
               child: Text("There are no item in cart!"),
             )
-          : buildListView(),
-      bottomSheet: buildBottomLayer(),
+          : Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              children: [
+                Expanded(
+                  child: buildListView(),
+                ),
+                buildEstimatePriceLayer(),
+                buildButtonLayer(),
+              ]),
+          ),
     );
   }
 
@@ -73,7 +84,6 @@ class _CartSceneState extends State<MyCartScene> {
     double estimatedBookPrice = 0;
     int cartQuantity = cartItemMap[item.ISBN_13] ?? 0;
     estimatedBookPrice = item.retailPrice * cartQuantity;
-
     return Container(
       decoration: const BoxDecoration(
           border: Border(bottom: BorderSide(color: Colors.grey))),
@@ -132,7 +142,7 @@ class _CartSceneState extends State<MyCartScene> {
               ],
             ),
             onLongPress: () async {
-              //remove actions
+              removeBook(item);
             },
           ),
         ),
@@ -140,59 +150,98 @@ class _CartSceneState extends State<MyCartScene> {
     );
   }
 
-  Widget buildBottomLayer() {
+  Widget buildButtonLayer() {
     return Container(
-        height: 80,
         width: MediaQuery.of(context).size.width,
         child: 
-        // Column(
-        //   children: [
-        //     Align(
-        //       alignment: Alignment.centerLeft,
-        //       child: Padding(
-        //         padding: const EdgeInsets.all(2.0),
-        //         child: Text(
-        //           "Current Estimated Price: ${Manager.estimatedPrice.toStringAsFixed(2)}",
-        //           style: const TextStyle(
-        //               fontSize: 20,
-        //               fontWeight: FontWeight.bold,
-        //               color: Colors.black),
-        //         ),
-        //       ),
-        //     ),
             Row(
               children: [
                 Expanded(
                   child: Container(
-                    height: 80,
+                    height: 40,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: kPrimaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0)
+                        ),
+                        ),
+                      onPressed: () {
+                        clearAll();                        
+                      },
                       child: const Text(
                         "Clear",
-                        style: TextStyle(fontSize: 24),
+                        style: 
+                        TextStyle(
+                          fontSize: 20,
+                          color: kPrimaryLightColor,
+                          ),
                       ),
-                      onPressed: () {},
                     ),
                   ),
                 ),
                 Expanded(
                   child: Container(
-                    height: 80,
+                    height: 40,
                     child: ElevatedButton(
-                      child: const Text(
-                        "Proceed",
-                        style: TextStyle(fontSize: 24),
+                      style: ElevatedButton.styleFrom(
+                        primary: kPrimaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0),
+                        ),
                       ),
-                      onPressed: () {},
+                      child: const Text(
+                        "Checkout",
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: kPrimaryLightColor,
+                          ),
+                      ),
+                      onPressed: () {
+                       if (cartItemMap.isNotEmpty){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyOrderProductScene()));  
+                       } else {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The cart is empty!")));
+                       }
+                      },
                     ),
                   ),
                 ),
               ],
             ),
-          //],
-        //)
         );
   }
 
+  Widget buildEstimatePriceLayer(){
+    return Container(
+      padding: const EdgeInsets.all(4),
+      height: 75,
+      width: MediaQuery.of(context).size.width,
+      child: Card(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "Total Estimated Price: ",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+              ),
+            Text(
+              "RM ${Manager.estimatedPrice.toStringAsFixed(2)}",
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black
+              ),
+              ),
+          ],    
+        ),
+      ),
+    );
+  }
   Future initializeDataInformation() async {
     if (user != null) {
       DatabaseService dbService = DatabaseService();
@@ -200,14 +249,32 @@ class _CartSceneState extends State<MyCartScene> {
       if (cartItemMap.isNotEmpty) {
         List<String> bookISBNList =
             cartItemMap.entries.map((e) => e.key).toList();
-        cartItemList = cartItemMap.entries
-            .map((e) => CartItem(bookID: e.key, quantity: e.value))
-            .toList();
-        bookList = await dbService.getBookListByWishlist(bookISBNList);
+        bookList = await dbService.getBookListByBookISBNList(bookISBNList);
+        bookList.sort((a, b) => a.ISBN_13.length.compareTo(b.ISBN_13.length));
       }
     }
   }
 
+  void removeBook(Book item) async {
+    bool result = await CustomDialog().confirm_dialog(context, "Remove Cart Item", "Are you sure to remove ${item.title} from your cart?");
+    if (result){
+      cartItemMap.remove(item.ISBN_13);
+      updateCart();
+    }
+  }
+
+  void clearAll() async {
+    if (cartItemMap.isNotEmpty){
+      bool result = await CustomDialog().confirm_dialog(context, "Remove All Cart Item", "Are you sure to remove everything from your cart?");
+          if (result){
+            cartItemMap = {};
+            updateCart();
+          }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The cart is already empty!"),));
+    }
+   
+  }
   void increaseQuantity(Book item) {
     int currQuantity = cartItemMap[item.ISBN_13]!;
     if (currQuantity >= item.quantity) {

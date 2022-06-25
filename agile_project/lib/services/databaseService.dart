@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:agile_project/models/order.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/models/userInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,6 +16,7 @@ class DatabaseService {
       FirebaseFirestore.instance.collection("books");
   final CollectionReference userCollectionRef =
       FirebaseFirestore.instance.collection("users");
+  final CollectionReference orderCollectionRef = FirebaseFirestore.instance.collection("orders");
 
   //constructor
   DatabaseService();
@@ -66,6 +68,12 @@ class DatabaseService {
     });
   }
 
+  Future updateBookQuantity(String bookID, int quantity) async {
+    return await bookCollectionRef.doc(bookID).update({
+      "quantity" : quantity,
+    });
+  }
+
   Future deleteBook(String ISBN_No) async {
     await fbStorage.ref("bookCoverImage/$ISBN_No").delete();
 
@@ -108,7 +116,7 @@ class DatabaseService {
     return result;
   }
 
-  Future<List<Book>> getBookListByWishlist(List<String> list) async {
+  Future<List<Book>> getBookListByBookISBNList(List<String> list) async {
     List<Book> bookList = [];
 
     for (int i = 0; i < list.length; i++) {
@@ -211,6 +219,18 @@ class DatabaseService {
     return await userCollectionRef.doc(uid).update({"carts" : cartItems});
   }
 
+  Future<List<String>> getOrderList(String uid) async {
+    return await userCollectionRef.doc(uid).get().then((value){
+      return List<String>.from(value.get("orderList"));
+    });
+  }
+
+  Future updateUserOrder(String uid, List<String> orderList) async {
+    return await userCollectionRef.doc(uid).update({
+      "orderList" : orderList,
+    });
+  }
+
   Future<UserInfomation> getUserInformation(String uid) async {
     return await userCollectionRef.doc(uid).get().then((value) {
       return UserInfomation(
@@ -223,7 +243,7 @@ class DatabaseService {
       );
     });
   }
-
+  
   Future<int> getAccountLevel(String uid) async {
     return await userCollectionRef.doc(uid).get().then((value) => value.get("accountLevel"));
   }
@@ -237,6 +257,34 @@ class DatabaseService {
   Future updatePhoneNumber(String uid, String val) async {
     return await userCollectionRef.doc(uid).update({
       "phoneNumber": val,
+    });
+  }
+
+  Future<String> createOrders(OrderInfo order, String uid) async {
+    return await orderCollectionRef.add({
+      "orderCode" : "",
+      "buyer" : order.buyerName,
+      "recipient" : order.recipientName,
+      "billingAddress" : order.billingAddress,
+      "shippingAddress" : order.shippingAddress,
+      "orderItems" : order.orderItems,
+      "orderItemPrices" : order.orderItemPrices,
+      "deliveryFee" : order.deliveryFee,
+      "orderDate" : order.orderDate
+    }).then(
+      (dataSnapshot) async {
+        dynamic result = await updateOrderId(dataSnapshot.id);      
+        if (result == null){
+          return dataSnapshot.id;
+        } else {
+          return "";
+        }
+      });
+  }
+
+  Future updateOrderId(String id) async {
+    return await orderCollectionRef.doc(id).update({
+      "orderCode" : id,
     });
   }
 }

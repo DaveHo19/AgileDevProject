@@ -105,7 +105,7 @@ class _DebugWishlistState extends State<DebugWishlist> {
   Future displayBookList() async {
     print("D-Booklist Checked #1");
     DatabaseService dbService = DatabaseService();
-    wishListForBook = await dbService.getBookListByWishlist(wishList);
+    wishListForBook = await dbService.getBookListByBookISBNList(wishList);
     for (int i=0; i < wishListForBook.length; i++){
       wishListForBook.elementAt(i).toInfo();
     }

@@ -93,7 +93,7 @@ class _MyWishlistSceneState extends State<MyWishlistScene>{
       DatabaseService dbService = DatabaseService();
       bookISBNWishList = await dbService.getUserWishlist(user!.uid);    
       if (bookISBNWishList.isNotEmpty){
-        bookWishList = await dbService.getBookListByWishlist(bookISBNWishList);
+        bookWishList = await dbService.getBookListByBookISBNList(bookISBNWishList);
       };
     } 
   } 

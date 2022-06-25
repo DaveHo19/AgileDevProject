@@ -330,12 +330,10 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
       });
       if (cartItemMap.keys.contains(widget.book.ISBN_13)){
         if (cartItemMap[widget.book.ISBN_13]! < widget.book.quantity){
-          print(cartItemMap);
           int quantity = cartItemMap[widget.book.ISBN_13]!;
           quantity++;
           cartItemMap[widget.book.ISBN_13] = quantity;
           add = false;
-          print(cartItemMap);
         } else {
           reachLimit = true;
         }

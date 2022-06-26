@@ -331,7 +331,6 @@ class DatabaseService {
   }
 
   Future<List<OrderInfo>> getOrderListByOrderCodeList(List<String> list) async {
-    print("#check");
     List<OrderInfo> orderList = [];
     for (int i = 0; i < list.length; i++){
       OrderInfo orderInfo = await getOrderByOrderCode(list.elementAt(i));

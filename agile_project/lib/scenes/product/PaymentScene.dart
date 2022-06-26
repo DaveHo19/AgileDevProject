@@ -162,6 +162,7 @@ class _MyPaymentSceneState extends State<MyPaymentScene> {
              }
              result = await dbService.updateUserCartItems(user!.uid, {});
              if (result == null){
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Order created successfully!!")));
               Navigator.pop(context, true);
              } else {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to clear cart!")));

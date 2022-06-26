@@ -56,20 +56,26 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
   }
 
   Widget buildContent() {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Checkout"),
-        backgroundColor: kPrimaryColor,
-        foregroundColor: kPrimaryLightColor,
-      ),
-      body: (cartItemMap.isEmpty) ? const Center(child: Text("No items Here!"),) 
-      : Form(
-        key: formKey,
-        child: ListView.builder(
-            itemCount: widgetList.length,
-            itemBuilder: (context, i) {
-              return widgetList[i];
-            }),
+    return WillPopScope(
+      onWillPop: (){
+        Navigator.pop(context, false);
+        return Future.value(false);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Checkout"),
+          backgroundColor: kPrimaryColor,
+          foregroundColor: kPrimaryLightColor,
+        ),
+        body: (cartItemMap.isEmpty) ? const Center(child: Text("No items Here!"),) 
+        : Form(
+          key: formKey,
+          child: ListView.builder(
+              itemCount: widgetList.length,
+              itemBuilder: (context, i) {
+                return widgetList[i];
+              }),
+        ),
       ),
     );
   }
@@ -275,7 +281,7 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
         orderDate: DateTime.now());
         bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) => MyPaymentScene(orderData: newOrder)));    
         if (result){
-          Navigator.pop(context);
+          Navigator.pop(context, true);
         }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all of the field!")));

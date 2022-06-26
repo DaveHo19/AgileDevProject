@@ -207,9 +207,12 @@ class _CartSceneState extends State<MyCartScene> {
                           color: kPrimaryLightColor,
                           ),
                       ),
-                      onPressed: () {
+                      onPressed: () async {
                        if (cartItemMap.isNotEmpty && containValidBooks){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyOrderProductScene()));  
+                        bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) => const MyOrderProductScene()));
+                        if (result){
+                          Navigator.pop(context);
+                        }  
                        } else if (cartItemMap.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The cart is empty!")));
                        } else if (!containValidBooks){

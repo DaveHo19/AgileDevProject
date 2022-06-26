@@ -266,6 +266,7 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
         orderCode: "ABC", 
         buyerName: nameController.text.trim(), 
         recipientName: recipientController.text.trim(), 
+        contactNumber: contactController.text.trim(),
         billingAddress: bAddressController.text, 
         shippingAddress: sAddressController.text, 
         orderItems: cartItemMap,

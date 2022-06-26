@@ -101,6 +101,26 @@ class DatabaseService {
     return bookCollectionRef.snapshots().map(bookListFromSnapshot);
   }
 
+  List<OrderInfo> orderInfoListFromSnapshot(QuerySnapshot snapshot){
+    return snapshot.docs.map((item){
+      return  OrderInfo(
+          orderCode: item.get("orderCode"),
+          buyerName: item.get("buyer"), 
+          contactNumber: item.get("contactNumber"),
+          recipientName: item.get("recipient"), 
+          billingAddress: item.get("billingAddress"), 
+          shippingAddress: item.get("shippingAddress"), 
+          orderItems: Map.from(item.get("orderItems")), 
+          orderItemPrices: item.get("orderItemPrices"), 
+          deliveryFee: item.get("deliveryFee"), 
+          orderDate: item.get("orderDate").toDate());
+    }).toList();
+  }
+
+  Stream<List<OrderInfo>> get orders{
+    return orderCollectionRef.snapshots().map(orderInfoListFromSnapshot);
+  }
+
   Future<bool> checkBookExists(String bookNo) async {
     bool result = false;
     await bookCollectionRef.doc(bookNo).get().then((doc) => {
@@ -127,24 +147,29 @@ class DatabaseService {
   }
 
   Future<Book> getBookByISBN(String bookISBN) async {
-    return await bookCollectionRef.doc(bookISBN).get().then((doc) {
-      if (doc.exists){
-        return Book(
-                  ISBN_13: doc.get("ISBN_13") ?? "",
-                  title: doc.get("title") ?? "",
-                  description: doc.get("desc") ?? "",
-                  author: doc.get("author") ?? "",
-                  publishedDate: doc.get("publishedDate").toDate(),
-                  imageCoverURL: doc.get("imgCoverUrl") ?? "",
-                  tags: doc.get("tags").cast<String>(),
-                  tradePrice: doc.get("tradePrice") ?? 0,
-                  retailPrice: doc.get("retailPrice") ?? 0,
-                  quantity: doc.get("quantity") ?? 0);
-      } else {
-        print("No data");
-        return Future.error("No Data");
-      } 
-    });
+    bool result = await checkBookExists(bookISBN);
+    if (result ){
+      return await bookCollectionRef.doc(bookISBN).get().then((doc) {
+            if (doc.exists){
+              return Book(
+                        ISBN_13: doc.get("ISBN_13") ?? "",
+                        title: doc.get("title") ?? "",
+                        description: doc.get("desc") ?? "",
+                        author: doc.get("author") ?? "",
+                        publishedDate: doc.get("publishedDate").toDate(),
+                        imageCoverURL: doc.get("imgCoverUrl") ?? "",
+                        tags: doc.get("tags").cast<String>(),
+                        tradePrice: doc.get("tradePrice") ?? 0,
+                        retailPrice: doc.get("retailPrice") ?? 0,
+                        quantity: doc.get("quantity") ?? 0);
+            } else {
+              print("No data");
+              return Future.error("No Data");
+            } 
+          }); 
+    } else {
+      return Book.createEmptyBook(bookISBN);
+    }
   }
 
   Future createUserProfile(UserInfomation userInfo) async {
@@ -265,6 +290,7 @@ class DatabaseService {
       "orderCode" : "",
       "buyer" : order.buyerName,
       "recipient" : order.recipientName,
+      "contactNumber" : order.contactNumber,
       "billingAddress" : order.billingAddress,
       "shippingAddress" : order.shippingAddress,
       "orderItems" : order.orderItems,
@@ -286,5 +312,32 @@ class DatabaseService {
     return await orderCollectionRef.doc(id).update({
       "orderCode" : id,
     });
+  }
+
+  Future<OrderInfo> getOrderByOrderCode(String orderCode) async {
+    return await orderCollectionRef.doc(orderCode).get().then((doc) {
+      return OrderInfo(
+                orderCode: doc.get("orderCode"),
+                buyerName: doc.get("buyer"), 
+                contactNumber: doc.get("contactNumber"),
+                recipientName: doc.get("recipient"), 
+                billingAddress: doc.get("billingAddress"), 
+                shippingAddress: doc.get("shippingAddress"), 
+                orderItems: Map.from(doc.get("orderItems")), 
+                orderItemPrices: doc.get("orderItemPrices"), 
+                deliveryFee: doc.get("deliveryFee"), 
+                orderDate: doc.get("orderDate").toDate());
+          });
+  }
+
+  Future<List<OrderInfo>> getOrderListByOrderCodeList(List<String> list) async {
+    print("#check");
+    List<OrderInfo> orderList = [];
+    for (int i = 0; i < list.length; i++){
+      OrderInfo orderInfo = await getOrderByOrderCode(list.elementAt(i));
+      orderList.add(orderInfo);
+    }
+
+    return orderList;
   }
 }

@@ -137,9 +137,9 @@ class _WrapperState extends State<Wrapper> {
         ),
         floatingActionButton: (Manager.currAccountType == AccountType.admin) ? 
           FloatingActionButton(
-            backgroundColor: Colors.black,
-            child: const Icon(Icons.settings, color: Colors.white,),
-            onPressed: _onFabTapped)
+            backgroundColor: kPrimaryColor,
+            onPressed: _onFabTapped,
+            child: const Icon(Icons.settings, color: kPrimaryLightColor,))
           : null,
       );
   }

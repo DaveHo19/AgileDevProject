@@ -1,14 +1,10 @@
-import 'package:agile_project/models/cart.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/services/firebase_auth.dart';
 import 'package:agile_project/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

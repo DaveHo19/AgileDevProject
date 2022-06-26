@@ -23,6 +23,7 @@ class _CartSceneState extends State<MyCartScene> {
   Map<String, int> cartItemMap = {};
   bool isProcess = false;
   bool priceChanges = false;
+  bool containValidBooks = true;
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +82,7 @@ class _CartSceneState extends State<MyCartScene> {
   }
 
   Widget buildListViewItem(Book item) {
+    containValidBooks &= item.title.isNotEmpty;
     double estimatedBookPrice = 0;
     int cartQuantity = cartItemMap[item.ISBN_13] ?? 0;
     estimatedBookPrice = item.retailPrice * cartQuantity;
@@ -94,7 +96,8 @@ class _CartSceneState extends State<MyCartScene> {
         child: Container(
           width: MediaQuery.of(context).size.width,
           height: 115,
-          child: ListTile(
+          child: (item.title.isNotEmpty) ? 
+          ListTile(
             leading: Container(
               width: 50,
               height: 300,
@@ -144,7 +147,14 @@ class _CartSceneState extends State<MyCartScene> {
             onLongPress: () async {
               removeBook(item);
             },
-          ),
+          ) 
+          : ListTile(
+            title: Text("ISBN Number: ${item.ISBN_13}"),
+            subtitle: const Text("This book been removed from stock. Please remove this book from cart!"),
+            onLongPress: () async {
+              removeBook(item);
+            },
+          )
         ),
       ),
     );
@@ -198,10 +208,12 @@ class _CartSceneState extends State<MyCartScene> {
                           ),
                       ),
                       onPressed: () {
-                       if (cartItemMap.isNotEmpty){
+                       if (cartItemMap.isNotEmpty && containValidBooks){
                         Navigator.push(context, MaterialPageRoute(builder: (context) => const MyOrderProductScene()));  
-                       } else {
+                       } else if (cartItemMap.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The cart is empty!")));
+                       } else if (!containValidBooks){
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The cart contains invalid stock items!")));
                        }
                       },
                     ),
@@ -252,11 +264,13 @@ class _CartSceneState extends State<MyCartScene> {
         bookList = await dbService.getBookListByBookISBNList(bookISBNList);
         bookList.sort((a, b) => a.ISBN_13.length.compareTo(b.ISBN_13.length));
       }
+      containValidBooks = true;
     }
   }
-
   void removeBook(Book item) async {
-    bool result = await CustomDialog().confirm_dialog(context, "Remove Cart Item", "Are you sure to remove ${item.title} from your cart?");
+    CustomDialog customDialog = CustomDialog();
+    String dialogContent = (item.title.isEmpty) ? "Remove the invalid book from your cart?" : "Are you sure to remove ${item.title} from your cart?";
+    bool result = await customDialog.confirm_dialog(context, "Remove Cart Item", dialogContent);
     if (result){
       cartItemMap.remove(item.ISBN_13);
       updateCart();

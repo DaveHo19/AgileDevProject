@@ -158,10 +158,10 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
                         user == null || widget.book.quantity == 0)
                     ? null
                     : FloatingActionButton(
-                        backgroundColor: Colors.black,
+                        backgroundColor: kPrimaryColor,
                         child: const Icon(
                           Icons.shopping_bag,
-                          color: Colors.white,
+                          color: kPrimaryLightColor,
                         ),
                         onPressed: () {
                           manageCart();

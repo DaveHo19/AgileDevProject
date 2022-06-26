@@ -5,6 +5,7 @@ import 'package:agile_project/scenes/authentication/login/LoginScene.dart';
 import 'package:agile_project/scenes/authentication/register/RegisterScene.dart';
 import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/scenes/user/AddressInformation.dart';
+import 'package:agile_project/scenes/user/MyOrder.dart';
 import 'package:agile_project/scenes/user/ProfileMenu.dart';
 import 'package:agile_project/services/databaseService.dart';
 import 'package:agile_project/services/firebase_auth.dart';
@@ -140,7 +141,8 @@ class ProfileSceneState extends State<ProfileScene> {
           icons: const Icon(Icons.shopping_bag),
           value: "",
           press: () {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("To be implement in Sprint 3")));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const MyOrderListScene()));
           },
         ),
         ProfileMenu(

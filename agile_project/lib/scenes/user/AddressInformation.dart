@@ -1,3 +1,4 @@
+import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/address.dart';
 import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/models/user.dart';
@@ -42,6 +43,8 @@ class _MyAddressSceneState extends State<MyAddressScene> {
   }
 
   Future initialAddress() async {
+    addressList.clear();
+    addressMap.clear();
     DatabaseService dbService = DatabaseService();
     if (user != null) {
       switch(widget.addressType){
@@ -56,6 +59,7 @@ class _MyAddressSceneState extends State<MyAddressScene> {
         for (var key in addressMap.keys) {
           addressList.add(LocationAddress(name: key, address: addressMap[key] ?? ""));
         }
+        addressList.sort((a, b) => a.name.length.compareTo(b.name.length));
       }
     }
   }
@@ -66,29 +70,37 @@ class _MyAddressSceneState extends State<MyAddressScene> {
         title: Text(
           widget.addressType == AddressType.billing ? "Billing Address" : "Shipping Address"
           ),
+        backgroundColor: kPrimaryColor,
+        foregroundColor: kPrimaryLightColor,
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () async {
-              Navigator.push(
+              bool result = await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => NewAddressScene(
                             uid: user!.uid,
                             addressType: widget.addressType,
                           )));
+              if (result){
+                setState(() {
+                });
+              }
             },
           )
         ],
       ),
-      body: RefreshIndicator(
+      body: addressList.isNotEmpty ? RefreshIndicator(
         onRefresh: initialAddress,
         child: ListView.builder(
             itemCount: addressMap.length,
             itemBuilder: (context, i) {
               return buildListItem(addressList[i]);
             }),
-      ),
+      ) : const Center(
+        child: Text("You have not set any address yet!"),
+      )
     );
   }
 
@@ -124,7 +136,6 @@ class _MyAddressSceneState extends State<MyAddressScene> {
               res = await dbService.updateUserShippingAddress(user!.uid, addressMap);
             break;
           } 
-
           if (res == null){
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Removed!")));
             setState(() {});

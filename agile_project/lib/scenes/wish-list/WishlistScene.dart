@@ -67,19 +67,33 @@ class _MyWishlistSceneState extends State<MyWishlistScene>{
   Widget buildListViewItem(Book item){
     return Padding(
       padding: const EdgeInsets.all(2.0),
-      child: ListTile(
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: Colors.grey))),
+        child: (item.title.isNotEmpty) ? ListTile(
         leading: Container(
           width: 50,
           height: 200,
           child: Image.network(item.imageCoverURL, fit: BoxFit.fill,),
         ),
-        title: Text("Book Name: " + item.title),
+        title: Text("Book Name: ${item.title}"),
         onTap: (){
           goToBook(item);
         },
         onLongPress: (){
           deleteProcess(item);
         },
+      ) : ListTile(
+        title: Text("ISBN NO: ${item.ISBN_13}"),
+        subtitle: const Text("This book been removed from stock. Press me to delete the item from wishlist!"),
+        onTap: (){
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("This book is removed from stock!")));
+        },
+        onLongPress: (){
+          deleteProcess(item);
+        },
+      ),
       ),
     );
   }
@@ -107,10 +121,11 @@ class _MyWishlistSceneState extends State<MyWishlistScene>{
 
   void deleteProcess(Book book) async {
     CustomDialog customDialog = CustomDialog();
+    String dialogContent = book.title.isEmpty ? "Remove this invalid book from your wishlist?" : "Are you sure to remove this book from your wishlist?";
     DatabaseService dbService = DatabaseService();
     if (user != null){
       isProcess = true;
-      bool result = await customDialog.confirm_dialog(context, "Confirmation Dialog", "Are you sure to remove this book from your wishlist?");
+      bool result = await customDialog.confirm_dialog(context, "Confirmation Dialog", dialogContent);
       if (result){
         if (bookISBNWishList.contains(book.ISBN_13)){
           bookISBNWishList.remove(book.ISBN_13);

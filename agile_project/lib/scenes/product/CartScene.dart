@@ -55,8 +55,14 @@ class _CartSceneState extends State<MyCartScene> {
         foregroundColor: kPrimaryLightColor,
       ),
       body: (cartItemMap.isEmpty)
-          ? const Center(
-              child: Text("There are no item in cart!"),
+          ? Container(
+              padding: EdgeInsets.all(30),
+              child: Column(
+                children: <Widget>[
+                  Image.asset("empty-box.png", fit: BoxFit.fill),
+                  Text("There is no item in cart currently !")
+                ],
+              ),
             )
           : Container(
               height: MediaQuery.of(context).size.height,

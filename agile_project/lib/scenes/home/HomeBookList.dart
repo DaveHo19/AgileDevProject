@@ -31,6 +31,7 @@ class _HomeBookListState extends State<HomeBookList> {
     });
 
     categoryController.addListener(() {
+      _onSearchChangedCategory();
       setState(() {});
     });
   }
@@ -95,7 +96,7 @@ class _HomeBookListState extends State<HomeBookList> {
     );
   }
 
-  Widget _buildsearchRow() {
+  Widget _buildSearchTitle() {
     final book = Provider.of<List<Book>>(context);
     List<Book> tempList = [];
     if (book.isNotEmpty) {
@@ -124,15 +125,18 @@ class _HomeBookListState extends State<HomeBookList> {
   Widget _buildSearchCategory() {
     final book = Provider.of<List<Book>>(context);
     List<Book> tempList = [];
+    final split_tag = categoryController.text.toString().split(";");
     if (book.isNotEmpty) {
       for (int i = 0; i < book.length; i++) {
-        if (book[i]
-            .title
-            .toLowerCase()
-            .contains(searchController.text.toString().toLowerCase())) {
-          tempList.add(book[i]);
+        for (int j = 0; j < (split_tag.length - 1); j++) {
+          if (!tempList.contains(book[i].ISBN_13)) {
+            if (book[i].tags.contains(split_tag[j].trim())) {
+              tempList.add(book[i]);
+            }
+          }
         }
       }
+      tempList = tempList.toSet().toList();
     }
     if (tempList.length == 0) {
       return Center(
@@ -246,9 +250,12 @@ class _HomeBookListState extends State<HomeBookList> {
                         return _categoryRow(categoryList[index]);
                       }),
                 ),
-                actions: [
-                  Center(child: searchCategoryButton),
-                ],
+                // actions: [
+                //   Center(
+                //     child: TextButton(
+                //         onPressed: onPressed, child: Text("Reset Category")),
+                //   )
+                // ],
               ));
             }));
   }
@@ -272,9 +279,6 @@ class _HomeBookListState extends State<HomeBookList> {
       ),
     );
   }
-
-  Widget searchCategoryButton =
-      TextButton(onPressed: () {}, child: Text("Search"));
 
   Widget _categoryRow(String items) {
     bool added = category.contains(items);
@@ -317,7 +321,8 @@ class _HomeBookListState extends State<HomeBookList> {
   }
 
   void layoutInitialize() {
-    if (searchController.text.length == 0) {
+    if (searchController.text.length == 0 &&
+        categoryController.text.length == 0) {
       layoutList.clear();
       layoutList.add(_buildSearchBox());
       layoutList.add(_buildCategoryField("Book Category"));
@@ -330,11 +335,16 @@ class _HomeBookListState extends State<HomeBookList> {
       layoutList.add(_buildSpace());
       layoutList.add(_buildFantasyRow());
       //layoutList.add(_buildRemainRow());
-    } else {
+    } else if (searchController.text.length > 0) {
       layoutList.clear();
       layoutList.add(_buildSearchBox());
       layoutList.add(_buildSpace());
-      layoutList.add(_buildsearchRow());
+      layoutList.add(_buildSearchTitle());
+    } else if (categoryController.text.length > 0) {
+      layoutList.clear();
+      layoutList.add(_buildCategoryField("Book Category"));
+      layoutList.add(_buildSpace());
+      layoutList.add(_buildSearchCategory());
     }
   }
 }

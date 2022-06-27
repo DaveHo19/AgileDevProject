@@ -1,13 +1,13 @@
 import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/enumList.dart';
-import 'package:agile_project/scenes/product/SearchBookScene.dart';
 import 'package:agile_project/scenes/product/ViewProductScene.dart';
-import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/category.dart';
 import '../../models/enumList.dart';
 import '../product/ViewProductScene.dart';
+import '../sharedProperties/textField.dart';
 
 class HomeBookList extends StatefulWidget {
   const HomeBookList({Key? key}) : super(key: key);
@@ -17,29 +17,27 @@ class HomeBookList extends StatefulWidget {
 }
 
 class _HomeBookListState extends State<HomeBookList> {
-  TextEditingController _searchController = TextEditingController();
+  TextEditingController searchController = TextEditingController();
+  TextEditingController categoryController = TextEditingController();
   List<Widget> layoutList = [];
+  List<String> category = [];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _searchController.addListener(_onSearchChanged);
+    searchController.addListener(() {
+      _onSearchChanged;
+      setState(() {});
+    });
+
+    categoryController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: layoutInitialize(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Loading();
-          } else {
-            return buildContent();
-          }
-        });
-  }
-
-  Widget buildContent() {
+    layoutInitialize();
     return ListView.builder(
       itemCount: layoutList.length,
       itemBuilder: (context, index) {
@@ -50,8 +48,10 @@ class _HomeBookListState extends State<HomeBookList> {
 
   @override
   void dispose() {
-    _searchController.removeListener(_onSearchChanged);
-    _searchController.dispose();
+    searchController.removeListener(_onSearchChanged);
+    categoryController.removeListener(_onSearchChangedCategory);
+    categoryController.dispose();
+    searchController.dispose();
     super.dispose();
   }
 
@@ -103,18 +103,50 @@ class _HomeBookListState extends State<HomeBookList> {
         if (book[i]
             .title
             .toLowerCase()
-            .contains(_searchController.text.toString().toLowerCase())) {
+            .contains(searchController.text.toString().toLowerCase())) {
           tempList.add(book[i]);
         }
       }
     }
-    return SizedBox(
-      height: 600,
-      child: ListView.builder(
-        itemCount: tempList.length,
-        itemBuilder: (context, index) => _buildBookTile(tempList[index]),
-      ),
-    );
+    if (tempList.length == 0) {
+      return Center(child: Text("There is no match book title found!"));
+    } else {
+      return SizedBox(
+        height: 600,
+        child: ListView.builder(
+          itemCount: tempList.length,
+          itemBuilder: (context, index) => _buildBookTile(tempList[index]),
+        ),
+      );
+    }
+  }
+
+  Widget _buildSearchCategory() {
+    final book = Provider.of<List<Book>>(context);
+    List<Book> tempList = [];
+    if (book.isNotEmpty) {
+      for (int i = 0; i < book.length; i++) {
+        if (book[i]
+            .title
+            .toLowerCase()
+            .contains(searchController.text.toString().toLowerCase())) {
+          tempList.add(book[i]);
+        }
+      }
+    }
+    if (tempList.length == 0) {
+      return Center(
+          child:
+              Text("There is no match book with the selected category found!"));
+    } else {
+      return SizedBox(
+        height: 600,
+        child: ListView.builder(
+          itemCount: tempList.length,
+          itemBuilder: (context, index) => _buildBookTile(tempList[index]),
+        ),
+      );
+    }
   }
 
   Widget _buildBookTile(Book book) {
@@ -129,7 +161,6 @@ class _HomeBookListState extends State<HomeBookList> {
           child: Image.network(book.imageCoverURL, fit: BoxFit.fill),
         ),
         title: Text("Book Name: ${book.title}"),
-        subtitle: Text("Quantity: ${book.quantity.toString()}"),
         trailing: const Icon(Icons.keyboard_arrow_right),
         onTap: () {
           Navigator.push(
@@ -185,46 +216,111 @@ class _HomeBookListState extends State<HomeBookList> {
     return Container(
       padding: const EdgeInsets.fromLTRB(40, 10, 40, 0),
       child: TextField(
-        controller: _searchController,
+          controller: searchController,
+          decoration: InputDecoration(
+            hintText: "Book Title",
+            prefixIcon: Icon(Icons.search),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: const BorderSide(color: Colors.black)),
+          ),
+          readOnly: checkReadOnlyBool(categoryController.text.length)),
+    );
+  }
+
+  void _callMultiSelectDialog() {
+    List<String> categoryList = getCategoryList();
+    showDialog(
+        context: context,
+        builder: (BuildContext context) =>
+            StatefulBuilder(builder: (context, setState) {
+              return (AlertDialog(
+                title: const Text("Categories"),
+                content: Container(
+                  width: (MediaQuery.of(context).size.width / 3) * 2,
+                  height: (MediaQuery.of(context).size.height / 2),
+                  padding: const EdgeInsets.all(4),
+                  child: ListView.builder(
+                      itemCount: categoryList.length,
+                      itemBuilder: (context, index) {
+                        return _categoryRow(categoryList[index]);
+                      }),
+                ),
+                actions: [
+                  Center(child: searchCategoryButton),
+                ],
+              ));
+            }));
+  }
+
+  Widget _buildCategoryField(String fieldName) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(40, 10, 40, 10),
+      child: TextField(
         decoration: InputDecoration(
-          hintText: "Book Title",
-          prefixIcon: Icon(Icons.search),
+          hintText: "Book Category",
+          suffixIcon: IconButton(
+            onPressed: _callMultiSelectDialog,
+            icon: const Icon(Icons.list),
+          ),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
               borderSide: const BorderSide(color: Colors.black)),
         ),
+        readOnly: true,
+        controller: categoryController,
       ),
     );
   }
 
-  // Widget _buildSearchBox() {
-  //   return Container(
-  //     padding: const EdgeInsets.fromLTRB(40, 10, 40, 0),
-  //     child: FloatingActionButton.extended(
-  //       heroTag: "SearchBtn",
-  //       label: Text('Search Book'), // <-- Text
-  //       backgroundColor: Colors.black,
-  //       icon: Icon(
-  //         // <-- Icon
-  //         Icons.search,
-  //         size: 24.0,
-  //       ),
-  //       onPressed: () {
-  //         Navigator.of(context)
-  //             .push(MaterialPageRoute(builder: (context) => SearchBookScene()));
-  //       },
-  //     ),
-  //   );
-  // }
+  Widget searchCategoryButton =
+      TextButton(onPressed: () {}, child: Text("Search"));
 
-  _onSearchChanged() {
-    print(_searchController.text.length);
+  Widget _categoryRow(String items) {
+    bool added = category.contains(items);
+    return StatefulBuilder(builder: (context, setState) {
+      return ListTile(
+        subtitle: Text(items),
+        trailing: Checkbox(
+          value: added,
+          onChanged: (val) => setState(
+            () {
+              added = val ?? false;
+              added ? category.add(items) : category.remove(items);
+              categoryController.text = "";
+              if (category.isNotEmpty) {
+                for (int i = 0; i < category.length; i++) {
+                  categoryController.text += category[i] + "; ";
+                }
+              }
+            },
+          ),
+        ),
+      );
+    });
   }
 
-  Future layoutInitialize() async {
-    if (_searchController.text.length == 0) {
+  bool checkReadOnlyBool(int i) {
+    if (i == 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  _onSearchChanged() {
+    print(searchController.text);
+  }
+
+  _onSearchChangedCategory() {
+    print(categoryController.text);
+  }
+
+  void layoutInitialize() {
+    if (searchController.text.length == 0) {
       layoutList.clear();
       layoutList.add(_buildSearchBox());
+      layoutList.add(_buildCategoryField("Book Category"));
       layoutList.add(_buildSpace());
       layoutList.add(_buildFantasyRow());
       layoutList.add(_buildSpace());

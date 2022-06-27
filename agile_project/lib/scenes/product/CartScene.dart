@@ -59,17 +59,16 @@ class _CartSceneState extends State<MyCartScene> {
               child: Text("There are no item in cart!"),
             )
           : Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              children: [
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: Column(children: [
                 Expanded(
                   child: buildListView(),
                 ),
                 buildEstimatePriceLayer(),
                 buildButtonLayer(),
               ]),
-          ),
+            ),
     );
   }
 
@@ -94,140 +93,144 @@ class _CartSceneState extends State<MyCartScene> {
       height: 125,
       child: Center(
         child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: 115,
-          child: (item.title.isNotEmpty) ? 
-          ListTile(
-            leading: Container(
-              width: 50,
-              height: 300,
-              child: Image.network(item.imageCoverURL, fit: BoxFit.fill),
-            ),
-            title: Text(item.title),
-            subtitle: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text(
-                    "Quantity: ${cartQuantity.toString()} \n\nTotal Price: RM ${estimatedBookPrice.toStringAsFixed(2)}",
-                    style: const TextStyle(color: Colors.black),
-                  ),
-                ),
-                Row(
-                  children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          primary: kPrimaryColor,
-                          fixedSize: const Size(10, 10)),
-                      child: const Text(
-                        "-",
-                        style: TextStyle(color: kPrimaryLightColor),
-                      ),
-                      onPressed: () async {
-                        decreaseQuantity(item);
-                      },
+            width: MediaQuery.of(context).size.width,
+            height: 115,
+            child: (item.title.isNotEmpty)
+                ? ListTile(
+                    leading: Container(
+                      width: 50,
+                      height: 300,
+                      child:
+                          Image.network(item.imageCoverURL, fit: BoxFit.fill),
                     ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          primary: kPrimaryColor,
-                          fixedSize: const Size(10, 10)),
-                      child: const Text(
-                        "+",
-                        style: TextStyle(color: kPrimaryLightColor),
-                      ),
-                      onPressed: () async {
-                        increaseQuantity(item);
-                      },
+                    title: Text(item.title),
+                    subtitle: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Text(
+                            "Quantity: ${cartQuantity.toString()} \n\nTotal Price: RM ${estimatedBookPrice.toStringAsFixed(2)}",
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: kPrimaryColor,
+                                  fixedSize: const Size(10, 10)),
+                              child: const Text(
+                                "-",
+                                style: TextStyle(color: kPrimaryLightColor),
+                              ),
+                              onPressed: () async {
+                                decreaseQuantity(item);
+                              },
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: kPrimaryColor,
+                                  fixedSize: const Size(10, 10)),
+                              child: const Text(
+                                "+",
+                                style: TextStyle(color: kPrimaryLightColor),
+                              ),
+                              onPressed: () async {
+                                increaseQuantity(item);
+                              },
+                            ),
+                          ],
+                        )
+                      ],
                     ),
-                  ],
-                )
-              ],
-            ),
-            onLongPress: () async {
-              removeBook(item);
-            },
-          ) 
-          : ListTile(
-            title: Text("ISBN Number: ${item.ISBN_13}"),
-            subtitle: const Text("This book been removed from stock. Please remove this book from cart!"),
-            onLongPress: () async {
-              removeBook(item);
-            },
-          )
-        ),
+                    onLongPress: () async {
+                      removeBook(item);
+                    },
+                  )
+                : ListTile(
+                    title: Text("ISBN Number: ${item.ISBN_13}"),
+                    subtitle: const Text(
+                        "This book been removed from stock. Please remove this book from cart!"),
+                    onLongPress: () async {
+                      removeBook(item);
+                    },
+                  )),
       ),
     );
   }
 
   Widget buildButtonLayer() {
     return Container(
-        width: MediaQuery.of(context).size.width,
-        child: 
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 40,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        primary: kPrimaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0)
-                        ),
-                        ),
-                      onPressed: () {
-                        clearAll();                        
-                      },
-                      child: const Text(
-                        "Clear",
-                        style: 
-                        TextStyle(
-                          fontSize: 20,
-                          color: kPrimaryLightColor,
-                          ),
-                      ),
-                    ),
+      width: MediaQuery.of(context).size.width,
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              height: 40,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: kPrimaryColor,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(0)),
+                ),
+                onPressed: () {
+                  clearAll();
+                },
+                child: const Text(
+                  "Clear",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: kPrimaryLightColor,
                   ),
                 ),
-                Expanded(
-                  child: Container(
-                    height: 40,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        primary: kPrimaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                      ),
-                      child: const Text(
-                        "Checkout",
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: kPrimaryLightColor,
-                          ),
-                      ),
-                      onPressed: () async {
-                       if (cartItemMap.isNotEmpty && containValidBooks){
-                        bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) => const MyOrderProductScene()));
-                        if (result){
-                          Navigator.pop(context);
-                        }  
-                       } else if (cartItemMap.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The cart is empty!")));
-                       } else if (!containValidBooks){
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The cart contains invalid stock items!")));
-                       }
-                      },
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-        );
+          ),
+          Expanded(
+            child: Container(
+              height: 40,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: kPrimaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(0),
+                  ),
+                ),
+                child: const Text(
+                  "Checkout",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: kPrimaryLightColor,
+                  ),
+                ),
+                onPressed: () async {
+                  if (cartItemMap.isNotEmpty && containValidBooks) {
+                    bool result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MyOrderProductScene()));
+                    if (result) {
+                      Navigator.pop(context);
+                    }
+                  } else if (cartItemMap.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("The cart is empty!")));
+                  } else if (!containValidBooks) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content:
+                            Text("The cart contains invalid stock items!")));
+                  }
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  Widget buildEstimatePriceLayer(){
+  Widget buildEstimatePriceLayer() {
     return Container(
       padding: const EdgeInsets.all(4),
       height: 75,
@@ -243,20 +246,20 @@ class _CartSceneState extends State<MyCartScene> {
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
-              ),
+            ),
             Text(
               "RM ${Manager.estimatedPrice.toStringAsFixed(2)}",
               style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black
-              ),
-              ),
-          ],    
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
+            ),
+          ],
         ),
       ),
     );
   }
+
   Future initializeDataInformation() async {
     if (user != null) {
       DatabaseService dbService = DatabaseService();
@@ -270,28 +273,37 @@ class _CartSceneState extends State<MyCartScene> {
       containValidBooks = true;
     }
   }
+
   void removeBook(Book item) async {
     CustomDialog customDialog = CustomDialog();
-    String dialogContent = (item.title.isEmpty) ? "Remove the invalid book from your cart?" : "Are you sure to remove ${item.title} from your cart?";
-    bool result = await customDialog.confirm_dialog(context, "Remove Cart Item", dialogContent);
-    if (result){
+    String dialogContent = (item.title.isEmpty)
+        ? "Remove the invalid book from your cart?"
+        : "Are you sure to remove ${item.title} from your cart?";
+    bool result = await customDialog.confirm_dialog(
+        context, "Remove Cart Item", dialogContent);
+    if (result) {
       cartItemMap.remove(item.ISBN_13);
       updateCart();
     }
   }
 
   void clearAll() async {
-    if (cartItemMap.isNotEmpty){
-      bool result = await CustomDialog().confirm_dialog(context, "Remove All Cart Item", "Are you sure to remove everything from your cart?");
-          if (result){
-            cartItemMap = {};
-            updateCart();
-          }
+    if (cartItemMap.isNotEmpty) {
+      bool result = await CustomDialog().confirm_dialog(
+          context,
+          "Remove All Cart Item",
+          "Are you sure to remove everything from your cart?");
+      if (result) {
+        cartItemMap = {};
+        updateCart();
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The cart is already empty!"),));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("The cart is already empty!"),
+      ));
     }
-   
   }
+
   void increaseQuantity(Book item) {
     int currQuantity = cartItemMap[item.ISBN_13]!;
     if (currQuantity >= item.quantity) {

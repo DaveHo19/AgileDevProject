@@ -20,6 +20,7 @@ class _HomeBookListState extends State<HomeBookList> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
   }
 
   @override
@@ -116,7 +117,7 @@ class _HomeBookListState extends State<HomeBookList> {
     layoutList.add(_buildSpace());
     layoutList.add(_buildFantasyRow());
     layoutList.add(_buildSpace());
-    layoutList.add(_buildFantasyRow());
+    layoutList.add(_buildNotFantasyRow());
     layoutList.add(_buildSpace());
     layoutList.add(_buildFantasyRow());
     layoutList.add(_buildSpace());

@@ -320,7 +320,7 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
     return ElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          if (validation.bookFieldValidation(category, tradePrice, retailPrice, quantity, imgSrc, BookManagement.create)){
+          if (validation.bookFieldValidation(category, tradePrice, retailPrice, quantity, imgSrc, widget.bookManagement)){
             if(validation.dateValidation(dateController.text)){
               switch (widget.bookManagement) {
                 case BookManagement.create:
@@ -448,9 +448,9 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
       DateTime pDate = DateFormat("yyyy-MM-dd").parse(dateController.text);
       if (url.isNotEmpty) {
         Book newBook = Book(
-            ISBN_13: id,
-            title: name,
-            author: author,
+            ISBN_13: id.trim(),
+            title: name.trim(),
+            author: author.trim(),
             description: description,
             publishedDate: pDate,
             imageCoverURL: url,
@@ -491,9 +491,9 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
     setState(()=>isProcess = true,);
     DateTime pDate = DateFormat("yyyy-MM-dd").parse(dateController.text);
     Book updBook = Book(
-        ISBN_13: widget.passedBook!.ISBN_13,
-        title: name,
-        author: author,
+        ISBN_13: widget.passedBook!.ISBN_13.trim(),
+        title: name.trim(),
+        author: author.trim(),
         description: description,
         publishedDate: pDate,
         imageCoverURL: widget.passedBook!.imageCoverURL,
@@ -561,8 +561,6 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
     titleController.text = widget.passedBook!.title;
     descController.text = widget.passedBook!.description??"";
     authorController.text = widget.passedBook!.author;
-    //tradePriceController.text =  widget.passedBook!.tradePrice.toStringAsFixed(2);
-    //retailPriceController.text = widget.passedBook!.retailPrice.toStringAsFixed(2);
     tradePrice = widget.passedBook!.tradePrice;
     retailPrice = widget.passedBook!.retailPrice;
     
@@ -580,9 +578,9 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
     });
 
     formWidgetList.clear();
-    dateController.text = DateFormat("yyyy-MM-dd").format(publishedDate);
-    formWidgetList.add(_buildImageField());
     formWidgetList.add(_buildSpace());
+    formWidgetList.add(_buildSpace());
+    dateController.text = DateFormat("yyyy-MM-dd").format(publishedDate);
     formWidgetList.add(_buildIDTextField("ISBN-13 No"));
     formWidgetList.add(_buildSpace());
     formWidgetList.add(_buildTitleTextField("Book Name"));

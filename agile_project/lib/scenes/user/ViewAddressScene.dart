@@ -1,5 +1,6 @@
 import 'dart:html';
 import 'package:agile_project/models/address.dart';
+import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/scenes/user/EditAddressScene.dart';
 import 'package:flutter/material.dart';
 import 'package:agile_project/models/rounded_button.dart';
@@ -10,11 +11,12 @@ class ViewAddressScene extends StatefulWidget {
     Key? key,
     required this.data,
     required this.uid,
+    required this.addressType,
   }) : super(key: key);
 
   final String uid;
-  final BillingAddress data;
-
+  final LocationAddress data;
+  final AddressType addressType;
   @override
   State<ViewAddressScene> createState() => _AddressSceneState();
 }
@@ -27,7 +29,6 @@ class _AddressSceneState extends State<ViewAddressScene> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    //fieldController.text = widget.data;
     nameController.text = widget.data.name;
     addressController.text = widget.data.address;
   }
@@ -70,9 +71,7 @@ class _AddressSceneState extends State<ViewAddressScene> {
             press: () {
               //for pop current scene
               Navigator.pop(context);
-              //for pop address list scene (coz no update)
-              Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => EditAddressScene(addressData: widget.data)));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => EditAddressScene(addressData: widget.data, addressType: widget.addressType ,)));
             },
           ),
         ],

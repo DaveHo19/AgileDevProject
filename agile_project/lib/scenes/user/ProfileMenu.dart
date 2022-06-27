@@ -9,11 +9,13 @@ class ProfileMenu extends StatelessWidget {
     required this.icons,
     required this.value,
     this.notDisplayArrow,
+    this.longPress,
   }) : super(key: key);
 
   final String text, value;
   //final String icon;
   final VoidCallback press;
+  VoidCallback? longPress;  
   final Icon icons;
   bool? notDisplayArrow;
 
@@ -26,6 +28,7 @@ class ProfileMenu extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         color: Color(0xFFF5F6F9),
         onPressed: press,
+        onLongPress: longPress??(){},
         child: Row(children: [
           icons,
           const SizedBox(width: 20),

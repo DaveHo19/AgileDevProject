@@ -1,3 +1,4 @@
+import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/book.dart';
 import 'package:flutter/material.dart';
 
@@ -11,32 +12,59 @@ class CustomDialog{
       context: context,
       builder: (BuildContext context) => (
         AlertDialog(
-          title: Text(title),
+          title: Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            )
+            ),
           content: Container(
             width: 250,
             height: 200,
             padding: const EdgeInsets.all(4),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Center(
                     child: Text(description)),
                   Center(
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            result = false;
-                            Navigator.pop(context);
-                            }, 
-                          child: Text(textForFalse)),
-                        ElevatedButton(
-                          onPressed: () {
-                            result = true;
-                            Navigator.pop(context);
-                            }, 
-                          child: Text(textForTrue)),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: kPrimaryColor,
+                              ),
+                              onPressed: () {
+                                result = false;
+                                Navigator.pop(context);
+                                }, 
+                              child: Text(
+                                textForFalse,
+                                style: const TextStyle(color: kPrimaryLightColor),
+                                )),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: kPrimaryColor,
+                              ),
+                              onPressed: () {
+                                result = true;
+                                Navigator.pop(context);
+                                }, 
+                              child: Text(
+                                textForTrue,
+                                style: const TextStyle(color: kPrimaryLightColor),
+                              )),
+                          ),
+                        ),
                       ],
                     ),
                   )

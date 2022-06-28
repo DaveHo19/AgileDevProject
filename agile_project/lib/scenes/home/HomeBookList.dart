@@ -250,12 +250,20 @@ class _HomeBookListState extends State<HomeBookList> {
                         return _categoryRow(categoryList[index]);
                       }),
                 ),
-                // actions: [
-                //   Center(
-                //     child: TextButton(
-                //         onPressed: onPressed, child: Text("Reset Category")),
-                //   )
-                // ],
+                actions: [
+                  Center(
+                    child: TextButton(
+                        onPressed: () {
+                          setState(
+                            () {
+                              category.clear();
+                              categoryController.text = "";
+                            },
+                          );
+                        },
+                        child: Text("Reset Category")),
+                  )
+                ],
               ));
             }));
   }

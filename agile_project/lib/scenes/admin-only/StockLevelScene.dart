@@ -41,17 +41,17 @@ class _MyStockLevelSceneState extends State<MyStockLevelScene> {
               onPressed: null,
             ),
             PopupMenuButton(
-              itemBuilder: (context) {
-                return [
-                  const PopupMenuItem<int>(
-                    value: 0,
-                    child: Text("Order List"),
-                  ),
-                ];
-              },
-              onSelected: (int i) => {
-                    menuItemHandler(context, i),
-                  })
+                itemBuilder: (context) {
+                  return [
+                    const PopupMenuItem<int>(
+                      value: 0,
+                      child: Text("Order List"),
+                    ),
+                  ];
+                },
+                onSelected: (int i) => {
+                      menuItemHandler(context, i),
+                    })
           ],
         ),
         body: const BookList(),
@@ -78,46 +78,12 @@ class _MyStockLevelSceneState extends State<MyStockLevelScene> {
     return <Book>[];
   }
 
-  void menuItemHandler(BuildContext context, int index){
-    switch (index){
+  void menuItemHandler(BuildContext context, int index) {
+    switch (index) {
       case 0:
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const MyOrderListScene()));
-      break;
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const MyOrderListScene()));
+        break;
     }
   }
-  // Widget _generateListView() {
-  //   return FutureBuilder(
-  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-  //       if (snapshot.connectionState == ConnectionState.done) {
-  //         return _buildContent(snapshot);
-  //       } else {
-  //         return const Center(child: CircularProgressIndicator());
-  //       }
-  //     },
-  //   );
-  // }
-
-  // Future<QuerySnapshot> getBookList() async {
-  //   QuerySnapshot querySnapshot = await bookRef.collection('books').get();
-  //   final allBookRefData = querySnapshot.docs.map((doc) => doc.data()).toList();
-  //   final allBookData = querySnapshot.docs.map((doc) {
-  //     Book book = Book(
-  //       ISBN_13: doc.get("ISBN_13") ?? "",
-  //       title: doc.get("title") ?? "",
-  //       description: doc.get("desc") ?? "",
-  //       author: doc.get("author") ?? "",
-  //       publishedDate: doc.get("publishedDate") ?? DateTime.now(),
-  //       imageCoverURL: doc.get("imgCoverUrl") ?? "",
-  //       tags: doc.get("tags") ?? <String>[],
-  //       tradePrice: doc.get("tradePrice") ?? 0,
-  //       retailPrice: doc.get("retailPrice") ?? 0,
-  //       quantity: doc.get("quantity") ?? 0,
-  //     );
-  //   }).toList();
-  //   print(allBookRefData);
-  //   return querySnapshot;
-  // }
 }

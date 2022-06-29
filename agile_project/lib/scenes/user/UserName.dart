@@ -31,7 +31,7 @@ class _UserNameFieldSceneState extends State<UserNameFieldScene> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: (){
+      onWillPop: () {
         Navigator.pop(context, false);
         return Future.value(false);
       },
@@ -82,16 +82,3 @@ class _UserNameFieldSceneState extends State<UserNameFieldScene> {
     }
   }
 }
-
-
-// class UserNameScene extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text("Edit Name"),
-//       ),
-//       body: EditNameBody(),
-//     );
-//   }
-// }

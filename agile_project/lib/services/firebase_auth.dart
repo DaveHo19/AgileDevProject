@@ -3,17 +3,16 @@ import 'package:agile_project/services/databaseService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:agile_project/models/user.dart';
 
-class AuthService{
-
+class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   //create user obj based on FirebaseUser
-  AppUser? _userFromFirebase(User? user){
+  AppUser? _userFromFirebase(User? user) {
     return user != null ? AppUser(uid: user.uid) : null;
   }
+
   // auth change user stream
   Stream<AppUser?> get user {
-    //return _auth.authStateChanges().map((User? user) => _userFromFirebase(user));
     return _auth.authStateChanges().map(_userFromFirebase);
   }
 
@@ -31,8 +30,9 @@ class AuthService{
 
   // sign in as email & password
   Future signInWithEmailAndPassword(String email, String password) async {
-    try{
-      UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
+    try {
+      UserCredential result = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
       User? user = result.user;
       return _userFromFirebase(user);
     } catch (e) {
@@ -40,34 +40,37 @@ class AuthService{
       return null;
     }
   }
+
   // register with email & password
   Future registerWithEmailAndPassword(String email, String password) async {
     try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      UserCredential result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
       User? user = result.user;
-      if( user != null){
-        dynamic result = await DatabaseService().createUserProfile(UserInfomation(
-          uid: user.uid, 
-          userName: "New User", 
-          emailAddress: email, 
-          accountLevel: 1));
-          
-        if (result == null){
+      if (user != null) {
+        dynamic result = await DatabaseService().createUserProfile(
+            UserInfomation(
+                uid: user.uid,
+                userName: "New User",
+                emailAddress: email,
+                accountLevel: 1));
+
+        if (result == null) {
           AppUser newUser = AppUser(uid: user.uid);
         }
-      
       }
       return _userFromFirebase(user);
-    } catch (e){
+    } catch (e) {
       print(e.toString());
       return null;
     }
   }
-  // sign out 
+
+  // sign out
   Future signOut() async {
     try {
       return await _auth.signOut();
-    } catch (e){
+    } catch (e) {
       print(e.toString());
       return null;
     }

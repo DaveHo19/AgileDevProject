@@ -31,7 +31,7 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: (){
+      onWillPop: () {
         Navigator.pop(context, false);
         return Future.value(false);
       },
@@ -76,22 +76,10 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
     if (result == null) {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Sucess")));
-          Navigator.pop(context, true);
+      Navigator.pop(context, true);
     } else {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Failed")));
     }
   }
 }
-
-// class ContactNumberScene extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text("Edit Contact Number"),
-//       ),
-//       body: EditContactNumberBody(),
-//     );
-//   }
-// }

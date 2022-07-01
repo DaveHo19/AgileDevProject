@@ -24,6 +24,8 @@ class _BookListState extends State<BookList> {
       },
     );
   }
+
+  //Container is used to store one or more widgets and position them on the screen
   Widget _buildBookTile(Book book) {
     return Container(
       width: MediaQuery.of(context).size.width,

@@ -23,6 +23,7 @@ class _MyStockLevelSceneState extends State<MyStockLevelScene> {
     super.initState();
   }
 
+//Stream provider: a single instance of a provider can be provided to multiple widgets within a subtree.
   @override
   Widget build(BuildContext context) {
     return StreamProvider<List<Book>>.value(
@@ -41,17 +42,17 @@ class _MyStockLevelSceneState extends State<MyStockLevelScene> {
               onPressed: null,
             ),
             PopupMenuButton(
-              itemBuilder: (context) {
-                return [
-                  const PopupMenuItem<int>(
-                    value: 0,
-                    child: Text("Order List"),
-                  ),
-                ];
-              },
-              onSelected: (int i) => {
-                    menuItemHandler(context, i),
-                  })
+                itemBuilder: (context) {
+                  return [
+                    const PopupMenuItem<int>(
+                      value: 0,
+                      child: Text("Order List"),
+                    ),
+                  ];
+                },
+                onSelected: (int i) => {
+                      menuItemHandler(context, i),
+                    })
           ],
         ),
         body: const BookList(),
@@ -71,6 +72,7 @@ class _MyStockLevelSceneState extends State<MyStockLevelScene> {
     );
   }
 
+//prompt error message
   List<Book> errorMessage(BuildContext context, var data) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(data.toString())));
@@ -78,14 +80,12 @@ class _MyStockLevelSceneState extends State<MyStockLevelScene> {
     return <Book>[];
   }
 
-  void menuItemHandler(BuildContext context, int index){
-    switch (index){
+  void menuItemHandler(BuildContext context, int index) {
+    switch (index) {
       case 0:
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const MyOrderListScene()));
-      break;
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const MyOrderListScene()));
+        break;
     }
   }
   // Widget _generateListView() {

@@ -13,6 +13,7 @@ class ContactNumberScene extends StatefulWidget {
 
   final String uid;
   final String data;
+  //bool isLoading = false;
 
   @override
   State<ContactNumberScene> createState() => _ContactNumberSceneState();
@@ -27,6 +28,8 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
     super.initState();
     fieldController.text = widget.data;
   }
+
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -69,17 +72,53 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
     );
   }
 
+  // ORIGINAL BLOCK!!!
+  // void updatePhone() async {
+  //   DatabaseService dbService = DatabaseService();
+  //   dynamic result =
+  //       await dbService.updatePhoneNumber(widget.uid, fieldController.text);
+  //   if (result == null) {
+  //     ScaffoldMessenger.of(context)
+  //         .showSnackBar(const SnackBar(content: Text("Sucess")));
+  //     Navigator.pop(context, true);
+  //   } else {
+  //     ScaffoldMessenger.of(context)
+  //         .showSnackBar(const SnackBar(content: Text("Failed")));
+  //   }
+  // }
+
   void updatePhone() async {
-    DatabaseService dbService = DatabaseService();
-    dynamic result =
-        await dbService.updatePhoneNumber(widget.uid, fieldController.text);
-    if (result == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Sucess")));
-      Navigator.pop(context, true);
+    if (isFilledAll(fieldController.text)) {
+      if (validatePhone(fieldController.text)) {
+        setState(() {
+          isLoading = true;
+        });
+        DatabaseService dbService = DatabaseService();
+        dynamic result =
+            await dbService.updatePhoneNumber(widget.uid, fieldController.text);
+        if (result == null) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text("Sucess")));
+          Navigator.pop(context, true);
+        } else {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text("Failed")));
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Invalid format for contact number!")));
+      }
     } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Failed")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("There are some field is empty!")));
     }
+  }
+
+  bool validatePhone(String fieldController) {
+    return RegExp(r"^(?:[+0]9)?[0-9]{11}$").hasMatch(fieldController);
+  }
+
+  bool isFilledAll(String fieldController) {
+    return ((fieldController.isNotEmpty));
   }
 }

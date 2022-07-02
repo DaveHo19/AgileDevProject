@@ -13,7 +13,6 @@ class ContactNumberScene extends StatefulWidget {
 
   final String uid;
   final String data;
-  //bool isLoading = false;
 
   @override
   State<ContactNumberScene> createState() => _ContactNumberSceneState();
@@ -71,21 +70,6 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
       ),
     );
   }
-
-  // ORIGINAL BLOCK!!!
-  // void updatePhone() async {
-  //   DatabaseService dbService = DatabaseService();
-  //   dynamic result =
-  //       await dbService.updatePhoneNumber(widget.uid, fieldController.text);
-  //   if (result == null) {
-  //     ScaffoldMessenger.of(context)
-  //         .showSnackBar(const SnackBar(content: Text("Sucess")));
-  //     Navigator.pop(context, true);
-  //   } else {
-  //     ScaffoldMessenger.of(context)
-  //         .showSnackBar(const SnackBar(content: Text("Failed")));
-  //   }
-  // }
 
   void updatePhone() async {
     if (isFilledAll(fieldController.text)) {

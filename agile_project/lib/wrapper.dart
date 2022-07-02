@@ -155,6 +155,7 @@ class _WrapperState extends State<Wrapper> {
     _bottomNavigationScene.clear();
     _bottomNavigationScene.add(const MyHomeScene());
     _bottomNavigationScene.add(const MyWishlistScene());
+    //_bottomNavigationScene.add(const MyProfileScene());
     _bottomNavigationScene.add(ProfileScene());
   }
 

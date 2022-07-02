@@ -97,12 +97,12 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
         dynamic result =
             await dbService.updatePhoneNumber(widget.uid, fieldController.text);
         if (result == null) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text("Sucess")));
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Updated successfully!")));
           Navigator.pop(context, true);
         } else {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text("Failed")));
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Opps! Update Failed")));
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -110,12 +110,12 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("There are some field is empty!")));
+          const SnackBar(content: Text("The field cannot be empty!")));
     }
   }
 
   bool validatePhone(String fieldController) {
-    return RegExp(r"^(?:[+0]9)?[0-9]{11}$").hasMatch(fieldController);
+    return RegExp(r"^(?:[+0]9)?[0-9]{10,11}$").hasMatch(fieldController);
   }
 
   bool isFilledAll(String fieldController) {

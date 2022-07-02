@@ -1,3 +1,4 @@
+import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/address.dart';
 import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/models/rounded_button.dart';
@@ -40,7 +41,7 @@ class _EditAddressSceneState extends State<EditAddressScene> {
     initialAddress();
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: kPrimaryColor,
         title: const Text("Edit Address Info"),
       ),
       body: Center(
@@ -89,36 +90,54 @@ class _EditAddressSceneState extends State<EditAddressScene> {
   }
 
   void updateAddress() async {
-    DatabaseService dbService = DatabaseService();
-    if ((widget.addressData.name != nameController.text) &&
-        (addressMap.containsKey(nameController.text))) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("The address name is already exists!")));
-    } else {
-      addressMap.remove(widget.addressData.name);
-      addressMap[nameController.text] = addressController.text;
-      if (user != null) {
-        dynamic result;
-        switch (widget.addressType) {
-          case AddressType.billing:
-            result =
-                await dbService.updateUserBillingAddress(user!.uid, addressMap);
-            break;
-          case AddressType.shipping:
-            result = await dbService.updateUserShippingAddress(
-                user!.uid, addressMap);
-            break;
-        }
-
-        if (result == null) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text("Updated!")));
-          Navigator.pop(context);
+    if (isFilledAll(nameController.text, addressController.text)) {
+      if (validateName(nameController.text)) {
+        DatabaseService dbService = DatabaseService();
+        if ((widget.addressData.name != nameController.text) &&
+            (addressMap.containsKey(nameController.text))) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("The address name is already exists!")));
         } else {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text("Failed to update!")));
+          addressMap.remove(widget.addressData.name);
+          addressMap[nameController.text] = addressController.text;
+          if (user != null) {
+            dynamic result;
+            switch (widget.addressType) {
+              case AddressType.billing:
+                result = await dbService.updateUserBillingAddress(
+                    user!.uid, addressMap);
+                break;
+              case AddressType.shipping:
+                result = await dbService.updateUserShippingAddress(
+                    user!.uid, addressMap);
+                break;
+            }
+            if (result == null) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(const SnackBar(content: Text("Updated!")));
+              Navigator.pop(context);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Failed to update!")));
+            }
+          }
         }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+                "The address name must be contain 5-20 characters only!")));
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("The field cannot be empty!")));
     }
+  }
+
+  bool validateName(String nameController) {
+    return RegExp(r"^(?=[a-zA-Z0-9]{5,20}$)").hasMatch(nameController);
+  }
+
+  bool isFilledAll(String nameController, String addressController) {
+    return ((nameController.isNotEmpty) && (addressController.isNotEmpty));
   }
 }

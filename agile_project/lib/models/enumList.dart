@@ -1,7 +1,6 @@
 enum BookManagement{
   create,
   edit,
-  delete,
 }
 
 enum AccountType{
@@ -15,3 +14,7 @@ enum ViewManagement{
   private,
 }
 
+enum AddressType{
+  billing,
+  shipping,
+}

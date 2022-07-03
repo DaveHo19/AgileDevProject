@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   if (kIsWeb) {
     await Firebase.initializeApp(
         options: const FirebaseOptions(
@@ -29,16 +30,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<AppUser?>.value(
-      initialData: null,
-      value: AuthService().user,
-      child: MaterialApp(
-        title: "Agile Project",
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: const Wrapper(),
-      ),
-    );
+    return  StreamProvider<AppUser?>.value(
+          initialData: null,
+          value: AuthService().user,
+          child: MaterialApp(
+            title: "Agile Project",
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+            home: const Wrapper(),
+          ),
+        );
   }
 }

@@ -23,6 +23,19 @@ class Book {
     required this.quantity,
   });
 
+  static Book createEmptyBook(String isbn){
+    return Book(
+      ISBN_13: isbn, 
+      title: "", 
+      author: "", 
+      publishedDate: DateTime.now(), 
+      imageCoverURL: "", 
+      tags: [], 
+      tradePrice: 0, 
+      retailPrice: 0, 
+      quantity: 0); 
+  }
+
   void toInfo() {
     print(
         "ISBN_13: $ISBN_13, Title: $title, Author: $author, P.Date: ${publishedDate.toString()}, imgCover: $imageCoverURL, tags: $tags, tPrice: $tradePrice, rPrice: $retailPrice, qty: $quantity");

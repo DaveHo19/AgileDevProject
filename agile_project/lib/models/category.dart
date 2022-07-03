@@ -1,4 +1,3 @@
-import 'package:agile_project/main.dart';
 
 List<String> getCategoryList() {
   return [

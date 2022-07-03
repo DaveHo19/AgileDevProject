@@ -1,3 +1,4 @@
+import 'package:agile_project/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:agile_project/scenes/authentication/register/RegisterBody.dart';
 
@@ -20,8 +21,8 @@ class _MyRegisterSceneState extends State<MyRegisterScene>{
     return Scaffold(
         appBar: AppBar(
           title: const Text("Register"),
-          backgroundColor: Colors.black,
-          foregroundColor: Colors.white,
+          backgroundColor: kPrimaryColor,
+          foregroundColor: kPrimaryLightColor,
         ),
         body: RegisterBody(),
     );

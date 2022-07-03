@@ -1,21 +1,21 @@
-import 'dart:js_util';
-
+import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/book.dart';
+import 'package:agile_project/models/cartItem.dart';
 import 'package:agile_project/models/user.dart';
-import 'package:agile_project/models/userInfo.dart';
 import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
-import 'package:agile_project/scenes/authentication/login/LoginScene.dart';
-import 'package:agile_project/scenes/authentication/register/RegisterScene.dart';
 import 'package:agile_project/scenes/debug/debug_auth.dart';
+import 'package:agile_project/scenes/debug/debug_cart.dart';
 import 'package:agile_project/scenes/debug/debug_image.dart';
-import 'package:agile_project/scenes/debug/debug_retrieve.dart';
 import 'package:agile_project/scenes/home/HomeScene.dart';
+import 'package:agile_project/scenes/product/CartScene.dart';
 import 'package:agile_project/scenes/product/ManageProductScene.dart';
+import 'package:agile_project/scenes/product/OrderProductScene.dart';
 import 'package:agile_project/scenes/product/ViewProductScene.dart';
-import 'package:agile_project/scenes/user/ProfileScene.dart';
-import 'package:agile_project/scenes/user/WishlistScene.dart';
+import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
+import 'package:agile_project/scenes/user/ProfileBody.dart';
+import 'package:agile_project/scenes/wish-list/WishlistScene.dart';
 import 'package:agile_project/services/databaseService.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:agile_project/services/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,11 +31,23 @@ class Wrapper extends StatefulWidget {
 class _WrapperState extends State<Wrapper> {
  //initial scene for bottom navigator
   int _selectedNavIndex = 0;
-  AccountType accountType = AccountType.guest;
-  var user;
+  String currentContentTitle = "Home";
+  AppUser? user;
+
   void _onItemTapped(int index){
-    setState(() => {
-    _selectedNavIndex = index,
+    setState(() {
+    _selectedNavIndex = index;
+    switch(_selectedNavIndex){
+      case 0:
+        currentContentTitle = "Home";
+        break;
+      case 1:
+        currentContentTitle = "My Wishlist";
+        break;
+      case 2:
+        currentContentTitle = "My Profile";
+        break;
+    }
     });
   }
 
@@ -52,24 +64,39 @@ class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
     user = Provider.of<AppUser?>(context);
-    isAdmin();
-    return Scaffold(
+    return (user != null && !Manager.initialized) ? FutureBuilder(
+        future: initializeDataInformation(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Loading();
+          } else {
+            return buildContent();
+          }
+        }) : buildContent();
+  }
+
+  Widget buildContent(){
+    return  Scaffold(
       //top bar
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        backgroundColor: kPrimaryColor,
+        foregroundColor: kPrimaryLightColor,
+        title: Text(currentContentTitle),
         actions: [
-          IconButton(
+          (user != null) 
+          ? ElevatedButton.icon(
+            onPressed: () async {
+              bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) => const MyCartScene()));
+              if(result){
+                setState(() {
+                });
+              }
+            }, 
             icon: const Icon(Icons.shopping_cart),
-            onPressed: pass,
-          ),
-          //debug purpose
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: ()=>{
-              print(user),
-            },
-          ),
+            label: Text(Manager.estimatedPrice.toStringAsFixed(2)),
+            style: ElevatedButton.styleFrom(primary: Colors.transparent)
+            ) 
+            : Container(),
           //debug purpose
           PopupMenuButton(
             itemBuilder: (context) => [
@@ -79,24 +106,8 @@ class _WrapperState extends State<Wrapper> {
               ),              
               const PopupMenuItem<int>(
                 value: 1,
-                child: Text("View"),
+                child: Text("Checkout"),
               ),
-              const PopupMenuItem<int>(
-                value: 2,
-                child: Text("Manage"),
-              ),    
-              const PopupMenuItem<int>(
-                value: 3,
-                child: Text("Debug-Auth"),
-              ),    
-              const PopupMenuItem<int>(
-                value: 4,
-                child: Text("Debug-Image"),
-              ),    
-              const PopupMenuItem<int>(
-                value: 5,
-                child: Text("Debug-Retrieve"),
-              ),               
             ], 
             onSelected: (int i) => {
               debugHandler(context, i)
@@ -124,11 +135,11 @@ class _WrapperState extends State<Wrapper> {
           currentIndex: _selectedNavIndex,
           onTap: _onItemTapped,
         ),
-        floatingActionButton: (accountType == AccountType.admin) ? 
+        floatingActionButton: (Manager.currAccountType == AccountType.admin) ? 
           FloatingActionButton(
-            backgroundColor: Colors.black,
-            child: const Icon(Icons.settings, color: Colors.white,),
-            onPressed: _onFabTapped)
+            backgroundColor: kPrimaryColor,
+            onPressed: _onFabTapped,
+            child: const Icon(Icons.settings, color: kPrimaryLightColor,))
           : null,
       );
   }
@@ -140,7 +151,8 @@ class _WrapperState extends State<Wrapper> {
     _bottomNavigationScene.clear();
     _bottomNavigationScene.add(const MyHomeScene());
     _bottomNavigationScene.add(const MyWishlistScene());
-    _bottomNavigationScene.add(const MyProfileScene());
+    //_bottomNavigationScene.add(const MyProfileScene());
+    _bottomNavigationScene.add(ProfileScene());
   }
 
   void _onFabTapped(){
@@ -154,52 +166,35 @@ class _WrapperState extends State<Wrapper> {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const MyStockLevelScene()));    
         break;
       case 1:
-        List<String> items = <String>[];
-        items.add("A");
-        items.add("B");
-        Book tempBook = Book(
-          ISBN_13: "Test", 
-          title: "Testing", 
-          author: "Mr. Test", 
-          publishedDate: DateTime.now(), 
-          imageCoverURL: "https://firebasestorage.googleapis.com/v0/b/agileproject-abd4b.appspot.com/o/bookCoverImage%2F0-7475-4215-9?alt=media&token=5e98a0d1-3b3d-4c4a-9abf-f62356c3c395", 
-          tags: items, 
-          tradePrice: 12.2324242, 
-          retailPrice: 15.51861218, 
-          quantity: 5);
- Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => MyViewProductScene(
-                    viewManagement: ViewManagement.public, book: tempBook)));
-        break;
-      case 2:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => MyManageProductScene(bookManagement: BookManagement.create,)));    
-        break;     
-      case 3: 
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugAuth()));    
-        break;
-      case 4:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugImage()));    
-      break;
-      case 5:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DebugRetrieve()));
-      break;
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyOrderProductScene()));    
+       break;
     }
   }
 
-  void isAdmin(){
-     
-     if (user != null){
-      if (user.uid == "AJDG4Ze3wpdav5bThoGHMfCekmI2"){
-        accountType = AccountType.admin;
-     } else {
-       accountType = AccountType.user;
-      } 
-     } else {
-       accountType = AccountType.guest;
-     }
-     
+  Future initializeDataInformation() async {
+    if (user != null){
+      DatabaseService dbService = DatabaseService();
+      int level = await dbService.getAccountLevel(user!.uid);
+      Manager.currAccountType = (level == 1) ? AccountType.user : 
+                                (level == 0) ? AccountType.admin : AccountType.guest;
+      await getEstimatePrice();
+    } 
+  }  
+
+  Future getEstimatePrice() async {
+    DatabaseService dbService = DatabaseService();
+    Manager.estimatedPrice = 0;
+    Map<String, int> cartItemMap = await dbService.getCartItems(user!.uid);
+    if (cartItemMap.isNotEmpty && user != null){
+      List<CartItem> cartItemList = [];
+      cartItemList = cartItemMap.entries.map((e) => CartItem(bookID: e.key, quantity: e.value)).toList();
+      for(int i = 0; i < cartItemList.length; i++){
+        Book tempBook = await dbService.getBookByISBN(cartItemList[i].bookID);
+        double priceForBook = tempBook.retailPrice * cartItemList[i].quantity;
+        Manager.estimatedPrice  += priceForBook;
+        Manager.initialized = true;
+      }
+    }
   }
-  
+
 }

@@ -15,3 +15,7 @@ enum ViewManagement{
   private,
 }
 
+enum AddressType{
+  billing,
+  shipping,
+}

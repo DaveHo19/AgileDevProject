@@ -1,3 +1,4 @@
+import 'package:agile_project/constants.dart';
 import 'package:flutter/material.dart';
 
 class Loading extends StatelessWidget {
@@ -6,9 +7,11 @@ class Loading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.grey,
+      color: kPrimaryColor,
       child: const Center(
         child: CircularProgressIndicator(
+          strokeWidth: 5,
+          color: kPrimaryLightColor,
         ),
       ),
     );

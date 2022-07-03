@@ -43,21 +43,24 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
     user = Provider.of<AppUser?>(context);
     return isProcess
         ? const Loading()
-        : (!initial) ? FutureBuilder(
-            future: initializeDataInformation(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return const Loading();
-              } else {
-                initial = true;
-                return buildContent();
-              }
-            }) : buildContent();
+        : (!initial)
+            ? FutureBuilder(
+                future: initializeDataInformation(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    return const Loading();
+                  } else {
+                    initial = true;
+                    return buildContent();
+                  }
+                })
+            : buildContent();
   }
 
+//user can't check out if the cart is empty
   Widget buildContent() {
     return WillPopScope(
-      onWillPop: (){
+      onWillPop: () {
         Navigator.pop(context, false);
         return Future.value(false);
       },
@@ -67,15 +70,18 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
           backgroundColor: kPrimaryColor,
           foregroundColor: kPrimaryLightColor,
         ),
-        body: (cartItemMap.isEmpty) ? const Center(child: Text("No items Here!"),) 
-        : Form(
-          key: formKey,
-          child: ListView.builder(
-              itemCount: widgetList.length,
-              itemBuilder: (context, i) {
-                return widgetList[i];
-              }),
-        ),
+        body: (cartItemMap.isEmpty)
+            ? const Center(
+                child: Text("No items Here!"),
+              )
+            : Form(
+                key: formKey,
+                child: ListView.builder(
+                    itemCount: widgetList.length,
+                    itemBuilder: (context, i) {
+                      return widgetList[i];
+                    }),
+              ),
       ),
     );
   }
@@ -93,10 +99,11 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
     widgetList.add(formSection("Customer Infomation"));
     widgetList.add(orderNameRow());
     widgetList.add(orderInfoField("Your Contact", contactController));
-    widgetList.add(orderAddressField("Billing Address", bAddressController, AddressType.billing));
-    widgetList.add(orderAddressField("Shipping Address", sAddressController, AddressType.shipping));
+    widgetList.add(orderAddressField(
+        "Billing Address", bAddressController, AddressType.billing));
+    widgetList.add(orderAddressField(
+        "Shipping Address", sAddressController, AddressType.shipping));
     widgetList.add(makeOrderButtonRow());
-
   }
 
   Widget formSection(String title) {
@@ -111,6 +118,7 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
     );
   }
 
+//order with details ad price
   Widget orderHeader() {
     return Container(
         width: MediaQuery.of(context).size.width,
@@ -129,6 +137,8 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
         ));
   }
 
+//item price is calculated by quantity times the retail price
+//prices shown in 2dp
   Widget orderItem(Book book, int index) {
     double itemPrice = 0;
     int quantity = cartItemMap[book.ISBN_13] ?? 0;
@@ -159,6 +169,7 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
     );
   }
 
+//shows the order postage
   Widget orderDeliveryTotal() {
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -171,6 +182,7 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
     );
   }
 
+//total price of order = item prices + postage
   Widget orderTotalPrice() {
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -184,7 +196,8 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
     );
   }
 
-  Widget orderNameRow(){
+//order will shows users' name (who ordered) and the receipient name
+  Widget orderNameRow() {
     return Container(
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.only(top: 10),
@@ -196,18 +209,20 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
       ),
     );
   }
+
   Widget orderInfoField(String fieldName, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.all(10),
       child: TextFormField(
-          controller: controller,
-          validator: (String? val) =>
-              (val != null && val.isEmpty) ? "Enter the $fieldName" : null,
-          decoration: inputDecoration(fieldName),
-        ),
+        controller: controller,
+        validator: (String? val) =>
+            (val != null && val.isEmpty) ? "Enter the $fieldName" : null,
+        decoration: inputDecoration(fieldName),
+      ),
     );
   }
 
+//addresses for user to select (if they have more than one registered address)
   Widget orderAddressField(String fieldName, TextEditingController controller,
       AddressType addressType) {
     return Padding(
@@ -219,33 +234,34 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
                 icon: const Icon(Icons.list))),
         readOnly: true,
         controller: controller,
-        validator: (String? val) => (val != null && val.isEmpty) ? "Select the $fieldName" : null, 
+        validator: (String? val) =>
+            (val != null && val.isEmpty) ? "Select the $fieldName" : null,
       ),
     );
   }
 
-  Widget makeOrderButtonRow(){
+//make order and proceed to payment page
+  Widget makeOrderButtonRow() {
     return Center(
-      child: Container(
-        padding: const EdgeInsets.all(2),
-        width: 100,
-        height: 50,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            primary: kPrimaryColor,          
-          ),
-          child: const Text(
-            "Pay Now",
-            style: TextStyle(
-              color: kPrimaryLightColor,
-              ),
-            ),
-          onPressed: () {
-            proceedToPayment();
-          },
+        child: Container(
+      padding: const EdgeInsets.all(2),
+      width: 100,
+      height: 50,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          primary: kPrimaryColor,
         ),
-      )
-    );
+        child: const Text(
+          "Pay Now",
+          style: TextStyle(
+            color: kPrimaryLightColor,
+          ),
+        ),
+        onPressed: () {
+          proceedToPayment();
+        },
+      ),
+    ));
   }
 
   Future initializeDataInformation() async {
@@ -267,26 +283,32 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
   }
 
   void proceedToPayment() async {
-    if (formKey.currentState!.validate()){
+    if (formKey.currentState!.validate()) {
       OrderInfo newOrder = OrderInfo(
-        orderCode: "ABC", 
-        buyerName: nameController.text.trim(), 
-        recipientName: recipientController.text.trim(), 
-        contactNumber: contactController.text.trim(),
-        billingAddress: bAddressController.text, 
-        shippingAddress: sAddressController.text, 
-        orderItems: cartItemMap,
-        orderItemPrices: Manager.estimatedPrice, 
-        deliveryFee: calculatePostageCost(), 
-        orderDate: DateTime.now());
-        bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) => MyPaymentScene(orderData: newOrder)));    
-        if (result){
-          Navigator.pop(context, true);
-        }
+          orderCode: "ABC",
+          buyerName: nameController.text.trim(),
+          recipientName: recipientController.text.trim(),
+          contactNumber: contactController.text.trim(),
+          billingAddress: bAddressController.text,
+          shippingAddress: sAddressController.text,
+          orderItems: cartItemMap,
+          orderItemPrices: Manager.estimatedPrice,
+          deliveryFee: calculatePostageCost(),
+          orderDate: DateTime.now());
+      bool result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MyPaymentScene(orderData: newOrder)));
+      if (result) {
+        Navigator.pop(context, true);
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all of the field!")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please fill all of the field!")));
     }
   }
+
+  //postage is calculated by using quantity of book ordered times the length of the book
   int calculatePostageCost() {
     int postage = 0;
     postage += (bookList.length * 3);
@@ -298,6 +320,7 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
     return postage;
   }
 
+//user can select the address from addresses list for billing address & shipping address
   void addressSelector(AddressType addressType) {
     List<LocationAddress> addressList = (addressType == AddressType.billing)
         ? billingAddressMap.entries
@@ -322,21 +345,25 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
                     child: ListView.builder(
                         itemCount: addressList.length,
                         itemBuilder: (context, index) {
-                          return buildAddressRow(addressList[index], (addressType == AddressType.billing) ? bAddressController : sAddressController);
+                          return buildAddressRow(
+                              addressList[index],
+                              (addressType == AddressType.billing)
+                                  ? bAddressController
+                                  : sAddressController);
                         }),
                   )));
             }));
   }
 
-  Widget buildAddressRow(LocationAddress address, TextEditingController controller){
+  Widget buildAddressRow(
+      LocationAddress address, TextEditingController controller) {
     return ListTile(
       title: Text(address.name),
       subtitle: Text(address.address),
       onTap: () {
         controller.text = address.address;
         Navigator.pop(context);
-        setState(() {
-        });
+        setState(() {});
       },
     );
   }

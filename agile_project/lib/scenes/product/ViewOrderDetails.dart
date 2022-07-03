@@ -33,17 +33,17 @@ class _MyViewOrderDetailsState extends State<MyViewOrderDetails> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-          future: initializeDataInformation(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
-              return const Loading();
-            } else {
-              return buildContent();
-            }
-          });
+        future: initializeDataInformation(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Loading();
+          } else {
+            return buildContent();
+          }
+        });
   }
 
-  Widget buildContent(){
+  Widget buildContent() {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Order Info"),
@@ -57,6 +57,7 @@ class _MyViewOrderDetailsState extends State<MyViewOrderDetails> {
           }),
     );
   }
+
   void buildFormContent() {
     widgetList.clear();
     widgetList.add(formSection("Order Item(s)"));
@@ -104,6 +105,7 @@ class _MyViewOrderDetailsState extends State<MyViewOrderDetails> {
         ));
   }
 
+//shows order item price and quantity
   Widget orderItem(Book book, int index) {
     double itemPrice = 0;
     int quantity = cartItemMap[book.ISBN_13] ?? 0;

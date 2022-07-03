@@ -16,7 +16,7 @@ class MyAddressScene extends StatefulWidget {
   const MyAddressScene({
     Key? key,
     required this.addressType,
-    }) : super(key: key);
+  }) : super(key: key);
 
   final AddressType addressType;
   @override
@@ -24,7 +24,7 @@ class MyAddressScene extends StatefulWidget {
 }
 
 class _MyAddressSceneState extends State<MyAddressScene> {
-  Map<String, String> addressMap = {};  
+  Map<String, String> addressMap = {};
   List<LocationAddress> addressList = [];
 
   AppUser? user;
@@ -47,17 +47,18 @@ class _MyAddressSceneState extends State<MyAddressScene> {
     addressMap.clear();
     DatabaseService dbService = DatabaseService();
     if (user != null) {
-      switch(widget.addressType){
-        case AddressType.billing: 
+      switch (widget.addressType) {
+        case AddressType.billing:
           addressMap = await dbService.getBillingAddress(user!.uid);
-        break;
+          break;
         case AddressType.shipping:
           addressMap = await dbService.getShippingAddress(user!.uid);
-        break;
+          break;
       }
       if (addressMap.isNotEmpty) {
         for (var key in addressMap.keys) {
-          addressList.add(LocationAddress(name: key, address: addressMap[key] ?? ""));
+          addressList
+              .add(LocationAddress(name: key, address: addressMap[key] ?? ""));
         }
         addressList.sort((a, b) => a.name.length.compareTo(b.name.length));
       }
@@ -66,85 +67,98 @@ class _MyAddressSceneState extends State<MyAddressScene> {
 
   Widget buildListView() {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.addressType == AddressType.billing ? "Billing Address" : "Shipping Address"
-          ),
-        backgroundColor: kPrimaryColor,
-        foregroundColor: kPrimaryLightColor,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () async {
-              bool result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => NewAddressScene(
-                            uid: user!.uid,
-                            addressType: widget.addressType,
-                          )));
-              if (result){
-                setState(() {
-                });
-              }
-            },
-          )
-        ],
-      ),
-      body: addressList.isNotEmpty ? RefreshIndicator(
-        onRefresh: initialAddress,
-        child: ListView.builder(
-            itemCount: addressMap.length,
-            itemBuilder: (context, i) {
-              return buildListItem(addressList[i]);
-            }),
-      ) : const Center(
-        child: Text("You have not set any address yet!"),
-      )
-    );
+        appBar: AppBar(
+          title: Text(widget.addressType == AddressType.billing
+              ? "Billing Address"
+              : "Shipping Address"),
+          backgroundColor: kPrimaryColor,
+          foregroundColor: kPrimaryLightColor,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () async {
+                bool result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NewAddressScene(
+                              uid: user!.uid,
+                              addressType: widget.addressType,
+                            )));
+                if (result) {
+                  setState(() {});
+                }
+              },
+            )
+          ],
+        ),
+        body: addressList.isNotEmpty
+            ? RefreshIndicator(
+                onRefresh: initialAddress,
+                child: ListView.builder(
+                    itemCount: addressMap.length,
+                    itemBuilder: (context, i) {
+                      return buildListItem(addressList[i]);
+                    }),
+              )
+            : const Center(
+                child: Text("You have not set any address yet!"),
+              ));
   }
 
   Widget buildListItem(LocationAddress address) {
     return ProfileMenu(
-      text: address.name, 
-      press: (){
-        if (user != null){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ViewAddressScene(data: address, uid: user!.uid, addressType: widget.addressType)));
-        }
-      }, 
-      longPress: () async {
-        deleteProcess(address);
-      },
-      icons: const Icon(Icons.home), 
-      value: "");
+        text: address.name,
+        press: () {
+          if (user != null) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ViewAddressScene(
+                        data: address,
+                        uid: user!.uid,
+                        addressType: widget.addressType)));
+          }
+        },
+        longPress: () async {
+          deleteProcess(address);
+        },
+        icons: const Icon(Icons.home),
+        value: "");
   }
 
+//delete billing address or shipping address
   void deleteProcess(LocationAddress address) async {
     CustomDialog customDialog = CustomDialog();
     DatabaseService dbService = DatabaseService();
-    if (user != null){
-      bool result = await customDialog.confirm_dialog(context, "Confirmation Dialog", "Are you sure to remove this address from your current address?");
-      if (result){
-        if (addressMap.containsKey(address.name)){
+    if (user != null) {
+      bool result = await customDialog.confirm_dialog(
+          context,
+          "Confirmation Dialog",
+          "Are you sure to remove this address from your current address?");
+      if (result) {
+        if (addressMap.containsKey(address.name)) {
           addressMap.remove(address.name);
           dynamic res;
-          switch (widget.addressType){
+          switch (widget.addressType) {
             case AddressType.billing:
-              res = await dbService.updateUserBillingAddress(user!.uid, addressMap);
-            break;
+              res = await dbService.updateUserBillingAddress(
+                  user!.uid, addressMap);
+              break;
             case AddressType.shipping:
-              res = await dbService.updateUserShippingAddress(user!.uid, addressMap);
-            break;
-          } 
-          if (res == null){
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Removed!")));
+              res = await dbService.updateUserShippingAddress(
+                  user!.uid, addressMap);
+              break;
+          }
+          if (res == null) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(const SnackBar(content: Text("Removed!")));
             setState(() {});
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to Remove!")));
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Failed to Remove!")));
           }
         }
       }
     }
   }
 }
-

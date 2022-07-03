@@ -7,10 +7,10 @@ import 'package:flutter/material.dart';
 
 class NewAddressScene extends StatefulWidget {
   const NewAddressScene({
-    Key? key, 
+    Key? key,
     required this.uid,
     required this.addressType,
-    }) : super(key: key);
+  }) : super(key: key);
 
   final String uid;
   final AddressType addressType;
@@ -18,21 +18,22 @@ class NewAddressScene extends StatefulWidget {
   State<NewAddressScene> createState() => _NewAddressSceneState();
 }
 
+//user can add billing address and shipping address into system
 class _NewAddressSceneState extends State<NewAddressScene> {
   TextEditingController nameController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: (){
+      onWillPop: () {
         Navigator.pop(context, false);
         return Future.value(false);
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            widget.addressType == AddressType.billing ? "Add New Billing Address" : "Add New Shipping Address"
-            ),
+          title: Text(widget.addressType == AddressType.billing
+              ? "Add New Billing Address"
+              : "Add New Shipping Address"),
         ),
         body: buildContent(),
       ),
@@ -70,39 +71,40 @@ class _NewAddressSceneState extends State<NewAddressScene> {
     );
   }
 
+//create and update address into database
   void createAddress() async {
     DatabaseService dbService = DatabaseService();
     Map<String, String> map = {};
-    switch (widget.addressType){
+    switch (widget.addressType) {
       case AddressType.billing:
         map = await dbService.getBillingAddress(widget.uid);
         break;
       case AddressType.shipping:
         map = await dbService.getShippingAddress(widget.uid);
     }
-    
+
     if (!map.containsKey(nameController.text)) {
       map[nameController.text] = addressController.text;
       dynamic result;
-      switch (widget.addressType){
+      switch (widget.addressType) {
         case AddressType.billing:
           result = await dbService.updateUserBillingAddress(widget.uid, map);
           break;
         case AddressType.shipping:
           result = await dbService.updateUserShippingAddress(widget.uid, map);
       }
-      
+
       if (result == null) {
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("Sucess")));
-          Navigator.pop(context, true);
+        Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("Failed")));
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The address name is already exitst!")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("The address name is already exitst!")));
     }
   }
 }
-

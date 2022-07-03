@@ -66,7 +66,9 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
   void initState() {
     super.initState();
 
-    publishedDate = (widget.bookManagement == BookManagement.create) ? DateTime.now() : widget.passedBook!.publishedDate;
+    publishedDate = (widget.bookManagement == BookManagement.create)
+        ? DateTime.now()
+        : widget.passedBook!.publishedDate;
     switch (widget.bookManagement) {
       case BookManagement.create:
         initialCreateView();
@@ -88,7 +90,8 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
               title: Text((widget.bookManagement == BookManagement.create)
                   ? "Book Creation"
                   : (widget.bookManagement == BookManagement.edit)
-                      ? "Book Update" : "Undefined Action"),
+                      ? "Book Update"
+                      : "Undefined Action"),
               backgroundColor: kPrimaryColor,
               foregroundColor: kPrimaryLightColor,
             ),
@@ -113,6 +116,8 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
     return const SizedBox(height: 20);
   }
 
+//GestureDetector will capture the gesture and dispatch multiple events based on the gesture
+//gestures: tap, double tap, long press.
   Widget _buildImageField() {
     return Center(
       child: Container(
@@ -166,13 +171,22 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
             //initialCreateView();
           });
         },
-        icon: (widget.bookManagement == BookManagement.create) ? isExistedID ? Icon(Icons.sync) : Icon(Icons.check) : Icon(Icons.lock),
-        color: (widget.bookManagement == BookManagement.create) ? isExistedID ? Colors.grey : Colors.green : Colors.transparent,
+        icon: (widget.bookManagement == BookManagement.create)
+            ? isExistedID
+                ? Icon(Icons.sync)
+                : Icon(Icons.check)
+            : Icon(Icons.lock),
+        color: (widget.bookManagement == BookManagement.create)
+            ? isExistedID
+                ? Colors.grey
+                : Colors.green
+            : Colors.transparent,
       )),
       readOnly: !(widget.bookManagement == BookManagement.create),
     );
   }
 
+//all the fields can't be empty else message will be prompted
   Widget _buildTitleTextField(String fieldName) {
     return TextFormField(
       controller: titleController,
@@ -230,11 +244,13 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
           suffixIcon: IconButton(
               onPressed: _callCalendar,
               icon: const Icon(Icons.calendar_month))),
-      validator: (String? val) => (val != null && val.isEmpty) ? "Select a date" : null,
+      validator: (String? val) =>
+          (val != null && val.isEmpty) ? "Select a date" : null,
       controller: dateController,
     );
   }
 
+//prices will be set to 2 dp
   Widget _buildTradePriceField(String fieldName) {
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
@@ -313,6 +329,7 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
     });
   }
 
+//validate all the fields before save into database
   Widget _buildButton() {
     DatabaseService dbService = DatabaseService();
     //For validation processes
@@ -320,8 +337,9 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
     return ElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          if (validation.bookFieldValidation(category, tradePrice, retailPrice, quantity, imgSrc, widget.bookManagement)){
-            if(validation.dateValidation(dateController.text)){
+          if (validation.bookFieldValidation(category, tradePrice, retailPrice,
+              quantity, imgSrc, widget.bookManagement)) {
+            if (validation.dateValidation(dateController.text)) {
               switch (widget.bookManagement) {
                 case BookManagement.create:
                   await createBookProcess();
@@ -332,8 +350,9 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
               }
             } else {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text("Date input is in wrong format! Please follow [yyyy-mm-dd] format!")));
-            } 
+                  content: Text(
+                      "Date input is in wrong format! Please follow [yyyy-mm-dd] format!")));
+            }
           } else {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content: Text("Some of the fields are in wrong value!")));
@@ -343,11 +362,11 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
               content: Text("There are some field does not entered!!")));
         }
       },
-      child: Text(
-          widget.bookManagement == BookManagement.create ? "Create" :
-          widget.bookManagement == BookManagement.edit ? "Edit" :
-          "??" 
-          ),
+      child: Text(widget.bookManagement == BookManagement.create
+          ? "Create"
+          : widget.bookManagement == BookManagement.edit
+              ? "Edit"
+              : "??"),
     );
   }
 
@@ -364,9 +383,8 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
               added ? category.add(items) : category.remove(items);
               categoryController.text = "";
               if (category.isNotEmpty) {
-                for (int i=0; i < category.length; i++){
+                for (int i = 0; i < category.length; i++) {
                   categoryController.text += category[i] + "; ";
-
                 }
               }
             },
@@ -376,7 +394,7 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
     });
   }
 
-
+//multiple selection of category
   void _callMultiSelectDialog() {
     List<String> categoryList = getCategoryList();
     showDialog(
@@ -438,6 +456,7 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
             )));
   }
 
+//process of create new book in system with all the details and image
   Future<void> createBookProcess() async {
     DatabaseService dbService = DatabaseService();
     if (!isExistedID) {
@@ -463,32 +482,35 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
           setState(() {
             isProcess = false;
           });
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("Book created successfully")));
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Book created successfully")));
           Navigator.pop(context);
         } else {
           setState(() {
             isProcess = false;
           });
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("Result failed to update!")));
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Result failed to update!")));
         }
       } else {
         setState(() {
           isProcess = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Book cover failed to upload!")));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Book cover failed to upload!")));
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Please check the ISBN-No first")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please check the ISBN-No first")));
     }
   }
 
+//process of edit book details
   Future<void> editBookProcess() async {
     DatabaseService dbService = DatabaseService();
-    setState(()=>isProcess = true,);
+    setState(
+      () => isProcess = true,
+    );
     DateTime pDate = DateFormat("yyyy-MM-dd").parse(dateController.text);
     Book updBook = Book(
         ISBN_13: widget.passedBook!.ISBN_13.trim(),
@@ -501,22 +523,27 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
         tradePrice: tradePrice,
         retailPrice: retailPrice,
         quantity: quantity);
-        var result = await dbService.updateBook(updBook);
-        if (result == null){
-          setState(() => isProcess = false,);
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Book update successfully")));
-          Navigator.pop(context);
-        } else {
-          setState((() => isProcess = false));
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Result failed to update")));
+    var result = await dbService.updateBook(updBook);
+    if (result == null) {
+      setState(
+        () => isProcess = false,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Book update successfully")));
+      Navigator.pop(context);
+    } else {
+      setState((() => isProcess = false));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Result failed to update")));
     }
   }
 
-  bool dateValidation(){
-    return RegExp(r"^[0-2][0-9][0-9][0-9]-[0-1][0-9]-[0-4][0-9]").hasMatch(dateController.text);
+  bool dateValidation() {
+    return RegExp(r"^[0-2][0-9][0-9][0-9]-[0-1][0-9]-[0-4][0-9]")
+        .hasMatch(dateController.text);
   }
+
   void initialCreateView() {
-    
     dateController.text = "";
     categoryController.text = "";
     quantityController.text = "";
@@ -554,20 +581,21 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
     formWidgetList.add(_buildSpace());
   }
 
-  void initialEditView(){
-    dateController.text = DateFormat("yyyy-MM-dd").format(widget.passedBook!.publishedDate);
+  void initialEditView() {
+    dateController.text =
+        DateFormat("yyyy-MM-dd").format(widget.passedBook!.publishedDate);
     quantityController.text = widget.passedBook!.quantity.toString();
     isbnController.text = widget.passedBook!.ISBN_13;
     titleController.text = widget.passedBook!.title;
-    descController.text = widget.passedBook!.description??"";
+    descController.text = widget.passedBook!.description ?? "";
     authorController.text = widget.passedBook!.author;
     tradePrice = widget.passedBook!.tradePrice;
     retailPrice = widget.passedBook!.retailPrice;
-    
+
     id = widget.passedBook!.ISBN_13;
     name = widget.passedBook!.title;
     author = widget.passedBook!.author;
-    description = widget.passedBook!.description??"";
+    description = widget.passedBook!.description ?? "";
     tradePrice = widget.passedBook!.tradePrice;
     retailPrice = widget.passedBook!.retailPrice;
     quantity = widget.passedBook!.quantity;
@@ -601,6 +629,6 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
     formWidgetList.add(_buildSpace());
     formWidgetList.add(_buildButton());
     formWidgetList.add(_buildSpace());
-    formWidgetList.add(_buildSpace());    
+    formWidgetList.add(_buildSpace());
   }
 }

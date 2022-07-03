@@ -28,10 +28,11 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
     fieldController.text = widget.data;
   }
 
+//user edit contact number
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: (){
+      onWillPop: () {
         Navigator.pop(context, false);
         return Future.value(false);
       },
@@ -44,6 +45,7 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
     );
   }
 
+//save contact number
   Widget buildContent() {
     return Center(
       child: Column(
@@ -69,6 +71,7 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
     );
   }
 
+//update phone number
   void updatePhone() async {
     DatabaseService dbService = DatabaseService();
     dynamic result =
@@ -76,7 +79,7 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
     if (result == null) {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Sucess")));
-          Navigator.pop(context, true);
+      Navigator.pop(context, true);
     } else {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Failed")));

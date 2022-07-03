@@ -15,6 +15,7 @@ class ProfilePic extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
+//upload profile image
   @override
   Widget build(BuildContext context) {
     return SizedBox(

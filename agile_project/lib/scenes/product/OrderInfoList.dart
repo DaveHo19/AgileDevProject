@@ -11,24 +11,26 @@ class OrderInfoList extends StatefulWidget {
   State<OrderInfoList> createState() => _OrderInfoListState();
 }
 
+//the order list arrange in ascending order of date added
 List<OrderInfo> list = [];
+
 class _OrderInfoListState extends State<OrderInfoList> {
   @override
   Widget build(BuildContext context) {
     final orderList = Provider.of<List<OrderInfo>>(context);
-    if (orderList.isNotEmpty){
+    if (orderList.isNotEmpty) {
       orderList.sort((a, b) => a.orderDate.compareTo(b.orderDate));
       list = orderList.reversed.toList();
     }
     return ListView.builder(
-      itemCount: list.length,
-      itemBuilder: (context, i){
-        return buildOrderTile(list[i]);
-      }
-    );
+        itemCount: list.length,
+        itemBuilder: (context, i) {
+          return buildOrderTile(list[i]);
+        });
   }
 
-  Widget buildOrderTile(OrderInfo order){
+//user order with details and total price to be pay (book price + delievry fee)
+  Widget buildOrderTile(OrderInfo order) {
     return Container(
       padding: const EdgeInsets.all(4),
       width: MediaQuery.of(context).size.width,
@@ -41,18 +43,21 @@ class _OrderInfoListState extends State<OrderInfoList> {
           child: Row(
             children: [
               Expanded(
-                child: Text("Total Payment : ${(order.orderItemPrices + order.deliveryFee).toStringAsFixed(2)}")),
+                  child: Text(
+                      "Total Payment : ${(order.orderItemPrices + order.deliveryFee).toStringAsFixed(2)}")),
               Expanded(
-                child: Text("Date: ${DateFormat('yyyy-MM-dd').format(order.orderDate)}")),
+                  child: Text(
+                      "Date: ${DateFormat('yyyy-MM-dd').format(order.orderDate)}")),
             ],
           ),
         ),
-        onTap: (){
- Navigator.push(
+        onTap: () {
+          Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => MyViewOrderDetails(
-                      orderInfoData: order,)));
+                        orderInfoData: order,
+                      )));
         },
       ),
     );

@@ -67,106 +67,107 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   Widget build(BuildContext context) {
     user = Provider.of<AppUser?>(context);
     return WillPopScope(
-      onWillPop:() {
+      onWillPop: () {
         Navigator.pop(context, priceChanges);
         return Future.value(priceChanges);
       },
       child: isProcess
           ? const Loading()
           : FutureBuilder(
-          future: initialDataInformation(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
-              return const Loading();
-            } else {
-              return _buildContent();
-            }
-          }),
+              future: initialDataInformation(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const Loading();
+                } else {
+                  return _buildContent();
+                }
+              }),
     );
   }
 
-  Widget _buildContent(){
-    return  Scaffold(
-          appBar: AppBar(
-            title: Text(isbnController.text),
-            backgroundColor: kPrimaryColor,
-            foregroundColor: kPrimaryLightColor,
-            actions: (widget.viewManagement == ViewManagement.public)
-                  ? [
-                        (user != null) 
-                        ? ElevatedButton.icon(
-                          onPressed: () async {
-                            bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) => const MyCartScene()));
-                            if (result){
-                              setState(() {
-                              });
-                            }
-                          }, 
-                          icon: const Icon(Icons.shopping_cart),
-                          label: Text(Manager.estimatedPrice.toStringAsFixed(2)),
-                          style: ElevatedButton.styleFrom(primary: Colors.transparent)
-                          ) 
-                          : Container(),
-                        (user != null)
-                          ? IconButton(
-                              onPressed: () async {
-                                manageWishlist();
-                              },
-                              icon:
-                                  const Icon(Icons.favorite, color: Colors.red))
-                          : Container(),
-                    ]
-                  : [
-                      PopupMenuButton(
-                          itemBuilder: (context) {
-                            return [
-                              const PopupMenuItem<int>(
-                                value: 0,
-                                child: Icon(
-                                  Icons.edit,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              const PopupMenuItem<int>(
-                                value: 1,
-                                child: Icon(
-                                  Icons.delete,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ];
-                          },
-                          onSelected: (int i) => {
-                                menuItemHandler(context, i),
-                              })
-                    ],
-            ),
-            body: SafeArea(
-              child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: formWidgetList.length,
-                  itemBuilder: (context, i) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: MediaQuery.of(context).size.width / 10),
-                      child: formWidgetList[i],
-                    );
-                  }),
-            ),
-            floatingActionButton:
-                (widget.viewManagement == ViewManagement.private ||
-                        user == null || widget.book.quantity == 0)
-                    ? null
-                    : FloatingActionButton(
-                        backgroundColor: kPrimaryColor,
-                        child: const Icon(
-                          Icons.shopping_bag,
-                          color: kPrimaryLightColor,
+  Widget _buildContent() {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(isbnController.text),
+        backgroundColor: kPrimaryColor,
+        foregroundColor: kPrimaryLightColor,
+        actions: (widget.viewManagement == ViewManagement.public)
+            ? [
+                (user != null)
+                    ? ElevatedButton.icon(
+                        onPressed: () async {
+                          bool result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const MyCartScene()));
+                          if (result) {
+                            setState(() {});
+                          }
+                        },
+                        icon: const Icon(Icons.shopping_cart),
+                        label: Text(Manager.estimatedPrice.toStringAsFixed(2)),
+                        style: ElevatedButton.styleFrom(
+                            primary: Colors.transparent))
+                    : Container(),
+                (user != null)
+                    ? IconButton(
+                        onPressed: () async {
+                          manageWishlist();
+                        },
+                        icon: const Icon(Icons.favorite, color: Colors.red))
+                    : Container(),
+              ]
+            : [
+                PopupMenuButton(
+                    itemBuilder: (context) {
+                      return [
+                        const PopupMenuItem<int>(
+                          value: 0,
+                          child: Icon(
+                            Icons.edit,
+                            color: Colors.black,
+                          ),
                         ),
-                        onPressed: () {
-                          manageCart();
-                        }),
-          );
+                        const PopupMenuItem<int>(
+                          value: 1,
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ];
+                    },
+                    onSelected: (int i) => {
+                          menuItemHandler(context, i),
+                        })
+              ],
+      ),
+      body: SafeArea(
+        child: ListView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: formWidgetList.length,
+            itemBuilder: (context, i) {
+              return Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width / 10),
+                child: formWidgetList[i],
+              );
+            }),
+      ),
+      floatingActionButton: (widget.viewManagement == ViewManagement.private ||
+              user == null ||
+              widget.book.quantity == 0)
+          ? null
+          : FloatingActionButton(
+              backgroundColor: kPrimaryColor,
+              child: const Icon(
+                Icons.shopping_bag,
+                color: kPrimaryLightColor,
+              ),
+              onPressed: () {
+                manageCart();
+              }),
+    );
   }
 
   void menuItemHandler(BuildContext context, int index) async {
@@ -205,6 +206,7 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
     );
   }
 
+//fields controllers
   Widget _buildIDTextField(String fieldName) {
     isbnController.text = widget.book.ISBN_13;
     return TextFormField(
@@ -286,6 +288,7 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
     );
   }
 
+//book to add or remove from wishlist
   void manageWishlist() async {
     DatabaseService dbService = DatabaseService();
     bool add = true;
@@ -320,16 +323,17 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
     }
   }
 
+//manage the cart with add book and update the quantity
   void manageCart() async {
     DatabaseService dbService = DatabaseService();
     bool add = true;
     bool reachLimit = false;
-    if (user != null){
+    if (user != null) {
       setState(() {
         isProcess = true;
       });
-      if (cartItemMap.keys.contains(widget.book.ISBN_13)){
-        if (cartItemMap[widget.book.ISBN_13]! < widget.book.quantity){
+      if (cartItemMap.keys.contains(widget.book.ISBN_13)) {
+        if (cartItemMap[widget.book.ISBN_13]! < widget.book.quantity) {
           int quantity = cartItemMap[widget.book.ISBN_13]!;
           quantity++;
           cartItemMap[widget.book.ISBN_13] = quantity;
@@ -338,26 +342,33 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
           reachLimit = true;
         }
       } else {
-          cartItemMap[widget.book.ISBN_13] = 1;
-          add = true;
+        cartItemMap[widget.book.ISBN_13] = 1;
+        add = true;
       }
-      if (!reachLimit){
+      if (!reachLimit) {
         dynamic result = dbService.updateUserCartItems(user!.uid, cartItemMap);
         setState(() {
           isProcess = false;
         });
-        if (result != null){
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: add ? const Text("Book Added To Cart!") : const Text("Book Quantity in Cart Increased!")));
+        if (result != null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: add
+                  ? const Text("Book Added To Cart!")
+                  : const Text("Book Quantity in Cart Increased!")));
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to perform this actions!")));
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Failed to perform this actions!")));
         }
       } else {
         isProcess = false;
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The quantity of this product is reach the stock limit in your cart!!")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+                "The quantity of this product is reach the stock limit in your cart!!")));
       }
     }
   }
 
+//delete book from cart
   Future<void> deleteBookProcess() async {
     //for delete
     setState(() {
@@ -381,10 +392,12 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
   Future getEstimatePrice() async {
     Manager.estimatedPrice = 0;
     DatabaseService dbService = DatabaseService();
-    if (cartItemMap.isNotEmpty && user != null){
+    if (cartItemMap.isNotEmpty && user != null) {
       List<CartItem> cartItemList = [];
-      cartItemList = cartItemMap.entries.map((e) => CartItem(bookID: e.key, quantity: e.value)).toList();
-      for(int i = 0; i < cartItemList.length; i++){
+      cartItemList = cartItemMap.entries
+          .map((e) => CartItem(bookID: e.key, quantity: e.value))
+          .toList();
+      for (int i = 0; i < cartItemList.length; i++) {
         Book tempBook = await dbService.getBookByISBN(cartItemList[i].bookID);
         double priceForBook = tempBook.retailPrice * cartItemList[i].quantity;
         Manager.estimatedPrice += priceForBook;
@@ -392,6 +405,7 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
       }
     }
   }
+
   void initialController() {
     isbnController.text = widget.book.ISBN_13;
     titleController.text = widget.book.title;

@@ -50,6 +50,8 @@ class _LoginState extends State<Login> {
           );
   }
 
+//email and password are required for login
+//error message will prompt for unverified login
   void login() async {
     if (isFilledAll(email, psw)) {
       if (validateEmail(email)) {

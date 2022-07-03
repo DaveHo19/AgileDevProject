@@ -17,6 +17,7 @@ class MyCartScene extends StatefulWidget {
   State<MyCartScene> createState() => _CartSceneState();
 }
 
+//cart scene of price changes after changing quantity
 class _CartSceneState extends State<MyCartScene> {
   AppUser? user;
   List<Book> bookList = [];
@@ -47,6 +48,7 @@ class _CartSceneState extends State<MyCartScene> {
     );
   }
 
+//prompt empty cart message when nothing is added to cart
   Widget buildContent() {
     return Scaffold(
       appBar: AppBar(
@@ -55,14 +57,8 @@ class _CartSceneState extends State<MyCartScene> {
         foregroundColor: kPrimaryLightColor,
       ),
       body: (cartItemMap.isEmpty)
-          ? Container(
-              padding: EdgeInsets.all(30),
-              child: Column(
-                children: <Widget>[
-                  Image.asset("empty-box.png", fit: BoxFit.fill),
-                  Text("There is no item in cart currently !")
-                ],
-              ),
+          ? const Center(
+              child: Text("There are no item in cart!"),
             )
           : Container(
               height: MediaQuery.of(context).size.height,
@@ -86,6 +82,7 @@ class _CartSceneState extends State<MyCartScene> {
         });
   }
 
+//Shows cart interms of item, quantity, and total price with 2 dp
   Widget buildListViewItem(Book item) {
     containValidBooks &= item.title.isNotEmpty;
     double estimatedBookPrice = 0;
@@ -154,6 +151,8 @@ class _CartSceneState extends State<MyCartScene> {
                       removeBook(item);
                     },
                   )
+
+                //user not able to purchase the book that have been removed from stock by admin
                 : ListTile(
                     title: Text("ISBN Number: ${item.ISBN_13}"),
                     subtitle: const Text(
@@ -203,6 +202,9 @@ class _CartSceneState extends State<MyCartScene> {
                     borderRadius: BorderRadius.circular(0),
                   ),
                 ),
+
+                //only in-stock books are able to purchase and check out by user
+                //prompt error message during check out when the cart is empty
                 child: const Text(
                   "Checkout",
                   style: TextStyle(
@@ -280,6 +282,7 @@ class _CartSceneState extends State<MyCartScene> {
     }
   }
 
+  //prompt message before remove book from cart
   void removeBook(Book item) async {
     CustomDialog customDialog = CustomDialog();
     String dialogContent = (item.title.isEmpty)
@@ -310,6 +313,7 @@ class _CartSceneState extends State<MyCartScene> {
     }
   }
 
+  //user unable to add the quantity of book that exceed the book stock level
   void increaseQuantity(Book item) {
     int currQuantity = cartItemMap[item.ISBN_13]!;
     if (currQuantity >= item.quantity) {
@@ -334,6 +338,7 @@ class _CartSceneState extends State<MyCartScene> {
     }
   }
 
+// update cart
   void updateCart() async {
     if (user != null) {
       DatabaseService dbService = DatabaseService();
@@ -354,6 +359,7 @@ class _CartSceneState extends State<MyCartScene> {
     }
   }
 
+  //shows price of the books in the cart
   Future getEstimatePrice() async {
     DatabaseService dbService = DatabaseService();
     Manager.estimatedPrice = 0;

@@ -1,3 +1,4 @@
+import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/services/firebase_auth.dart';
 import 'package:agile_project/wrapper.dart';
@@ -30,16 +31,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return  StreamProvider<AppUser?>.value(
-          initialData: null,
-          value: AuthService().user,
-          child: MaterialApp(
-            title: "Agile Project",
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
-            home: const Wrapper(),
-          ),
-        );
+    return StreamProvider<AppUser?>.value(
+      initialData: null,
+      value: AuthService().user,
+      child: MaterialApp(
+        title: "Agile Project",
+        theme: ThemeData(
+          primarySwatch: Colors.deepPurple,
+        ),
+        home: const Wrapper(),
+      ),
+    );
   }
 }

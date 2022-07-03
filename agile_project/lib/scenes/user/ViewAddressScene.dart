@@ -1,4 +1,5 @@
 import 'dart:html';
+import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/address.dart';
 import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/scenes/user/EditAddressScene.dart';
@@ -37,7 +38,7 @@ class _AddressSceneState extends State<ViewAddressScene> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: kPrimaryColor,
         title: const Text("Address Info"),
       ),
       body: buildContent(),
@@ -71,7 +72,13 @@ class _AddressSceneState extends State<ViewAddressScene> {
             press: () {
               //for pop current scene
               Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => EditAddressScene(addressData: widget.data, addressType: widget.addressType ,)));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EditAddressScene(
+                            addressData: widget.data,
+                            addressType: widget.addressType,
+                          )));
             },
           ),
         ],
@@ -79,5 +86,3 @@ class _AddressSceneState extends State<ViewAddressScene> {
     );
   }
 }
-
-

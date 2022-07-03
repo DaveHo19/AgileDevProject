@@ -27,16 +27,12 @@ class _DebugAddressState extends State<DebugAddress> {
         ));
   }
 
-//verify billing address in Firebase
   void getData() async {
     DatabaseService dbService = DatabaseService();
     if (user != null) {
       print(user!.uid);
       Map<String, String> data = await dbService.getBillingAddress(user!.uid);
       if (data.isNotEmpty) {
-        // for (int i =0; i < data.keys.length; i++){
-        //   print(data);
-        // }
         for (var key in data.keys) {
           print("${key} : ${data[key]}");
         }

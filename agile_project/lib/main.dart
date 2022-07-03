@@ -1,4 +1,3 @@
-import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/services/firebase_auth.dart';
 import 'package:agile_project/wrapper.dart';
@@ -35,9 +34,10 @@ class MyApp extends StatelessWidget {
       initialData: null,
       value: AuthService().user,
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: "Agile Project",
         theme: ThemeData(
-          primarySwatch: Colors.deepPurple,
+          primarySwatch: Colors.blue,
         ),
         home: const Wrapper(),
       ),

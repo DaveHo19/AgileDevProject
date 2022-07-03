@@ -342,7 +342,6 @@ class _HomeBookListState extends State<HomeBookList> {
       layoutList.add(_buildFantasyRow());
       layoutList.add(_buildSpace());
       layoutList.add(_buildFantasyRow());
-      //layoutList.add(_buildRemainRow());
     } else if (searchController.text.length > 0) {
       layoutList.clear();
       layoutList.add(_buildSearchBox());

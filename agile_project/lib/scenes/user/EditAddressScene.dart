@@ -1,4 +1,5 @@
 import 'package:agile_project/models/address.dart';
+import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/models/rounded_button.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
@@ -9,9 +10,12 @@ import 'package:provider/provider.dart';
 class EditAddressScene extends StatefulWidget {
   const EditAddressScene({
     Key? key,
-    required this.addressData}) : super(key: key);
+    required this.addressData,
+    required this.addressType,
+    }) : super(key: key);
   
-  final BillingAddress addressData; 
+  final LocationAddress addressData; 
+  final AddressType addressType;
   @override
   State<EditAddressScene> createState() => _EditAddressSceneState();
 }
@@ -35,58 +39,73 @@ class _EditAddressSceneState extends State<EditAddressScene> {
     user = Provider.of<AppUser?>(context);
     initialAddress();
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text("Edit Address Info"), 
-      ),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: TextFormField(
-                decoration: inputDecoration("Address Name"),
-                controller: nameController,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: TextFormField(
-                decoration: inputDecoration("New Address"),
-                controller: addressController,
-                minLines: 5,
-                maxLines: 10,
-              ),
-            ),
-            RoundedButton(
-              text: "Save",
-              press: () async {
-                updateAddress();
-              },
-            ),
-          ],
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          title: const Text("Edit Address Info"), 
         ),
-      ),
+        body: Center(
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: TextFormField(
+                  decoration: inputDecoration("Address Name"),
+                  controller: nameController,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: TextFormField(
+                  decoration: inputDecoration("New Address"),
+                  controller: addressController,
+                  minLines: 5,
+                  maxLines: 10,
+                ),
+              ),
+              RoundedButton(
+                text: "Save",
+                press: () async {
+                  updateAddress();
+                },
+              ),
+            ],
+          ),
+        ),
     );
   }
 
   void initialAddress() async {
     DatabaseService dbService = DatabaseService();
     if (user != null){
-      addressMap = await dbService.getBillingAddress(user!.uid);
+      switch(widget.addressType){
+        case AddressType.billing:
+          addressMap = await dbService.getBillingAddress(user!.uid);
+        break;
+        case AddressType.shipping:
+          addressMap = await dbService.getShippingAddress(user!.uid);
+        break;
+      }
     }
   }
 
   void updateAddress() async {
     DatabaseService dbService = DatabaseService();
-    
     if ((widget.addressData.name != nameController.text) && (addressMap.containsKey(nameController.text))){
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("The address name is already exists!")));
     } else{
       addressMap.remove(widget.addressData.name);
       addressMap[nameController.text] = addressController.text;
       if (user != null){
-        dynamic result = await dbService.updateUserBillingAddress(user!.uid, addressMap);
+        dynamic result; 
+        switch (widget.addressType){
+          case AddressType.billing:
+            result = await dbService.updateUserBillingAddress(user!.uid, addressMap);
+            break;
+          case AddressType.shipping:
+            result = await dbService.updateUserShippingAddress(user!.uid, addressMap);
+            break;
+        }
+        
         if (result == null){
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Updated!")));
           Navigator.pop(context);

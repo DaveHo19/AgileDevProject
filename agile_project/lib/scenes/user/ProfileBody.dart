@@ -1,9 +1,11 @@
+import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/models/userInfo.dart';
 import 'package:agile_project/scenes/authentication/login/LoginScene.dart';
 import 'package:agile_project/scenes/authentication/register/RegisterScene.dart';
 import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/scenes/user/AddressInformation.dart';
+import 'package:agile_project/scenes/user/MyOrder.dart';
 import 'package:agile_project/scenes/user/ProfileMenu.dart';
 import 'package:agile_project/services/databaseService.dart';
 import 'package:agile_project/services/firebase_auth.dart';
@@ -103,6 +105,9 @@ class ProfileSceneState extends State<ProfileScene> {
                               MaterialPageRoute(
                                   builder: (context) => ContactNumberScene(
                                       uid: user!.uid, data: information!.phoneNumber ?? "")));
+            if(result){
+              setState(() {});
+            }
           },
         ),
         ProfileMenu(
@@ -114,12 +119,21 @@ class ProfileSceneState extends State<ProfileScene> {
           notDisplayArrow: true,
         ),
         ProfileMenu(
-          text: "My Address",
+          text: "My Billing Address",
           icons: const Icon(Icons.location_city),
           value: "",
           press: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const MyAddressScene()));
+                MaterialPageRoute(builder: (context) =>  const MyAddressScene(addressType: AddressType.billing,)));
+          },
+        ),
+        ProfileMenu(
+          text: "My Shipping Address",
+          icons: const Icon(Icons.location_city),
+          value: "",
+          press: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const MyAddressScene(addressType:  AddressType.shipping,)));
           },
         ),
         ProfileMenu(
@@ -127,7 +141,8 @@ class ProfileSceneState extends State<ProfileScene> {
           icons: const Icon(Icons.shopping_bag),
           value: "",
           press: () {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("To be implement in Sprint 3")));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const MyOrderListScene()));
           },
         ),
         ProfileMenu(

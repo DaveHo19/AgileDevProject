@@ -14,7 +14,9 @@ class UserInfomation {
   String? gender;
 
   List<String> wishList;
-  Map<String, dynamic> addressMap;
+  Map<String, dynamic> billingAddressMap;
+  Map<String, dynamic> shippingAddressMap;
+  Map<String, int> carts;
 
   //future uses
   List<String> orderList;
@@ -26,8 +28,11 @@ class UserInfomation {
     required this.accountLevel,
     this.gender,
     this.phoneNumber,
+    this.carts = const {},
     this.wishList = const [],
-    this.addressMap = const {},
+    this.billingAddressMap = const {},
+    this.shippingAddressMap = const {},
     this.orderList = const [],
+
   });
 }

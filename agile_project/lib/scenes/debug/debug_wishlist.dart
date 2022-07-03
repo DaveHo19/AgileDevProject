@@ -37,10 +37,10 @@ class _DebugWishlistState extends State<DebugWishlist> {
               children: [ 
                 ElevatedButton(
                   onPressed: () async {
-                  print("test");
-                  //addDummyDataForWishList("Test");
+                    print("test");
+                    getBookByISBN();
                   },
-                child: const Text("Test"),),
+                child: const Text("Get Book"),),
                 ElevatedButton(
                   onPressed: () async {
                   print("Debug");
@@ -93,10 +93,19 @@ class _DebugWishlistState extends State<DebugWishlist> {
     }
   }
   
+  void getBookByISBN() async {
+    print("Checked #1");
+    String id = "0-374-28438-5";
+    DatabaseService databaseService = DatabaseService();
+    Book book = await databaseService.getBookByISBN(id);
+    book.toInfo();
+    // bool result = await databaseService.checkBookExists(id);
+    // print(result);  
+  }
   Future displayBookList() async {
     print("D-Booklist Checked #1");
     DatabaseService dbService = DatabaseService();
-    wishListForBook = await dbService.getBookListByWishlist(wishList);
+    wishListForBook = await dbService.getBookListByBookISBNList(wishList);
     for (int i=0; i < wishListForBook.length; i++){
       wishListForBook.elementAt(i).toInfo();
     }

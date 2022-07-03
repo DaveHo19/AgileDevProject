@@ -1,10 +1,8 @@
-class BillingAddress{
+class LocationAddress{
   final String name;
   final String address;
 
-  BillingAddress({
+  LocationAddress({
     required this.name, required this.address
   });
-
-  
 }

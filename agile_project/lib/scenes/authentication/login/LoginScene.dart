@@ -1,3 +1,4 @@
+import 'package:agile_project/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:agile_project/scenes/authentication/login/LoginBody.dart';
 
@@ -19,8 +20,8 @@ class _MyLoginSceneState extends State<MyLoginScene> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Login"),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        backgroundColor: kPrimaryColor,
+        foregroundColor: kPrimaryLightColor,
       ),
       body: const Login(),
     );

@@ -1,4 +1,6 @@
+import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/address.dart';
+import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/scenes/user/AddNewAddressScene.dart';
@@ -8,16 +10,22 @@ import 'package:agile_project/services/databaseService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class MyAddressScene extends StatefulWidget {
-  const MyAddressScene({Key? key}) : super(key: key);
+import '../../utilities/custom_dialog.dart';
 
+class MyAddressScene extends StatefulWidget {
+  const MyAddressScene({
+    Key? key,
+    required this.addressType,
+    }) : super(key: key);
+
+  final AddressType addressType;
   @override
   State<MyAddressScene> createState() => _MyAddressSceneState();
 }
 
 class _MyAddressSceneState extends State<MyAddressScene> {
   Map<String, String> addressMap = {};  
-  List<BillingAddress> addressList = [];
+  List<LocationAddress> addressList = [];
 
   AppUser? user;
   @override
@@ -35,13 +43,23 @@ class _MyAddressSceneState extends State<MyAddressScene> {
   }
 
   Future initialAddress() async {
+    addressList.clear();
+    addressMap.clear();
     DatabaseService dbService = DatabaseService();
     if (user != null) {
-      addressMap = await dbService.getBillingAddress(user!.uid);
+      switch(widget.addressType){
+        case AddressType.billing: 
+          addressMap = await dbService.getBillingAddress(user!.uid);
+        break;
+        case AddressType.shipping:
+          addressMap = await dbService.getShippingAddress(user!.uid);
+        break;
+      }
       if (addressMap.isNotEmpty) {
         for (var key in addressMap.keys) {
-          addressList.add(BillingAddress(name: key, address: addressMap[key] ?? ""));
+          addressList.add(LocationAddress(name: key, address: addressMap[key] ?? ""));
         }
+        addressList.sort((a, b) => a.name.length.compareTo(b.name.length));
       }
     }
   }
@@ -49,43 +67,84 @@ class _MyAddressSceneState extends State<MyAddressScene> {
   Widget buildListView() {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Address"),
+        title: Text(
+          widget.addressType == AddressType.billing ? "Billing Address" : "Shipping Address"
+          ),
+        backgroundColor: kPrimaryColor,
+        foregroundColor: kPrimaryLightColor,
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              bool result = await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => NewAddressScene(
                             uid: user!.uid,
+                            addressType: widget.addressType,
                           )));
+              if (result){
+                setState(() {
+                });
+              }
             },
           )
         ],
       ),
-      body: RefreshIndicator(
+      body: addressList.isNotEmpty ? RefreshIndicator(
         onRefresh: initialAddress,
         child: ListView.builder(
             itemCount: addressMap.length,
             itemBuilder: (context, i) {
               return buildListItem(addressList[i]);
             }),
-      ),
+      ) : const Center(
+        child: Text("You have not set any address yet!"),
+      )
     );
   }
 
-  Widget buildListItem(BillingAddress address) {
+  Widget buildListItem(LocationAddress address) {
     return ProfileMenu(
       text: address.name, 
       press: (){
         if (user != null){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ViewAddressScene(data: address, uid: user!.uid)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ViewAddressScene(data: address, uid: user!.uid, addressType: widget.addressType)));
         }
       }, 
+      longPress: () async {
+        deleteProcess(address);
+      },
       icons: const Icon(Icons.home), 
       value: "");
-    
+  }
+
+  void deleteProcess(LocationAddress address) async {
+    CustomDialog customDialog = CustomDialog();
+    DatabaseService dbService = DatabaseService();
+    if (user != null){
+      bool result = await customDialog.confirm_dialog(context, "Confirmation Dialog", "Are you sure to remove this address from your current address?");
+      if (result){
+        if (addressMap.containsKey(address.name)){
+          addressMap.remove(address.name);
+          dynamic res;
+          switch (widget.addressType){
+            case AddressType.billing:
+              res = await dbService.updateUserBillingAddress(user!.uid, addressMap);
+            break;
+            case AddressType.shipping:
+              res = await dbService.updateUserShippingAddress(user!.uid, addressMap);
+            break;
+          } 
+          if (res == null){
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Removed!")));
+            setState(() {});
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to Remove!")));
+          }
+        }
+      }
+    }
   }
 }
 

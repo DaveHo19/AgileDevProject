@@ -1,6 +1,6 @@
-import 'package:agile_project/models/cart.dart';
+import 'package:agile_project/no-use-anymore/cart.dart';
+import 'package:agile_project/no-use-anymore/class%20for%20testing/CartTest.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:agile_project/class%20for%20testing/CartTest.dart';
 
 void main() {
   test(

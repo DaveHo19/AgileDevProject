@@ -28,10 +28,12 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
     fieldController.text = widget.data;
   }
 
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: (){
+      onWillPop: () {
         Navigator.pop(context, false);
         return Future.value(false);
       },
@@ -70,28 +72,37 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
   }
 
   void updatePhone() async {
-    DatabaseService dbService = DatabaseService();
-    dynamic result =
-        await dbService.updatePhoneNumber(widget.uid, fieldController.text);
-    if (result == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Sucess")));
+    if (isFilledAll(fieldController.text)) {
+      if (validatePhone(fieldController.text)) {
+        setState(() {
+          isLoading = true;
+        });
+        DatabaseService dbService = DatabaseService();
+        dynamic result =
+            await dbService.updatePhoneNumber(widget.uid, fieldController.text);
+        if (result == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Updated successfully!")));
           Navigator.pop(context, true);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Opps! Update Failed")));
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Invalid format for contact number!")));
+      }
     } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Failed")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("The field cannot be empty!")));
     }
   }
-}
 
-// class ContactNumberScene extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text("Edit Contact Number"),
-//       ),
-//       body: EditContactNumberBody(),
-//     );
-//   }
-// }
+  bool validatePhone(String fieldController) {
+    return RegExp(r"^(?:[+0]9)?[0-9]{10,11}$").hasMatch(fieldController);
+  }
+
+  bool isFilledAll(String fieldController) {
+    return ((fieldController.isNotEmpty));
+  }
+}

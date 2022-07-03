@@ -28,10 +28,12 @@ class _UserNameFieldSceneState extends State<UserNameFieldScene> {
     fieldController.text = widget.data;
   }
 
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: (){
+      onWillPop: () {
         Navigator.pop(context, false);
         return Future.value(false);
       },
@@ -69,29 +71,42 @@ class _UserNameFieldSceneState extends State<UserNameFieldScene> {
   }
 
   void updateName() async {
-    DatabaseService dbService = DatabaseService();
-    dynamic result =
-        await dbService.updateUserName(widget.uid, fieldController.text);
-    if (result == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Sucess")));
-      Navigator.pop(context, true);
+    if (isFilledAll(fieldController.text)) {
+      if (validateName(fieldController.text)) {
+        setState(() {
+          isLoading = true;
+        });
+        DatabaseService dbService = DatabaseService();
+        dynamic result =
+            await dbService.updateUserName(widget.uid, fieldController.text);
+        if (result == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Updated successfully!")));
+          Navigator.pop(context, true);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Opps! Update Failed")));
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Minimum 5 and maximum 20 characters only!")));
+      }
     } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Failed")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("The field cannot be empty!")));
     }
   }
+
+  bool validateName(String fieldController) {
+    //[a-zA-Z0-9._] --> allowed characters
+    //{5,20} --> username is 5-20 characters long
+    //(?!.*[_.]{2}) --> no __ or _. or ._ or .. inside
+    // [^_.].*[^_.] --> no _ or . at the beginning and end
+    return RegExp(r"^(?=[a-zA-Z0-9._]{5,20}$)(?!.*[_.]{2})[^_.].*[^_.]$")
+        .hasMatch(fieldController);
+  }
+
+  bool isFilledAll(String fieldController) {
+    return ((fieldController.isNotEmpty));
+  }
 }
-
-
-// class UserNameScene extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text("Edit Name"),
-//       ),
-//       body: EditNameBody(),
-//     );
-//   }
-// }

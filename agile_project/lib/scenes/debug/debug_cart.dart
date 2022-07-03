@@ -23,59 +23,64 @@ class _DebugCartsState extends State<DebugCarts> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Debug Cart"),
-      actions: [
-        IconButton(
-          onPressed: () async {
-            getCart();
-            setState(() {
-            });
-            }, 
-          icon: const Icon(Icons.refresh))
-      ],
+        actions: [
+          IconButton(
+              onPressed: () async {
+                getCart();
+                setState(() {});
+              },
+              icon: const Icon(Icons.refresh))
+        ],
       ),
       body: ListView.builder(
-        itemCount: cartList.length,
-        itemBuilder: (context, i) {
-          return buildrow(cartList[i].bookID, cartList[i].quantity, i);
-        }),
+          itemCount: cartList.length,
+          itemBuilder: (context, i) {
+            return buildrow(cartList[i].bookID, cartList[i].quantity, i);
+          }),
     );
   }
 
-  Widget buildrow(String name, int quantity, int index){
+//update book name, quantity
+  Widget buildrow(String name, int quantity, int index) {
     return Row(
       children: [
         Text(name),
         Text("Quantity: $quantity"),
         ElevatedButton(
-          onPressed: () async {
-            cartList[index].quantity++;
-            updateCart();
-            }, 
-          child: const Text("+")),
+            onPressed: () async {
+              cartList[index].quantity++;
+              updateCart();
+            },
+            child: const Text("+")),
         ElevatedButton(
-          onPressed: () async {
-            cartList[index].quantity--;
-            updateCart();
-            }, 
-          child: const Text("-")),  
+            onPressed: () async {
+              cartList[index].quantity--;
+              updateCart();
+            },
+            child: const Text("-")),
       ],
     );
   }
+
+  //search and get cart items in Firebase
   void getCart() async {
-    if (user != null){
+    if (user != null) {
       cartItems = await dbService.getCartItems(user!.uid);
-      if (cartItems.isNotEmpty){
-        cartList = cartItems.entries.map((e) => CartItem(bookID: e.key, quantity: e.value)).toList();
+      if (cartItems.isNotEmpty) {
+        cartList = cartItems.entries
+            .map((e) => CartItem(bookID: e.key, quantity: e.value))
+            .toList();
       }
       print(cartItems);
       print(cartList);
     }
   }
 
+//update book list in cart
   void updateCart() async {
-    if(user != null){
+    if (user != null) {
       Map<String, int> temp = {};
-      for (int i = 0; i < cartList.length; i++){
+      for (int i = 0; i < cartList.length; i++) {
         temp[cartList[i].bookID] = cartList[i].quantity;
       }
       dynamic result = await dbService.updateUserCartItems(user!.uid, temp);

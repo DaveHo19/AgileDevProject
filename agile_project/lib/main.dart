@@ -30,16 +30,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return  StreamProvider<AppUser?>.value(
-          initialData: null,
-          value: AuthService().user,
-          child: MaterialApp(
-            title: "Agile Project",
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
-            home: const Wrapper(),
-          ),
-        );
+    return StreamProvider<AppUser?>.value(
+      initialData: null,
+      value: AuthService().user,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: "Agile Project",
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: const Wrapper(),
+      ),
+    );
   }
 }

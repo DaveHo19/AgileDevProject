@@ -308,7 +308,7 @@ class _MyOrderProductSceneState extends State<MyOrderProductScene> {
     }
   }
 
-  //postage is calculated by using quantity of book ordered times the length of the book
+  //postage is calculated
   int calculatePostageCost() {
     int postage = 0;
     postage += (bookList.length * 3);

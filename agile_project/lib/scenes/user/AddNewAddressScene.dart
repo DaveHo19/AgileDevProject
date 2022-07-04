@@ -1,4 +1,3 @@
-import 'dart:html';
 import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/models/rounded_button.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';

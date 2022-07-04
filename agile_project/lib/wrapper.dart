@@ -3,14 +3,8 @@ import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/cartItem.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/admin-only/StockLevelScene.dart';
-import 'package:agile_project/scenes/debug/debug_auth.dart';
-import 'package:agile_project/scenes/debug/debug_cart.dart';
-import 'package:agile_project/scenes/debug/debug_image.dart';
 import 'package:agile_project/scenes/home/HomeScene.dart';
 import 'package:agile_project/scenes/product/CartScene.dart';
-import 'package:agile_project/scenes/product/ManageProductScene.dart';
-import 'package:agile_project/scenes/product/OrderProductScene.dart';
-import 'package:agile_project/scenes/product/ViewProductScene.dart';
 import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/scenes/user/ProfileBody.dart';
 import 'package:agile_project/scenes/wish-list/WishlistScene.dart';
@@ -100,20 +94,20 @@ class _WrapperState extends State<Wrapper> {
                   label: Text(Manager.estimatedPrice.toStringAsFixed(2)),
                   style: ElevatedButton.styleFrom(primary: Colors.transparent))
               : Container(),
-          //debug purpose
-          PopupMenuButton(
-            itemBuilder: (context) => [
-              const PopupMenuItem<int>(
-                value: 0,
-                child: Text("StockLevel"),
-              ),
-              const PopupMenuItem<int>(
-                value: 1,
-                child: Text("Checkout"),
-              ),
-            ],
-            onSelected: (int i) => {debugHandler(context, i)},
-          ),
+          // //debug purpose
+          // PopupMenuButton(
+          //   itemBuilder: (context) => [
+          //     const PopupMenuItem<int>(
+          //       value: 0,
+          //       child: Text("StockLevel"),
+          //     ),
+          //     const PopupMenuItem<int>(
+          //       value: 1,
+          //       child: Text("Checkout"),
+          //     ),
+          //   ],
+          //   onSelected: (int i) => {debugHandler(context, i)},
+          // ),
         ],
       ),
       body:
@@ -155,7 +149,6 @@ class _WrapperState extends State<Wrapper> {
     _bottomNavigationScene.clear();
     _bottomNavigationScene.add(const MyHomeScene());
     _bottomNavigationScene.add(const MyWishlistScene());
-    //_bottomNavigationScene.add(const MyProfileScene());
     _bottomNavigationScene.add(ProfileScene());
   }
 
@@ -164,20 +157,20 @@ class _WrapperState extends State<Wrapper> {
         MaterialPageRoute(builder: (context) => const MyStockLevelScene()));
   }
 
-  void debugHandler(BuildContext context, int i) {
-    switch (i) {
-      case 0:
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const MyStockLevelScene()));
-        break;
-      case 1:
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const MyOrderProductScene()));
-        break;
-    }
-  }
+  // void debugHandler(BuildContext context, int i) {
+  //   switch (i) {
+  //     case 0:
+  //       Navigator.push(context,
+  //           MaterialPageRoute(builder: (context) => const MyStockLevelScene()));
+  //       break;
+  //     case 1:
+  //       Navigator.push(
+  //           context,
+  //           MaterialPageRoute(
+  //               builder: (context) => const MyOrderProductScene()));
+  //       break;
+  //   }
+  // }
 
   Future initializeDataInformation() async {
     if (user != null) {

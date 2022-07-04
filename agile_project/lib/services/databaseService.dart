@@ -1,14 +1,10 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:agile_project/models/order.dart';
-import 'package:agile_project/models/user.dart';
 import 'package:agile_project/models/userInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_Storage.dart';
 import 'package:agile_project/models/book.dart';
-import 'package:flutter/material.dart';
 
 class DatabaseService {
   final FirebaseStorage fbStorage = FirebaseStorage.instance;

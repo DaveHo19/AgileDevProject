@@ -1,6 +1,5 @@
 import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/book.dart';
-import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/models/order.dart';
 import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';

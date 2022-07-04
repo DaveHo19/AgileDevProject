@@ -1,5 +1,4 @@
 import 'package:agile_project/constants.dart';
-import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/models/order.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/product/OrderInfoList.dart';

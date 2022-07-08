@@ -34,35 +34,34 @@ class ProfileSceneState extends State<ProfileScene> {
   Widget build(BuildContext context) {
     user = Provider.of<AppUser?>(context);
     initialUserInfo();
-    return (user == null) ? buildNonUserScene() : buildUserScene(); 
+    return (user == null) ? buildNonUserScene() : buildUserScene();
   }
 
-  Widget buildNonUserScene(){
+  Widget buildNonUserScene() {
     return Column(
       children: [
         const ProfilePic(),
         const SizedBox(height: 20),
         ProfileMenu(
-          text: "Login", 
-          press: () {
-            Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const MyLoginScene()));
-          }, 
-          icons: const Icon(Icons.login), 
-          value: ""),
+            text: "Login",
+            press: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MyLoginScene()));
+            },
+            icons: const Icon(Icons.login),
+            value: ""),
         ProfileMenu(
-          text: "Register", 
-          press: () {
-            Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const MyRegisterScene()));
-          }, 
-          icons: const Icon(Icons.app_registration_rounded), 
-          value: ""),
-
+            text: "Register",
+            press: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MyRegisterScene()));
+            },
+            icons: const Icon(Icons.app_registration_rounded),
+            value: ""),
       ],
     );
   }
@@ -75,87 +74,97 @@ class ProfileSceneState extends State<ProfileScene> {
           return const Loading();
         } else {
           return Column(
-      children: [
-        ProfilePic(),
-        SizedBox(height: 20),
-        ProfileMenu(
-          text: "Name",
-          icons: const Icon(Icons.person),
-          value: information!.userName,
-          press: () async {
-            bool result = false;
-            result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => UserNameFieldScene(
-                        uid: user!.uid, data: information!.userName)));
-            if(result){
-              setState(() {});
-            }
-          },
-        ),
-        ProfileMenu(
-          text: "Contact Number",
-          icons: const Icon(Icons.phone),
-          value: information!.phoneNumber ?? "",
-          press: () async {
-            bool result = false;
-            result = await  Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ContactNumberScene(
-                                      uid: user!.uid, data: information!.phoneNumber ?? "")));
-            if(result){
-              setState(() {});
-            }
-          },
-        ),
-        ProfileMenu(
-          text: "Email Address",
-          icons: const Icon(Icons.email),
-          value: information!.emailAddress,
-          press: () {
-          },
-          notDisplayArrow: true,
-        ),
-        ProfileMenu(
-          text: "My Billing Address",
-          icons: const Icon(Icons.location_city),
-          value: "",
-          press: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) =>  const MyAddressScene(addressType: AddressType.billing,)));
-          },
-        ),
-        ProfileMenu(
-          text: "My Shipping Address",
-          icons: const Icon(Icons.location_city),
-          value: "",
-          press: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const MyAddressScene(addressType:  AddressType.shipping,)));
-          },
-        ),
-        ProfileMenu(
-          text: "My Order",
-          icons: const Icon(Icons.shopping_bag),
-          value: "",
-          press: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const MyOrderListScene()));
-          },
-        ),
-        ProfileMenu(
-          text: "Logout",
-          icons: const Icon(Icons.exit_to_app),
-          value: "",
-          press: () {
-            AuthService authService = AuthService();
-            authService.signOut();
-          },
-        ),
-      ],
-    );
+            children: [
+              ProfilePic(),
+              SizedBox(height: 20),
+              ProfileMenu(
+                text: "Name",
+                icons: const Icon(Icons.person),
+                value: information!.userName,
+                press: () async {
+                  bool result = false;
+                  result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => UserNameFieldScene(
+                              uid: user!.uid, data: information!.userName)));
+                  if (result) {
+                    setState(() {});
+                  }
+                },
+              ),
+              ProfileMenu(
+                text: "Contact Number",
+                icons: const Icon(Icons.phone),
+                value: information!.phoneNumber ?? "",
+                press: () async {
+                  bool result = false;
+                  result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ContactNumberScene(
+                              uid: user!.uid,
+                              data: information!.phoneNumber ?? "")));
+                  if (result) {
+                    setState(() {});
+                  }
+                },
+              ),
+              ProfileMenu(
+                text: "Email Address",
+                icons: const Icon(Icons.email),
+                value: information!.emailAddress,
+                press: () {},
+                notDisplayArrow: true,
+              ),
+              ProfileMenu(
+                text: "My Billing Address",
+                icons: const Icon(Icons.location_city),
+                value: "",
+                press: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MyAddressScene(
+                                addressType: AddressType.billing,
+                              )));
+                },
+              ),
+              ProfileMenu(
+                text: "My Shipping Address",
+                icons: const Icon(Icons.location_city),
+                value: "",
+                press: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MyAddressScene(
+                                addressType: AddressType.shipping,
+                              )));
+                },
+              ),
+              ProfileMenu(
+                text: "My Order",
+                icons: const Icon(Icons.shopping_bag),
+                value: "",
+                press: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MyOrderListScene()));
+                },
+              ),
+              ProfileMenu(
+                text: "Logout",
+                icons: const Icon(Icons.exit_to_app),
+                value: "",
+                press: () {
+                  AuthService authService = AuthService();
+                  authService.signOut();
+                },
+              ),
+            ],
+          );
         }
       },
     );

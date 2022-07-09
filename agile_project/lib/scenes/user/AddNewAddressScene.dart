@@ -1,4 +1,3 @@
-import 'dart:html';
 import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/models/rounded_button.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
@@ -98,13 +97,52 @@ class _NewAddressSceneState extends State<NewAddressScene> {
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("Sucess")));
         Navigator.pop(context, true);
+    if (isFilledAll(nameController.text, addressController.text)) {
+      if (validateName(nameController.text)) {
+        if (!map.containsKey(nameController.text)) {
+          map[nameController.text] = addressController.text;
+          dynamic result;
+          switch (widget.addressType) {
+            case AddressType.billing:
+              result =
+                  await dbService.updateUserBillingAddress(widget.uid, map);
+              break;
+            case AddressType.shipping:
+              result =
+                  await dbService.updateUserShippingAddress(widget.uid, map);
+          }
+
+          if (result == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Updated Successfully!")));
+            Navigator.pop(context, true);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Opps! Update Failed")));
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("The address name is already exitst!")));
+        }
       } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Failed")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+                "The address name must be contain 5-20 characters only!")));
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("The address name is already exitst!")));
     }
+  }
+          const SnackBar(content: Text("The field cannot be empty!")));
+    }
+  }
+
+  bool validateName(String nameController) {
+    return RegExp(r"^(?=[a-zA-Z0-9]{5,20}$)").hasMatch(nameController);
+  }
+
+  bool isFilledAll(String nameController, String addressController) {
+    return ((nameController.isNotEmpty) && (addressController.isNotEmpty));
   }
 }

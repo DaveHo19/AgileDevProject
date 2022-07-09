@@ -9,7 +9,7 @@ class UserInfomation {
     1 = Client 
   */
   final int accountLevel;
-  
+
   String? phoneNumber;
   String? gender;
 

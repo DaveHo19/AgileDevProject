@@ -1,4 +1,3 @@
-import 'dart:html';
 import 'dart:typed_data';
 
 import 'package:agile_project/constants.dart';
@@ -167,9 +166,7 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
             ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("ISBN field is empty!")));
           }
-          setState(() {
-            //initialCreateView();
-          });
+          setState(() {});
         },
         icon: (widget.bookManagement == BookManagement.create)
             ? isExistedID

@@ -88,36 +88,4 @@ class _MyStockLevelSceneState extends State<MyStockLevelScene> {
         break;
     }
   }
-  // Widget _generateListView() {
-  //   return FutureBuilder(
-  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-  //       if (snapshot.connectionState == ConnectionState.done) {
-  //         return _buildContent(snapshot);
-  //       } else {
-  //         return const Center(child: CircularProgressIndicator());
-  //       }
-  //     },
-  //   );
-  // }
-
-  // Future<QuerySnapshot> getBookList() async {
-  //   QuerySnapshot querySnapshot = await bookRef.collection('books').get();
-  //   final allBookRefData = querySnapshot.docs.map((doc) => doc.data()).toList();
-  //   final allBookData = querySnapshot.docs.map((doc) {
-  //     Book book = Book(
-  //       ISBN_13: doc.get("ISBN_13") ?? "",
-  //       title: doc.get("title") ?? "",
-  //       description: doc.get("desc") ?? "",
-  //       author: doc.get("author") ?? "",
-  //       publishedDate: doc.get("publishedDate") ?? DateTime.now(),
-  //       imageCoverURL: doc.get("imgCoverUrl") ?? "",
-  //       tags: doc.get("tags") ?? <String>[],
-  //       tradePrice: doc.get("tradePrice") ?? 0,
-  //       retailPrice: doc.get("retailPrice") ?? 0,
-  //       quantity: doc.get("quantity") ?? 0,
-  //     );
-  //   }).toList();
-  //   print(allBookRefData);
-  //   return querySnapshot;
-  // }
 }

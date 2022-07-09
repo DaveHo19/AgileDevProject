@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/book.dart';
 import 'package:agile_project/models/cartItem.dart';
@@ -443,7 +441,6 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
     formWidgetList.add(_buildSpace());
     formWidgetList.add(_buildQuantity("Book Quantity"));
     formWidgetList.add(_buildSpace());
-    // formWidgetList.add(_buildButton());
     formWidgetList.add(_buildSpace());
     formWidgetList.add(_buildSpace());
   }
@@ -468,7 +465,6 @@ class _MyViewProductSceneState extends State<MyViewProductScene> {
     formWidgetList.add(_buildSpace());
     formWidgetList.add(_buildQuantity("Available In Stock"));
     formWidgetList.add(_buildSpace());
-    // formWidgetList.add(_buildButton());
     formWidgetList.add(_buildSpace());
     formWidgetList.add(_buildSpace());
   }

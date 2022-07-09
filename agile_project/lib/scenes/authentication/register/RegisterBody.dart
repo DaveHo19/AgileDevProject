@@ -89,7 +89,7 @@ class _RegisterBodyState extends State<RegisterBody> {
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Both password are differences!")));
+              const SnackBar(content: Text("Passwords do not match!")));
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

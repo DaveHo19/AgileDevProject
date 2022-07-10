@@ -3,6 +3,7 @@ import 'package:agile_project/models/rounded_input_field.dart';
 import 'package:agile_project/models/rounded_password_field.dart';
 import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
 import 'package:agile_project/services/firebase_auth.dart';
+import 'package:agile_project/utilities/field_validation.dart';
 import 'package:flutter/material.dart';
 import 'package:agile_project/scenes/authentication/register/RegisterBackground.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -63,7 +64,8 @@ class _RegisterBodyState extends State<RegisterBody> {
 //Implement Firebase database service to store data
   void registerEvent() async {
     if (isFilledAll(email, psdOne, psdTwo)) {
-      if (validateEmail(email)) {
+      FieldValidation valid = FieldValidation();
+      if (valid.validateEmail(email)) {
         if (psdOne == psdTwo) {
           setState(() {
             isLoading = true;
@@ -99,13 +101,6 @@ class _RegisterBodyState extends State<RegisterBody> {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("There are some field is empty!")));
     }
-  }
-
-//valid format for email
-  bool validateEmail(String email) {
-    return RegExp(
-            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-        .hasMatch(email);
   }
 
 //email and password should not be empty

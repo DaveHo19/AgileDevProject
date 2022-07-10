@@ -57,7 +57,7 @@ class FieldValidation {
         .hasMatch(fieldController);
   }
 
-//To validate the email input matches the rules set in system
+  //To validate the email input matches the rules set in system
   bool validateEmail(String val) {
     bool emailValid = RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
@@ -66,11 +66,17 @@ class FieldValidation {
     return emailValid;
   }
 
+  //To validate the password input matches the rules set in system
   bool validatePassword(String val) {
     bool passwordValid =
         RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
             .hasMatch(val);
 
     return passwordValid;
+  }
+
+// To validate both email and password input matches the rules setin system
+  bool validateEmailPassword(String email, String password) {
+    return validateEmail(email) && validatePassword(password);
   }
 }

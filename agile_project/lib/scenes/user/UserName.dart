@@ -2,6 +2,7 @@ import 'package:agile_project/models/rounded_button.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
 import 'package:agile_project/services/databaseService.dart';
+import 'package:agile_project/utilities/field_validation.dart';
 import 'package:flutter/material.dart';
 
 class UserNameFieldScene extends StatefulWidget {
@@ -72,7 +73,8 @@ class _UserNameFieldSceneState extends State<UserNameFieldScene> {
 
   void updateName() async {
     if (isFilledAll(fieldController.text)) {
-      if (validateName(fieldController.text)) {
+      FieldValidation valid = FieldValidation();
+      if (valid.validateName(fieldController.text)) {
         setState(() {
           isLoading = true;
         });
@@ -95,15 +97,6 @@ class _UserNameFieldSceneState extends State<UserNameFieldScene> {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("The field cannot be empty!")));
     }
-  }
-
-  bool validateName(String fieldController) {
-    //[a-zA-Z0-9._] --> allowed characters
-    //{5,20} --> username is 5-20 characters long
-    //(?!.*[_.]{2}) --> no __ or _. or ._ or .. inside
-    // [^_.].*[^_.] --> no _ or . at the beginning and end
-    return RegExp(r"^(?=[a-zA-Z0-9._]{5,20}$)(?!.*[_.]{2})[^_.].*[^_.]$")
-        .hasMatch(fieldController);
   }
 
   bool isFilledAll(String fieldController) {

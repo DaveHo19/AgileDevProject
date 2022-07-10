@@ -18,8 +18,8 @@ class ProfilePic extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 110,
-      width: 110,
+      height: 115,
+      width: 115,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -40,7 +40,7 @@ class ProfilePic extends StatelessWidget {
                 ),
                 color: Color(0xFFF5F6F9),
                 onPressed: () {},
-                child: SvgPicture.asset("images/profilepic.png"),
+                child: SvgPicture.asset("images/main_top.png"),
               ),
             ),
           )

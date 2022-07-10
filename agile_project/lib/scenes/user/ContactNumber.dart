@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:agile_project/models/rounded_button.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
 import 'package:agile_project/services/databaseService.dart';
+import 'package:agile_project/utilities/field_validation.dart';
 
 class ContactNumberScene extends StatefulWidget {
   const ContactNumberScene({
@@ -73,7 +74,8 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
 
   void updatePhone() async {
     if (isFilledAll(fieldController.text)) {
-      if (validatePhone(fieldController.text)) {
+      FieldValidation valid = FieldValidation();
+      if (valid.validatePhone(fieldController.text)) {
         setState(() {
           isLoading = true;
         });
@@ -96,10 +98,6 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("The field cannot be empty!")));
     }
-  }
-
-  bool validatePhone(String fieldController) {
-    return RegExp(r"^(?:[+0]9)?[0-9]{10,11}$").hasMatch(fieldController);
   }
 
   bool isFilledAll(String fieldController) {

@@ -56,4 +56,13 @@ class FieldValidation {
     return RegExp(r"^(?=[a-zA-Z0-9._]{5,20}$)(?!.*[_.]{2})[^_.].*[^_.]$")
         .hasMatch(fieldController);
   }
+
+//To validate the email input matches the rules set in system
+  bool validateEmail(String val) {
+    bool emailValid = RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(val);
+
+    return emailValid;
+  }
 }

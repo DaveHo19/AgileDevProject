@@ -6,6 +6,7 @@ void main() {
 
   test('email returns error value', () {
     var email = "aiweitan@gmail.com";
+    var password = "";
     bool emailValid = RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
         .hasMatch(email);

@@ -65,12 +65,12 @@ class FieldValidation {
 
     return emailValid;
   }
-}
 
-bool validatePassword(String val) {
-  bool passwordValid =
-      RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
-          .hasMatch(val);
+  bool validatePassword(String val) {
+    bool passwordValid =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+            .hasMatch(val);
 
-  return passwordValid;
+    return passwordValid;
+  }
 }

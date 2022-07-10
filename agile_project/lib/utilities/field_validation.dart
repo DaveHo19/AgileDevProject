@@ -57,7 +57,12 @@ class FieldValidation {
         .hasMatch(fieldController);
   }
 
-//To validate the email input matches the rules set in system
+  //To validate the input contact number matches the rules set in system
+  bool validatePhone(String fieldController) {
+    return RegExp(r"^(?:[+0]9)?[0-9]{10,11}$").hasMatch(fieldController);
+  }
+
+  //To validate the email input matches the rules set in system
   bool validateEmail(String val) {
     bool emailValid = RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")

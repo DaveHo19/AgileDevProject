@@ -1,5 +1,4 @@
 import 'package:agile_project/models/book.dart';
-import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/home/HomeBookList.dart';
 import 'package:agile_project/services/databaseService.dart';
 import 'package:flutter/material.dart';

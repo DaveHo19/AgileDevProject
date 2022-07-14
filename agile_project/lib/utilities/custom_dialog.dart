@@ -1,5 +1,4 @@
 import 'package:agile_project/constants.dart';
-import 'package:agile_project/models/book.dart';
 import 'package:flutter/material.dart';
 
 class CustomDialog{

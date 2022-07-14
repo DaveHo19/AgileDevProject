@@ -1,5 +1,4 @@
 import 'package:agile_project/models/rounded_button.dart';
-import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
 import 'package:agile_project/services/databaseService.dart';
 import 'package:agile_project/utilities/field_validation.dart';

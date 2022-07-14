@@ -1,10 +1,8 @@
-import 'dart:html';
 import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/order.dart';
 import 'package:agile_project/models/user.dart';
 import 'package:agile_project/scenes/product/ViewOrderDetails.dart';
 import 'package:agile_project/scenes/sharedProperties/loadingBox.dart';
-import 'package:agile_project/scenes/user/OrderBody.dart';
 import 'package:agile_project/scenes/user/ProfileMenu.dart';
 import 'package:agile_project/services/databaseService.dart';
 import 'package:flutter/material.dart';

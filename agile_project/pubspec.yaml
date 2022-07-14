@@ -52,6 +52,10 @@ dependencies:
   hive_flutter: ^1.1.0
 
 dev_dependencies:
+  flutter_driver:
+    sdk: flutter  
+  integration_test:
+    sdk: flutter
   flutter_test:
     sdk: flutter
   search_widget: 1.0.2

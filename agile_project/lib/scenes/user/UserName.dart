@@ -1,3 +1,4 @@
+import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/rounded_button.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
 import 'package:agile_project/services/databaseService.dart';
@@ -39,6 +40,8 @@ class _UserNameFieldSceneState extends State<UserNameFieldScene> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Edit Name"),
+          backgroundColor: kPrimaryColor,
+          foregroundColor: kPrimaryLightColor,
         ),
         body: buildContent(),
       ),

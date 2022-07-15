@@ -132,9 +132,9 @@ class _MyManageProductSceneState extends State<MyManageProductScene> {
               ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text("No image selected")));
             } else {
-              setState(() {
                 imgSrc = imgResult.files.single.bytes;
                 isNewCover = true;
+                setState(() {
               });
             }
           },

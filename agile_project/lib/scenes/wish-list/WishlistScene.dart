@@ -52,7 +52,10 @@ class _MyWishlistSceneState extends State<MyWishlistScene>{
   }
 
   Widget buildWishListView(){ 
-    return RefreshIndicator(
+    return bookWishList.isEmpty ? 
+    const Center(
+      child: Text("You had no wishlist any item yet!")
+    ) : RefreshIndicator(
       onRefresh: refreshContent,
       child: ListView.builder(
         itemCount: bookWishList.isEmpty ? 0 : bookWishList.length,
@@ -130,10 +133,14 @@ class _MyWishlistSceneState extends State<MyWishlistScene>{
           bookISBNWishList.remove(book.ISBN_13);
           dynamic res = await dbService.updateUserWishlist(user!.uid, bookISBNWishList);
           if (res == null){
-            isProcess = false;
+            setState(() {
+              isProcess = false;
+            });
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Removed!")));
           } else {
-            isProcess = false;
+            setState(() {
+              isProcess = false;
+            });
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to Remove!")));
           }
         }

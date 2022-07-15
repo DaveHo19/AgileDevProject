@@ -1,3 +1,4 @@
+import 'package:agile_project/constants.dart';
 import 'package:agile_project/models/enumList.dart';
 import 'package:agile_project/models/rounded_button.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
@@ -32,6 +33,8 @@ class _NewAddressSceneState extends State<NewAddressScene> {
           title: Text(widget.addressType == AddressType.billing
               ? "Add New Billing Address"
               : "Add New Shipping Address"),
+          backgroundColor: kPrimaryColor,
+          foregroundColor: kPrimaryLightColor,
         ),
         body: buildContent(),
       ),

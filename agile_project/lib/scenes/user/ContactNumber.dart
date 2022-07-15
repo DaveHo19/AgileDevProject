@@ -1,3 +1,4 @@
+import 'package:agile_project/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:agile_project/models/rounded_button.dart';
 import 'package:agile_project/scenes/sharedProperties/textField.dart';
@@ -39,6 +40,8 @@ class _ContactNumberSceneState extends State<ContactNumberScene> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Edit Contact Number"),
+          backgroundColor: kPrimaryColor,
+          foregroundColor: kPrimaryLightColor,
         ),
         body: buildContent(),
       ),

@@ -1,7 +1,5 @@
 import 'package:hive/hive.dart';
 
-part 'cart.g.dart';
-
 @HiveType(typeId: 0)
 class Cart {
   @HiveField(0)
@@ -29,21 +27,4 @@ class Cart {
       required this.retailPrice,
       required this.quantity,
       required this.cartQuantity});
-
-  Cart copyWith({
-    String? ISBN_13,
-    String? title,
-    String? imageCoverURL,
-    double? retailPrice,
-    int? quantity,
-    int? cartQuantity,
-  }) {
-    return Cart(
-        ISBN_13: ISBN_13 ?? this.ISBN_13,
-        title: title ?? this.title,
-        imageCoverURL: imageCoverURL ?? this.imageCoverURL,
-        retailPrice: retailPrice ?? this.retailPrice,
-        quantity: quantity ?? this.quantity,
-        cartQuantity: cartQuantity ?? this.cartQuantity);
-  }
 }

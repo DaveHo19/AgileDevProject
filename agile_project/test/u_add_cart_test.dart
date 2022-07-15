@@ -156,6 +156,50 @@ void main() {
 
     testCart.addToCart(cartList, cartObject);
 
-    expect(cartList.length, 1);
+    Cart cartObject2 = Cart(
+        ISBN_13: "978-0-670-02055-3",
+        title: "The Magicians",
+        imageCoverURL:
+            "https://firebasestorage.googleapis.com/v0/b/agileproject-abd4b.appspot.com/o/bookCoverImage%2F%09978-0-670-02055-3?alt=media&token=9a4f4d21-a17a-4689-86f1-a80f6ef35679",
+        retailPrice: 21.30,
+        quantity: 3,
+        cartQuantity: 0);
+
+    testCart.addToCart(cartList, cartObject2);
+
+    Cart cartObject3 = Cart(
+        ISBN_13: "0-374-28438-5",
+        title: "The Virgin Suicides",
+        imageCoverURL:
+            "https://firebasestorage.googleapis.com/v0/b/agileproject-abd4b.appspot.com/o/bookCoverImage%2F0-374-28438-5?alt=media&token=6f61b17f-ee49-46a7-9010-c93f0f070746",
+        retailPrice: 31.20,
+        quantity: 15,
+        cartQuantity: 0);
+
+    testCart.addToCart(cartList, cartObject3);
+
+    Cart cartObject4 = Cart(
+        ISBN_13: "0-374-28698-5",
+        title: "The Virgin Suicides 2",
+        imageCoverURL:
+            "https://firebasestorage.googleapis.com/v0/b/agileproject-abd4b.appspot.com/o/bookCoverImage%2F0-374-28438-5?alt=media&token=6f61b17f-ee49-46a7-9010-c93f0f070746",
+        retailPrice: 27.20,
+        quantity: 9,
+        cartQuantity: 0);
+
+    testCart.addToCart(cartList, cartObject4);
+
+    Cart cartObject5 = Cart(
+        ISBN_13: "0-374-28698-5",
+        title: "The Virgin Suicides 4",
+        imageCoverURL:
+            "https://firebasestorage.googleapis.com/v0/b/agileproject-abd4b.appspot.com/o/bookCoverImage%2F0-374-28438-5?alt=media&token=6f61b17f-ee49-46a7-9010-c93f0f070746",
+        retailPrice: 27.20,
+        quantity: 9,
+        cartQuantity: 0);
+
+    testCart.addToCart(cartList, cartObject5);
+
+    expect(cartList.length, 5);
   });
 }

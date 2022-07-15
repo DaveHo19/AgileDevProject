@@ -20,9 +20,7 @@ void main() {
 
     cartList.add(cartObject);
 
-    testCart.countTotalCartQuantity(cartList);
-
-    expect(testCart.totalCartQuantity, 2);
+    expect(testCart.countTotalCartQuantity(cartList), 2);
   });
 
   test(
@@ -53,9 +51,7 @@ void main() {
 
     cartList.add(cartObject2);
 
-    testCart.countTotalCartQuantity(cartList);
-
-    expect(testCart.totalCartQuantity, 8);
+    expect(testCart.countTotalCartQuantity(cartList), 8);
   });
 
   test(
@@ -97,9 +93,7 @@ void main() {
 
     cartList.add(cartObject3);
 
-    testCart.countTotalCartQuantity(cartList);
-
-    expect(testCart.totalCartQuantity, 15);
+    expect(testCart.countTotalCartQuantity(cartList), 15);
   });
 
   test(
@@ -152,9 +146,7 @@ void main() {
 
     cartList.add(cartObject4);
 
-    testCart.countTotalCartQuantity(cartList);
-
-    expect(testCart.totalCartQuantity, 17);
+    expect(testCart.countTotalCartQuantity(cartList), 17);
   });
 
   test(
@@ -218,8 +210,6 @@ void main() {
 
     cartList.add(cartObject5);
 
-    testCart.countTotalCartQuantity(cartList);
-
-    expect(testCart.totalCartQuantity, 22);
+    expect(testCart.countTotalCartQuantity(cartList), 22);
   });
 }

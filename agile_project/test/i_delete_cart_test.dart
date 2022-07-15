@@ -22,7 +22,7 @@ void main() {
 
     testCart.removeCartObject(cartList, 0);
 
-    expect(cartList.length, 1);
+    expect(cartList.length, 0);
   });
 
   test(
@@ -60,7 +60,7 @@ void main() {
   });
 
   test(
-      'Test 4: Check to see first cart object and second cart object is remove from the list and the expected result is 0',
+      'Test 3: Check to see first cart object and second cart object is remove from the list and the expected result is 0',
       () {
     final testCart = TestCart();
     List<Cart> cartList = [];
@@ -93,7 +93,7 @@ void main() {
   });
 
   test(
-      'Test 3: Check to see second cart object is remove from the list and left first cart object, third object in list and the expected result is 2',
+      'Test 4: Check to see second cart object is remove from the list and left first cart object, third object in list and the expected result is 2',
       () {
     final testCart = TestCart();
     List<Cart> cartList = [];

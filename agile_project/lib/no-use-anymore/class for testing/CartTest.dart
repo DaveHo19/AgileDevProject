@@ -17,10 +17,11 @@ class TestCart {
     cartList.add(tempCartObject);
   }
 
-  void countTotalCartQuantity(List<Cart> cartList) {
+  int countTotalCartQuantity(List<Cart> cartList) {
     for (int i = 0; i < cartList.length; i++) {
       totalCartQuantity = totalCartQuantity + cartList[i].cartQuantity;
     }
+    return totalCartQuantity;
   }
 
   void increCart(List<Cart> cartList, int index) {

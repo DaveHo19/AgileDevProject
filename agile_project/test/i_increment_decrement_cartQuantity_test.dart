@@ -1,6 +1,9 @@
 import 'package:agile_project/no-use-anymore/cart.dart';
 import 'package:agile_project/no-use-anymore/class%20for%20testing/CartTest.dart';
+// import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
+// import 'package:integration_test/integration_test.dart';
+// import '../lib/main.dart' as app;
 
 void main() {
   test(
@@ -166,3 +169,23 @@ void main() {
     expect(cartList[0].cartQuantity, 9);
   });
 }
+
+// void main() {
+//   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+//   testWidgets(
+//       "Add book into cart and click on add button to incremenet quantity",
+//       (tester) async {
+//     app.main();
+//     await tester.pumpAndSettle();
+
+//     final searchTitle = find.byKey(Key("SearchTitle"));
+//     final titleBookList = find.byKey(Key("titleBookList"));
+
+//     await tester.enterText(searchTitle, "Harry");
+//     await tester.pumpAndSettle();
+
+//     expect(find.text("Book Name: Harry Potter and the Prisoner of Azkaban"),
+//         findsOneWidget);
+//   });
+// }

@@ -35,44 +35,48 @@ class _MyOrderListSceneState extends State<MyOrderListScene> {
         });
   }
 
-  Widget buildListView(){
+  Widget buildListView() {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "My Order"
+        appBar: AppBar(
+          title: const Text("My Order"),
+          backgroundColor: kPrimaryColor,
+          foregroundColor: kPrimaryLightColor,
         ),
-        backgroundColor: kPrimaryColor,
-        foregroundColor: kPrimaryLightColor,
-      ),
-      body: orderInfoList.isNotEmpty ? 
-            ListView.builder(
-              itemCount: orderInfoList.length,
-              itemBuilder: (context, i){
-                return buildListItem(orderInfoList[i]);
-              }) : const Center(
+        body: orderInfoList.isNotEmpty
+            ? ListView.builder(
+                itemCount: orderInfoList.length,
+                itemBuilder: (context, i) {
+                  return buildListItem(orderInfoList[i]);
+                })
+            : const Center(
                 child: Text("You have not make any order yet!"),
-              )
-    );
+              ));
   }
 
-  Widget buildListItem(OrderInfo order){
+  Widget buildListItem(OrderInfo order) {
     return ProfileMenu(
-      text: order.orderCode!, 
-      press: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context) => MyViewOrderDetails(orderInfoData: order)));
-      }, 
-      icons: const Icon(Icons.inventory_2), 
-      value: DateFormat('yyyy-MM-dd').format(order.orderDate));
+        text: order.orderCode!,
+        press: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      MyViewOrderDetails(orderInfoData: order)));
+        },
+        icons: const Icon(Icons.inventory_2),
+        value: DateFormat('yyyy-MM-dd').format(order.orderDate));
   }
+
   Future initialOrderList() async {
     DatabaseService dbService = DatabaseService();
     if (user != null) {
       orderCodeList = await dbService.getOrderList(user!.uid);
       print(orderCodeList);
-      orderInfoList = await dbService.getOrderListByOrderCodeList(orderCodeList);
+      orderInfoList =
+          await dbService.getOrderListByOrderCodeList(orderCodeList);
       print(orderInfoList);
-      if (orderInfoList.isNotEmpty){
-        orderInfoList.sort((a,b) => a.orderDate.compareTo(b.orderDate));
+      if (orderInfoList.isNotEmpty) {
+        orderInfoList.sort((a, b) => a.orderDate.compareTo(b.orderDate));
         orderInfoList = orderInfoList.reversed.toList();
       }
     }

@@ -6,6 +6,7 @@ import 'package:agile_project/services/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:agile_project/scenes/authentication/register/RegisterBackground.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:agile_project/main.dart';
 
 class RegisterBody extends StatefulWidget {
   RegisterBody({Key? key}) : super(key: key);
@@ -75,7 +76,8 @@ class _RegisterBodyState extends State<RegisterBody> {
             isLoading = false;
             ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Register successfully!!")));
-            Navigator.pop(context);
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const MyApp()));
           }
 
           //Prompt error message for invalid input
